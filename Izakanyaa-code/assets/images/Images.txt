@@ -1,0 +1,2 @@
+This file will contain names and extensions of images used in Phaser code
+download images in this file from MEGA
