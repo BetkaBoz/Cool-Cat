@@ -14,8 +14,15 @@ class CreateSavesTable extends Migration
     public function up()
     {
         Schema::create('saves', function (Blueprint $table) {
+            $allowed = ["EASY","MEDIUM","HARD"];
             $table->id();
+            $table->unsignedBigInteger("user_id");
+            $table->foreign('user_id')->references('id')->on('users');
+            $table->enum("difficulty",$allowed);
+            $table->integer("level");
+            $table->integer("score");
             $table->timestamps();
+
         });
     }
 
