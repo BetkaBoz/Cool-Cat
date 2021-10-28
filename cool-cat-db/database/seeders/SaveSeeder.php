@@ -32,6 +32,12 @@ class SaveSeeder extends Seeder
                 "difficulty"=>"MEDIUM",
                 "level"=>1,
                 "score"=>0,
+            ],
+            4 => [
+                "user_id"=>5,
+                "difficulty"=>"MEDIUM",
+                "level"=>1,
+                "score"=>0,
             ]
         ];
 
