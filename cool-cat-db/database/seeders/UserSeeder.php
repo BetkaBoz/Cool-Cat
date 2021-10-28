@@ -24,6 +24,11 @@ class UserSeeder extends Seeder
                 "name"=>"Feri",
                 "email"=>"ferko@gmail.com",
                 "password"=>"123456789",
+            ],
+            3 => [
+                "name"=>"Sano",
+                "email"=>"sano@gmail.com",
+                "password"=>"optovolokno",
             ]
         ];
 
