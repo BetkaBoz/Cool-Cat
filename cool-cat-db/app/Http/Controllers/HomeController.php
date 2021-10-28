@@ -16,13 +16,12 @@ class HomeController extends Controller
 
         echo "<h3> COOL FUCKING CAT </h3>";
     }
-
+/*
     public function insertTask(){
         $task = new Task();
         $task->content = "uprac izbu kek";
         $task->owner = "Feri";
         $task->save();
-
     }
 
     public function selectTask($id){
@@ -72,7 +71,6 @@ class HomeController extends Controller
             echo "Typek neexistuje";
         }
     }
-
-
+    */
 }
 
