@@ -1,9 +1,13 @@
 /** @type {import("./assets/lib/phaser")} */
 
+import Timer from "./Timer";
+
 var text;
 var circle;
 var test_int;
 var dropOff;
+var timer;
+
 export default class MainScene extends Phaser.Scene {
 
 
@@ -21,6 +25,7 @@ export default class MainScene extends Phaser.Scene {
         var test = this.add.image(300, 50, 'square');
         dropOff = this.add.image(100, 250, 'square');
         dropOff.setScale(1.5,1.0);
+        timer = new Timer({scene: this, x: 400, y: 300, time: 3000, endEvent: this.onEvent});
         var scene = this;
         var selected = null;
         circle = null;
@@ -108,7 +113,16 @@ export default class MainScene extends Phaser.Scene {
         })
     }
 
+    onEvent(){
+        text.destroy();
+    }
+
+    onEvent(){
+        dropOff.setScale(0.5);
+    }
+
     update(){
+        timer.draw();
         if(circle != null && circle.y >= 300 ){
             circle.y = 10;
             //circle.destroy();
