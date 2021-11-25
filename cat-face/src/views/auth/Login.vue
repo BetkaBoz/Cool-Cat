@@ -34,8 +34,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: "Login",
   data() {
@@ -50,7 +48,7 @@ export default {
   },
   methods: {
     login() {
-      axios.post('http://localhost/Cool-Cat/cat-tail/public/api/login', this.formData).then(res => {
+      this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/login', this.formData).then(res => {
         localStorage.setItem('token', res.data)
         // this.$parent.loggedIn()
         this.$router.push('/')

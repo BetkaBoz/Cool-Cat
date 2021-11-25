@@ -28,6 +28,24 @@ class AuthController extends Controller
         return $user->createToken($request->device_name)->plainTextToken;
     }
 
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => ['required'],
+            'email' => ['required', 'email', 'unique:users'],
+            'password' => ['required', 'min:6', 'confirmed'],
+            'password_confirmation' => ['required'],
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json(['msg' => 'Registered successfully']);
+    }
+
     public function logout(Request $request)
     {
         // TODO: mazanie tokenov funguje iba ak sa stranka refreshne, zatialco uz je user prihlaseny.
