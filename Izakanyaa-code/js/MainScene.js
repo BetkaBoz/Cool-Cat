@@ -1,12 +1,17 @@
 /** @type {import("./assets/lib/phaser")} */
 
 import Timer from "./Timer";
+import Customer from "./Customer";
+import Cookware from "./Cookware";
 
-var text;
-var circle;
-var test_int;
-var dropOff;
+let text;
+let circle;
+let test_int;
+let dropOff;
 var timer;
+let pot;
+let width;
+let score;
 
 export default class MainScene extends Phaser.Scene {
 
@@ -18,16 +23,77 @@ export default class MainScene extends Phaser.Scene {
     preload() {
         this.load.image('square','./assets/images/square.jpg');
         this.load.image('circle','./assets/images/circle.jpg');
+        this.load.image('customer','./assets/images/customer_1.png');
+        width = this.cameras.main.width;
     }
 
     create(){
+        //this.createStuff()
         text = this.add.text(10, 10, 'Move the mouse', { font: '16px Courier', fill: '#00ff00' });
-        var test = this.add.image(300, 50, 'square');
+        let scene = this;
+        let potImg = scene.add.image(100, 200, "circle");
+        // scene.input.on('pointerOver', function(gameObject) {
+        //     gameObject.setTint(0x44ff4);
+        // });
+        timer = new Timer({scene: scene, x: 400, y: 300});
+        this.add.existing(timer);
+        pot = new Cookware({scene: scene, x: 400, y:300, objectImg: potImg, type: "pot"});
+        this.add.existing(pot);
+        pot.setCookEndEvent(this.onEvent);
+        //pot.setCookEndEvent(this.onEvent);
+        //console.log("FURNG");
+        pot.startCooking({timer: timer, time:3000});
+        // timer.setEvent({time: 3000,endEvent: this.onEvent});
+        // timer.setVisiblity(true);
+    }
+
+    onEvent(){
+        //console.log("wat"+timer);
+        pot.startBurn({timer: timer, time: 3000});
+    }
+
+    oneEvent(){
+        text.setText("DERG");
+        //console.log("DERG");
+        timer.setEvent({time: 3000,endEvent: this.onEvent});
+    }
+
+    update(){
+        // if(!(pot.timer == null)){
+        //    pot.draw();
+        // }
+        pot.testText(text);
+        timer.draw();
+        // if(circle != null && circle.y >= 300 ){
+        //     circle.y = 10;
+        //     //circle.destroy();
+        // }
+        // let pointer = this.input.activePointer;
+        // if(circle != null){
+        //     text.setText(""[
+        //         'x: ' + pointer.x,
+        //         'y: ' + pointer.y,
+        //         'int: ' + test_int,
+        //         'circle x: ' + circle.x,
+        //         'circle y: ' + circle.y,
+        //         'dropoff x: ' + dropOff.x,
+        //         'dropoff y: ' + dropOff.y,
+        //         'dropoff with: ' + dropOff.width,
+        //         'dropoff height: ' + dropOff.height""
+        //     ]);
+        // }
+    }
+
+    createStuff(){
+        score = 0;
+
+        let test = this.add.image(300, 50, 'square');
         dropOff = this.add.image(100, 250, 'square');
         dropOff.setScale(1.5,1.0);
-        timer = new Timer({scene: this, x: 400, y: 300, time: 3000, endEvent: this.onEvent});
-        var scene = this;
-        var selected = null;
+        //firstCustomer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 0, y:200, timeLimit: 3000, timeOffset: 0, order: "circle", bubble: "square", score: score});
+        timer = new Timer({scene: this, x: 400, y: 300, time: 3000, showTimer: true,endEvent: this.onEvent});
+
+        let selected = null;
         circle = null;
         test_int = 0;
         test.setInteractive();
@@ -43,15 +109,15 @@ export default class MainScene extends Phaser.Scene {
         })
 
         scene.input.on('pointermove', function(pointer) {
-                //check here is a scene has a selected gameObject
-                
-                if(selected != null){
-                    //text.setText('TRIGGERED');
-                    selected.setTint(0x44ff4);
-                    selected.setPosition(pointer.x, pointer.y);                        
-                }else{
-                    //text.setText('NOT');
-                }
+            //check here is a scene has a selected gameObject
+
+            if(selected != null){
+                //text.setText('TRIGGERED');
+                selected.setTint(0x44ff4);
+                selected.setPosition(pointer.x, pointer.y);
+            }else{
+                //text.setText('NOT');
+            }
         })
 
         scene.input.on('pointerup', function(){
@@ -71,7 +137,7 @@ export default class MainScene extends Phaser.Scene {
                 selected = null;
             }
         })
-        
+
         /*scene.input.on('pointerdown',function(gameObject){
             if(gameObject = circle){
                 gameObject.body.setGravity(0);
@@ -94,7 +160,7 @@ export default class MainScene extends Phaser.Scene {
                 test_int++;
                 selected.destroy();
                 selected = null;
-            }else{                
+            }else{
                 if(circle != null){
                     test_int++;
                     circle.destroy();
@@ -109,37 +175,7 @@ export default class MainScene extends Phaser.Scene {
                 'circle y: ' + circle.y,
                 'dropoff x: ' + dropOff.x,
                 'dropoff y: ' + dropOff.y
-            ]*/);   
+            ]*/);
         })
-    }
-
-    onEvent(){
-        text.destroy();
-    }
-
-    onEvent(){
-        dropOff.setScale(0.5);
-    }
-
-    update(){
-        timer.draw();
-        if(circle != null && circle.y >= 300 ){
-            circle.y = 10;
-            //circle.destroy();
-        }
-        var pointer = this.input.activePointer;
-        if(circle != null){
-            text.setText([
-                'x: ' + pointer.x,
-                'y: ' + pointer.y,
-                'int: ' + test_int,
-                'circle x: ' + circle.x,
-                'circle y: ' + circle.y,
-                'dropoff x: ' + dropOff.x,
-                'dropoff y: ' + dropOff.y,
-                'dropoff with: ' + dropOff.width,
-                'dropoff height: ' + dropOff.height
-            ]); 
-        }       
     }
 }
