@@ -1,6 +1,19 @@
-import Timer from "./Timer";
-
+import Timer from "./Timer.js";
+import Food from "./Food.js";
 let scene;
+
+var foods =["Shioyaki",
+            "Ikayaki",
+            "Onigiri",
+            "Cabbage Salad",
+            "Taiyaki",
+            "Dorayaki",
+            "Daikon Salad",
+            "Sushi",
+            "Ebi Furai",
+            "Takoyaki",
+            "Chef’s ultimate secret bowl"];
+
 export default class Customer extends Phaser.GameObjects.Container{
     constructor(data) {
         let{scene, image, counterX, edgeX, x, y, timeLimit, timeOffset, order, bubble, score} = data
@@ -13,7 +26,8 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.orderImg = order;
         this.customer = customerImg;
         this.bubble = bubbleImg;
-        this.order = orderImg;
+        this.order_image = orderImg;
+        this.order = "nothing";
         this.scene = scene;
         this.timeLimit = timeLimit;
         this.counterX = counterX;
@@ -44,11 +58,12 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.score = -50;
         this.targetX = this.edgeX;
         this.bubble.destroy();
-        this.order.destroy();
+        this.order_image.destroy();
         this.isMoving = true;
     }
 
     startOrder(){
+
         let showTimer = true;
         this.timedEvent = new Timer({scene: this.scene, x: this.x, y: this.y-10, time: this.timeLimit, showTimer, endEvent: this.walkOff});
     }
@@ -66,6 +81,27 @@ export default class Customer extends Phaser.GameObjects.Container{
         //this.customer = scene.add.image(this.x,this.y, this.customerImg);
         this.customer.setX(this.x);
         this.targetX = this.counterX;
+
+    }
+
+    generateOrder(){
+        let level = 1;  // Keď budeme mať premennú tak to dáme preč zatiaľ je to je napevno
+        if (level === 1){
+            const random = Math.floor(Math.random() * (foods.length - 6) ) ;
+            this.order = foods[random];
+            console.log(random, foods[random]);
+        }
+        else if (level === 2){
+            const random = Math.floor(Math.random() * (foods.length - 3) ) ;
+            this.order = foods[random];
+            console.log(random, foods[random]);
+        }
+        else if (level === 3){
+            const random = Math.floor(Math.random() * (foods.length ) ) ;
+            this.order = foods[random];
+            console.log(random, foods[random]);
+        }
+
 
     }
 }

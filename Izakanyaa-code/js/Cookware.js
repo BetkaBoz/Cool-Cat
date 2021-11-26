@@ -1,4 +1,4 @@
-import Timer from "./Timer";
+import Timer from "./Timer.js";
 export default class Cookware extends Phaser.GameObjects.Container{
     constructor(data){
         let{scene, x, y, objectImg, type} = data;
