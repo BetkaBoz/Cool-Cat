@@ -1,8 +1,10 @@
 /** @type {import("./assets/lib/phaser")} */
 
-import Timer from "./Timer";
-import Customer from "./Customer";
-import Cookware from "./Cookware";
+import Timer from "./Timer.js";
+import Customer from "./Customer.js";
+import Cookware from "./Cookware.js";
+import Food from "./Food.js";
+
 
 let text;
 let circle;
@@ -12,6 +14,8 @@ var timer;
 let pot;
 let width;
 let score;
+let customer;
+
 
 export default class MainScene extends Phaser.Scene {
 
@@ -45,6 +49,11 @@ export default class MainScene extends Phaser.Scene {
         pot.startCooking({timer: timer, time:3000});
         // timer.setEvent({time: 3000,endEvent: this.onEvent});
         // timer.setVisiblity(true);
+
+
+        customer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 250, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "square", score: score});
+        this.add.existing(customer);
+        customer.generateOrder();
     }
 
     onEvent(){
@@ -59,6 +68,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     update(){
+
         // if(!(pot.timer == null)){
         //    pot.draw();
         // }
