@@ -45,34 +45,38 @@
 </template>
 
 <script>
+import {createToast} from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css'
+
 export default {
-    name: "Register",
-    data() {
-        return {
-            formData: {
-                name: '',
-                email: '',
-                password: '',
-                password_confirmation: ''
-            },
-            errors: {}
-        }
-    },
-    methods: {
-        registerUser() {
-            this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/register', this.formData).then(
-                res => {
-                    console.log(res.data)
-                    this.formData.name = this.formData.email = this.formData.password = this.formData.password_confirmation = ''
-                    this.errors = {}
-                    this.$router.push('/login')
-                }
-            ).catch(er => {
-                this.errors = er.response.data.errors
-                console.log(this.errors)
-            })
-        }
+  name: "Register",
+  data() {
+    return {
+      formData: {
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: ''
+      },
+      errors: {}
     }
+  },
+  methods: {
+    registerUser() {
+      this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/register', this.formData).then(
+          res => {
+            console.log(res.data)
+            this.formData.name = this.formData.email = this.formData.password = this.formData.password_confirmation = ''
+            this.errors = {}
+            this.$router.push('/login')
+            createToast('Register Successful', {type: 'success'})
+          }
+      ).catch(er => {
+        this.errors = er.response.data.errors
+        console.log(this.errors)
+      })
+    }
+  }
 }
 </script>
 
