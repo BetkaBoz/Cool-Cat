@@ -34,6 +34,9 @@
 </template>
 
 <script>
+import {createToast} from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css'
+
 export default {
   name: "Login",
   data() {
@@ -52,6 +55,7 @@ export default {
         localStorage.setItem('token', res.data)
         // this.$parent.loggedIn()
         this.$router.push('/')
+        createToast('Login Successful', {type: 'success'})
       }).catch(er => {
         this.errors = er.response.data.errors
       })
