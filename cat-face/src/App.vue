@@ -31,12 +31,13 @@
 </template>
 
 <script>
-import axios from "axios";
+import { createToast } from 'mosha-vue-toastify';
+import 'mosha-vue-toastify/dist/style.css'
 
 export default {
   created() {
     this.$axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-    axios.get('http://localhost/Cool-Cat/cat-tail/public/api/user').then(res=>{
+    this.$axios.get('http://localhost/Cool-Cat/cat-tail/public/api/user').then(res=>{
       this.currentUser = res.data //toto je zatial nepouzite, ale su tam ulozene udaje o uzivatelovi, aby sme ich potom mohli vypisat na stranke
       // this.loggedIn()
     }).catch(er => {
@@ -58,10 +59,11 @@ export default {
     //   this.isLoggedIn = localStorage.getItem('token')
     // },
     logout() {
-      axios.post('http://localhost/Cool-Cat/cat-tail/public/api/logout').then(() => {
+      this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/logout').then(() => {
         // setTimeout(() => {
         localStorage.removeItem('token')
         this.$router.push('/login')
+        createToast('Logout Successful', {type: 'success'})
         // }, 1000)
       }).catch(er => {
         console.log(er)
