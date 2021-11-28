@@ -7,6 +7,7 @@ import Food from "./Food.js";
 
 
 let text;
+let scoreText;
 let circle;
 let test_int;
 let dropOff;
@@ -14,28 +15,39 @@ var timer;
 let pot;
 let width;
 let score;
-let customer;
-
+let customerCounter = 20;
+const customerCounterAll = customerCounter;
+var timerCustomer;
+var timedEvent;
+let targetX;
+let place;
 
 export default class MainScene extends Phaser.Scene {
-
-
     constructor() {
       super('MainScene');
+        this.difficulty = "EASY"; //for now
+        this.delay= this.changeDelay();
+        this.firstPlaceIsEmpty = true;
+        this.secondPlaceIsEmpty = true;
+        this.thirdPlaceIsEmpty = true;
+        this.score = 0;
+
     }
   
     preload() {
-        this.load.image('square','./assets/images/square.jpg');
-        this.load.image('circle','./assets/images/circle.jpg');
+        this.load.image('bubble','./assets/images/bubble.png');
+        this.load.image('order','./assets/images/circle.jpg');
         this.load.image('customer','./assets/images/customer_1.png');
         width = this.cameras.main.width;
     }
 
     create(){
+        scoreText = this.add.text(width/2, 10, 'SCORE: ' + this.score, { font: '32px Courier', fill: '#00ff00' });
+
         //this.createStuff()
-        text = this.add.text(10, 10, 'Move the mouse', { font: '16px Courier', fill: '#00ff00' });
-        let scene = this;
-        let potImg = scene.add.image(100, 200, "circle");
+
+        //let scene = this;
+        /*let potImg = scene.add.image(100, 200, "circle");
         // scene.input.on('pointerOver', function(gameObject) {
         //     gameObject.setTint(0x44ff4);
         // });
@@ -49,18 +61,21 @@ export default class MainScene extends Phaser.Scene {
         pot.startCooking({timer: timer, time:3000});
         // timer.setEvent({time: 3000,endEvent: this.onEvent});
         // timer.setVisiblity(true);
+*/
+        this.customerGroup = this.add.group({
+            //key: 'customer',
+            maxSize: 3,
+        });
 
+        //štart hry keby ste nevedeli
+        this.startGame()
 
-        customer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 250, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "square", score: score});
-        this.add.existing(customer);
-        customer.generateOrder();
     }
 
     onEvent(){
         //console.log("wat"+timer);
         pot.startBurn({timer: timer, time: 3000});
     }
-
     oneEvent(){
         text.setText("DERG");
         //console.log("DERG");
@@ -68,12 +83,53 @@ export default class MainScene extends Phaser.Scene {
     }
 
     update(){
+        scoreText.setText('SCORE: ' + this.score);
+        /*
+        if (this.customerGroup.getLength() > 0){
+            //console.log(this.customerGroup.getChildren()) ;
+            if (this.customerGroup.getChildren()[0]){
+                console.log(this.customerGroup.getChildren()[0]);
+            }
+        }
+        */
+
+        // ak sú traja zákazníci na scéne zastav timer na generovanie zákazníkov
+              if (this.customerGroup.isFull()){
+                  timerCustomer.paused = true;
+              }
+              else {
+                  timerCustomer.paused = false;
+              }
+        //hýbanie so zákazníkmi
+        for (let i = 0; i < this.customerGroup.getChildren().length; i++) {
+            //console.log(this.customerGroup.getChildren()[i]) ;
+            //this.customerGroup.getChildren()[i].x += 10;
+            this.customerGroup.getChildren()[i].moveCustomer();
+            this.customerGroup.getChildren()[i].walkOff();
+        }
+
+
+        //TODO: SPRAVIT HODINY PODLA POCTU ZVYSNYCH ZAKAZNIKOV
+        if (customerCounter< customerCounterAll *0.75){
+
+        }
+        else if(customerCounter< customerCounterAll *0.75){
+
+        }
+        else if (customerCounter< customerCounterAll *0.75){
+
+        }
+        else {
+
+        }
 
         // if(!(pot.timer == null)){
         //    pot.draw();
         // }
+        /*
         pot.testText(text);
         timer.draw();
+        */
         // if(circle != null && circle.y >= 300 ){
         //     circle.y = 10;
         //     //circle.destroy();
@@ -93,6 +149,113 @@ export default class MainScene extends Phaser.Scene {
         //     ]);
         // }
     }
+
+    startGame(){
+        //let startTimer = new Timer({scene: this, x: 400, y: 300});
+        //startTimer.setEvent(10,this.createCustomer())
+        //setInterval(this.createCustomer(),5000)
+        //this.initialTime = 10;
+
+
+
+        //časovač na vytváranie zákazníkov
+        timerCustomer = this.time.addEvent({ delay: this.delay * 1000, callback: this.createCustomer, callbackScope: this, repeat: customerCounter -1 });
+
+
+/*
+        let customer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 350, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
+        let customer2 = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 250, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
+        let customer3 = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 150, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
+        this.add.existing(customer);
+        this.add.existing(customer2);
+        this.add.existing(customer3);
+
+        customer.setScale(0.4)
+        customer2.setScale(0.4)
+        customer3.setScale(0.4)
+
+        //console.log(customer.order)
+
+        this.customerGroup.add(customer);
+        this.customerGroup.add(customer2);
+        this.customerGroup.add(customer3);
+*/
+    }
+    createCustomer(){
+        /*
+        //ak sa nenachádza customer na scéne daj ho do stredu okna
+        if (this.customerGroup.getChildren().length === 0){
+            targetX = width/2;
+            this.firstPlaceIsEmpty = false;
+        }
+        //ak je jeden tak do 1/3 okna
+        else if (this.customerGroup.getChildren().length === 1){
+            targetX = width/3;
+            this.secondPlaceIsEmpty = false;
+        }
+        //ak sú dvaja tak do 1/7 okna
+        else if (this.customerGroup.getChildren().length === 2){
+            targetX = width/7;
+            this.thirdPlaceIsEmpty = false;
+        }
+        //viac ako traja by nemali nikdy byť
+        else {
+            targetX = width;
+        }
+*/
+        customerCounter--;
+        console.log(customerCounter)
+        //better riešenie, ify na zabranie miesta
+        if (this.firstPlaceIsEmpty){
+            //stred okna
+            targetX = width/2;
+            place = 1;
+            this.firstPlaceIsEmpty = false;
+        }
+        else if (this.secondPlaceIsEmpty){
+            targetX = width/3;
+            place = 2;
+            this.secondPlaceIsEmpty = false;
+        }
+        else if (this.thirdPlaceIsEmpty){
+            targetX = width/7;
+            place = 3;
+            this.thirdPlaceIsEmpty = false;
+        }
+        //viac ako traja BY nemali nikdy byť ale nikdy nevieš
+        else {
+            targetX = width/1.5;
+        }
+
+        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
+        this.add.existing(customer);
+        customer.setScale(0.3);
+        this.customerGroup.add(customer);
+
+        console.log( customer.order );
+        //console.log( this.customerGroup.getLength());
+        //customer.isMoving = true;
+        //customer.moveRight();
+    }
+
+    //delay ako často budú chodiť zákazníci
+    changeDelay(){
+        if (this.difficulty === "EASY"){
+            this.delay = 10;
+            return 4;
+        }
+        else if  (this.difficulty === "MEDIUM"){
+            this.delay = 8;
+            return 8;
+
+        }
+        else if  (this.difficulty === "HARD"){
+            this.delay = 6;
+            return 6;
+        }
+    }
+
+
 
     createStuff(){
         score = 0;
@@ -189,3 +352,27 @@ export default class MainScene extends Phaser.Scene {
         })
     }
 }
+/*
+function createCustomer(){
+    let customer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 350, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
+    this.add.existing(customer);
+    customer.setScale(0.4)
+    return customer;
+}
+*/
+/*
+function onEvent ()
+{
+    this.initialTime -= 1; // One second
+    text.setText('Countdown: ' + formatTime(this.initialTime));
+}
+function formatTime(seconds){
+    // Minutes
+    var minutes = Math.floor(seconds/60);
+    // Seconds
+    var partInSeconds = seconds%60;
+    // Adds left zeros to seconds
+    partInSeconds = partInSeconds.toString().padStart(2,'0');
+    // Returns formated time
+    return `${minutes}:${partInSeconds}`;
+}*/
