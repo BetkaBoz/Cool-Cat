@@ -14,20 +14,31 @@
 <!--    </div>-->
 
 
-  <div id="nav">
-    <div>
-      <router-link to="/login">Login</router-link>
-      |
-      <router-link to="/register">Register</router-link>
-      |
-      <router-link to="/">Home</router-link>
-      |
-      <router-link to="/about">About</router-link>
-      |
-      <button @click="logout" class="btn btn-success">Logout</button>
+  <nav class="navbar navbar-expand-md navbar-dark navbar-custom navbar-brand fixed-top">
+    <div class="container px-5">
+      <router-link to="/" class="navbar-brand"><img src="@/assets/CC_logo.png" alt="Cool Cat" class="img-fluid logo">
+        Izakanyaa
+      </router-link>
+
+      <div class="nav justify-content-end" v-if="isLoggedIn">
+        <router-link to="/about" class="nav-item nav-link">About</router-link>
+        <button @click="logout" class="btn btn-success my-2 my-sm-0">Logout</button>
+      </div>
+
+      <div class="nav justify-content-end" v-else>
+        <router-link to="/login" class="nav-link" style="color: rgba(255, 255, 255, 0.55);">Login</router-link>
+        |
+        <router-link to="/register" class="nav-link" style="color: rgba(255, 255, 255, 0.55);">Register</router-link>
+      </div>
     </div>
+  </nav>
+  <br/>
+  <br/>
+  <br/>
+  <br/>
+  <div class="container-fluid" style="width: 90%; min-height: 80%">
+    <router-view/>
   </div>
-  <router-view/>
 </template>
 
 <script>
@@ -75,23 +86,38 @@ export default {
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
+  color: rgba(255, 255, 255, 0.58);
 }
-
-#nav {
-  padding: 30px;
+.navbar-custom {
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  margin-right: 0rem;
+  background-color: rgba(0, 0, 0, 0.5);
 }
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
+.navbar-brand {
+  text-transform: uppercase;
+  font-size: 1rem;
+  letter-spacing: 0.1rem;
+  font-weight: 700;
 }
-
-#nav a.router-link-exact-active {
-  color: #42b983;
+.nav-item, .nav-link {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.1rem;
+  color: rgba(255, 255, 255, 0.55);
+}
+.nav-link,.nav-item:hover {
+  color: rgba(255, 255, 255, 0.85);
+}
+.logo {
+  vertical-align: sub;
+  width: 2em;
+}
+.container-fluid {
+  background-color: rgba(0, 0, 0, 0.85)
 }
 </style>
