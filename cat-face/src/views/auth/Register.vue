@@ -1,46 +1,52 @@
 <template>
   <div>
+    <br/><br/><br/>
     <div class="row justify-content-center">
-      <div class="col-md-6">
+      <h2>Join us!</h2>
+      <div class="col-md-4">
+        <br/>
         <div class="card">
-          <div class="card-header">Register</div>
           <div class="card-body">
-            <div class="form-group">
-              <label htmlFor="name">Name</label>
-              <input v-model="formData.name" type="text" class="form-control" name="name">
-              <p class="table-danger" v-text="errors.name"></p>
-            </div>
-            <div class="form-group">
-              <label htmlFor="email">Email</label>
-              <input v-model="formData.email" type="text" class="form-control" name="email">
-              <p class="table-danger" v-text="errors.email"></p>
-            </div>
-            <div class="form-group">
-              <label htmlFor="password">Password</label>
-              <input v-model="formData.password" type="password" class="form-control" name="password">
-              <p class="table-danger" v-text="errors.password"></p>
-            </div>
-            <div class="form-group">
-              <label htmlFor="password_confirmation">Confirm Password</label>
-              <input v-model="formData.password_confirmation" type="password" class="form-control"
-                     name="password_confirmation">
-              <p class="table-danger" v-text="errors.password_confirmation"></p>
-            </div>
+            <br/>
 
-            <div class="row">
-              <div class="col-md-6">
+            <form>
+              <div class="form-group">
+                <input v-model="formData.name" type="text" class="form-control" name="name" placeholder="Username">
+                <p class="table-danger" v-text="errors.name"></p>
+              </div>
+
+              <div class="form-group">
+                <input v-model="formData.email" type="text" class="form-control" name="email" placeholder="Email">
+                <p class="table-danger" v-text="errors.email"></p>
+              </div>
+
+              <div class="form-group">
+                <input v-model="formData.password" type="password" class="form-control" name="password" placeholder="Password">
+                <p class="table-danger" v-text="errors.password"></p>
+              </div>
+
+              <div class="form-group">
+                <input v-model="formData.password_confirmation" type="password" class="form-control"
+                       name="password_confirmation" placeholder="Confirm Password">
+                <p class="table-danger" v-text="errors.password_confirmation"></p>
+              </div>
+
+              <div class="col-md-12">
                 <div class="form-group">
                   <button @click="registerUser" class="btn btn-primary">Register</button>
                 </div>
               </div>
-              <div class="col-md-6 text-right">
-                <router-link to="/login">Already have an account!</router-link>
-              </div>
+            </form>
+
+            <br/>
+            <div class="col-md-12 text-center">
+              <router-link to="/login">Already have an account!</router-link>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <br/><br/><br/>
   </div>
 </template>
 
@@ -81,5 +87,25 @@ export default {
 </script>
 
 <style scoped>
-
+.card {
+  background-color: rgba(96,111,123,0)
+}
+h2 {
+  color: rgba(255, 255, 255, 0.85);
+}
+button {
+  background-color: #0dc6fd61;
+  border-color: #0dc6fd61;
+}
+button:hover {
+  background-color: rgba(13, 198, 253, 0.75);
+  border-color: rgba(13, 198, 253, 0.75);
+}
+a {
+  color: rgba(13, 198, 253, 0.55);
+  text-decoration: none;
+}
+a:hover {
+  color: rgba(13, 198, 253, 0.75);
+}
 </style>
