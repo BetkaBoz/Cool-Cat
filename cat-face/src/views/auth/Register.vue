@@ -9,7 +9,6 @@
           <div class="card-body">
             <br/>
 
-            <form>
               <div class="form-group">
                 <input v-model="formData.name" type="text" class="form-control" name="name" placeholder="Username">
                 <p class="table-danger" v-text="errors.name"></p>
@@ -36,7 +35,6 @@
                   <button @click="registerUser" class="btn btn-primary">Register</button>
                 </div>
               </div>
-            </form>
 
             <br/>
             <div class="col-md-12 text-center">
