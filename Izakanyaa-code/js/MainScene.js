@@ -23,6 +23,9 @@ var timedEvent;
 let targetX;
 let place;
 let clock;
+let scene;
+let ingredient;
+let level = 1;
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -47,6 +50,8 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('background','./assets/images/Background.png');
         this.load.image('curtains','./assets/images/Curtains.png');
         this.load.image('table','./assets/images/Table.png');
+        this.load.image('square','./assets/images/square.jpg');
+        this.load.image('circle','./assets/images/circle.jpg');
 
         //let bg = this.add.sprite(0, 0, 'background');
         // change origin to the top-left of the sprite
@@ -227,6 +232,107 @@ export default class MainScene extends Phaser.Scene {
     }
 
 
+
+    //function used only for testing
+    //TIMO
+    testingCreate(){
+        scene = this;
+        let potImg = scene.add.image(100, 200, "circle");
+        timer = new Timer({scene: scene, x: 400, y: 300});
+        this.add.existing(timer);
+        pot = new Cookware({scene: scene, x: 400, y:300, objectImg: potImg, type: "pot"});
+        this.add.existing(pot);
+        pot.setCookEndEvent(this.onEvent);
+        pot.setStart(timer);
+        let plateObj = scene.add.sprite(0,0,"circle");
+        dropOff = new PreparationPlate({scene: scene, x: 100, y:100, plateImg:plateObj, ingredients:[], foods:foods});
+        dropOff.plate.setTint(0xB0FFFF);
+        this.addFoods();
+        this.addIngredients();
+        scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
+            gameObject.x = dragX;
+            gameObject.y = dragY;
+            gameObject.setTint(0xB0FFFF);
+            gameObject.setDepth(0);
+        })
+
+
+        scene.input.on('pointerup', function(){
+            dropOff.checkOverlap(ingredientOne);
+        });
+
+    }
+
+    //function used to test out the creation of ingredients
+    //TIMO
+    addIngredients(){
+        ingredient = new Ingredient({scene:scene, x : 500, y:100, img: "square", name: "banana"});
+        ingredient.setInteractive();
+        scene.input.setDraggable(ingredient);
+        ingredient.on('dragend', function(){
+            this.clearTint();
+        })
+    }
+
+    //function fills Foods array with instances of Food classed used in the level
+    //this function should only be called in <createLevel> function
+    //TIMO
+    addFoods(){
+        let ingredients;
+        let food;
+
+        ingredients = ['apple','banana','orange'];
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+        food.setAlpha(0);
+        food.setX(-100);
+        food.setFoodName("Apple Split");
+        foods.push(food);
+
+        ingredients = ['banana','orange'];
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+        food.setAlpha(0);
+        food.setX(-100);
+        food.setFoodName("Banana Split");
+        foods.push(food);
+
+        ingredients = ['apple','orange'];
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+        food.setAlpha(0);
+        food.setX(-100);
+        food.setFoodName("Orange Split");
+        foods.push(food);
+        if(level >1){
+            ingredients = ['orange'];
+            food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+            food.setAlpha(0);
+            food.setX(-100);
+            food.setFoodName("Literal Orange");
+            foods.push(food);
+            if(level = 3){
+                ingredients = ['orange'];
+                food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "frier"});
+                food.setAlpha(0);
+                food.setX(-100);
+                food.setFoodName("WHAT?");
+                foods.push(food);
+            }
+        }
+    }
+
+    //this is used to set different function to Timer in Cookware
+    //will be changed
+    //TIMO
+    onEvent(){
+        pot.startBurn({timer: timer, time: 3000});
+    }
+
+    timoUpdate(){
+        if(pot.isCooking || pot.isBurning){
+            timer.draw();
+        }
+    }
+
+
     createStuff(){
         score = 0;
 
@@ -346,3 +452,5 @@ function formatTime(seconds){
     // Returns formated time
     return `${minutes}:${partInSeconds}`;
 }*/
+
+
