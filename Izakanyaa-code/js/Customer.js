@@ -17,7 +17,7 @@ var foods =["Shioyaki",
 
 export default class Customer extends Phaser.GameObjects.Container{
     constructor(data) {
-        let{scene, image,place, targetX, edgeX, x, y, timeLimit, timeOffset, order, bubble, score} = data
+        let{scene, image,place, targetX, edgeX, x, y, bubble} = data
         let customerImg = scene.add.image(x,y,image);
         customerImg.flipX= true;
         let bubbleImg = scene.add.image(x+300, y-400, bubble);
@@ -33,8 +33,7 @@ export default class Customer extends Phaser.GameObjects.Container{
         //this.order_image = orderImg;
         this.order = this.generateOrder();
         this.scene = scene;
-
-        this.speed = 2;
+        this.speed = 10;
         //this.timeLimit = timeLimit;
         //this.counterX = counterX;
         this.edgeX = edgeX;
@@ -42,7 +41,7 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.isMovingAway = false;
         this.isStanding = false;
         //this.timedEvent = null;
-
+        this.delay = 2;
         this.place = place;
 
         //this.score = score;
@@ -75,7 +74,7 @@ export default class Customer extends Phaser.GameObjects.Container{
                 //ukáže sa mu bublina a jedlo čo chce
                 this.bubble.visible = true;
                 //odíde po určitom čase
-                this.scene.time.addEvent({ delay: 5000, callback: this.customerIsDone, callbackScope: this, loop: false });
+                this.scene.time.addEvent({ delay: this.delay * 1000, callback: this.customerIsDone, callbackScope: this, loop: false });
             }
         }
     }
