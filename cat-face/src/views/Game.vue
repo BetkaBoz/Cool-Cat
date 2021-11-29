@@ -1,5 +1,13 @@
 <template>
-  <div class="about">
-    <h1>This is an about page</h1>
+  <br/><br/><br/>
+  <div class="container-fluid">
+    <br/>
+    <p>sem sa dá main menu hry</p>
+    <br/>
   </div>
+  <br/><br/><br/>
 </template>
+
+<script>
+
+</script>

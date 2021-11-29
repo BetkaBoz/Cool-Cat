@@ -8,7 +8,6 @@
         <div class="card">
           <div class="card-body">
             <br/>
-            <form>
 
               <div class="form-group">
                 <input v-model="formData.email" type="text" class="form-control" name="email" placeholder="Email">
@@ -23,7 +22,7 @@
               <div class="form-group">
                 <button @click="login" class="btn btn-primary">Login</button>
               </div>
-            </form>
+
             <br/>
             <div class="col-md-12 text-center">
               <p>Haven't joined yet? Register <router-link to="/register">here</router-link>!</p>
