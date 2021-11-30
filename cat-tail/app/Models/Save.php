@@ -16,5 +16,15 @@ class Save extends Model
      */
     protected $table = 'saves';
 
-
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var string[]
+     */
+    protected $fillable = [
+        'user_id',
+        'difficulty',
+        'level',
+        'score'
+    ];
 }
