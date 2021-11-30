@@ -1,26 +1,11 @@
 <template>
-<!--    <div v-if="isLoggedIn" name="nav">-->
-<!--    <div id="nav">-->
-<!--      <div v-if="isLoggedIn">-->
-<!--        <router-link to="/">Home</router-link>-->
-<!--        |-->
-<!--        <router-link to="/about">About</router-link>-->
-<!--        |-->
-<!--        <button @click="logout" class="btn btn-success">Logout</button>-->
-<!--      </div>-->
-<!--      <div v-else>-->
-<!--        <router-link to="/login">Login</router-link>-->
-<!--      </div>-->
-<!--    </div>-->
-
-
   <nav class="navbar navbar-expand-md navbar-dark navbar-custom navbar-brand fixed-top">
     <div class="container px-5">
       <router-link to="/" class="navbar-brand"><img src="@/assets/CC_logo.png" alt="Cool Cat" class="img-fluid logo">
         Izakanyaa
       </router-link>
 
-      <div class="nav justify-content-end" v-if="isLoggedIn">
+      <div class="nav justify-content-end" v-if="!this.$route.meta.guest">
         <router-link to="/about" class="nav-item nav-link">About</router-link>
         <button @click="logout" class="btn btn-success my-2 my-sm-0">Logout</button>
       </div>
@@ -42,15 +27,14 @@
 </template>
 
 <script>
-import { createToast } from 'mosha-vue-toastify';
+import {createToast} from 'mosha-vue-toastify';
 import 'mosha-vue-toastify/dist/style.css'
 
 export default {
   created() {
     this.$axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-    this.$axios.get('http://localhost/Cool-Cat/cat-tail/public/api/user').then(res=>{
+    this.$axios.get('http://localhost/Cool-Cat/cat-tail/public/api/user').then(res => {
       this.currentUser = res.data //toto je zatial nepouzite, ale su tam ulozene udaje o uzivatelovi, aby sme ich potom mohli vypisat na stranke
-      // this.loggedIn()
     }).catch(er => {
       console.log(er)
     })
@@ -60,22 +44,17 @@ export default {
   },
   data() {
     return {
-      isLoggedIn: false,
       currentUser: {},
       token: localStorage.getItem('token'),
     }
   },
   methods: {
-    // loggedIn() {
-    //   this.isLoggedIn = localStorage.getItem('token')
-    // },
     logout() {
       this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/logout').then(() => {
-        // setTimeout(() => {
         localStorage.removeItem('token')
+        this.token = localStorage.getItem('token')
         this.$router.push('/login')
         createToast('Logout Successful', {type: 'success'})
-        // }, 1000)
       }).catch(er => {
         console.log(er)
       })
@@ -91,18 +70,21 @@ export default {
   text-align: center;
   color: rgba(255, 255, 255, 0.58);
 }
+
 .navbar-custom {
   padding-top: 1rem;
   padding-bottom: 1rem;
   margin-right: 0rem;
   background-color: rgba(0, 0, 0, 0.5);
 }
+
 .navbar-brand {
   text-transform: uppercase;
   font-size: 1rem;
   letter-spacing: 0.1rem;
   font-weight: 700;
 }
+
 .nav-item, .nav-link {
   text-transform: uppercase;
   font-size: 0.8rem;
@@ -110,13 +92,16 @@ export default {
   letter-spacing: 0.1rem;
   color: rgba(255, 255, 255, 0.55);
 }
-.nav-link,.nav-item:hover {
+
+.nav-link, .nav-item:hover {
   color: rgba(255, 255, 255, 0.85);
 }
+
 .logo {
   vertical-align: sub;
   width: 2em;
 }
+
 .container-fluid {
   background-color: rgba(0, 0, 0, 0.85)
 }
