@@ -1,8 +1,7 @@
 import Timer from "./Timer.js";
 import Food from "./Food.js";
 import "./game.js"
-let scene;
-let timedEvent;
+
 var foods =["Shioyaki",
     "Ikayaki",
     "Onigiri",
@@ -20,7 +19,7 @@ export default class Customer extends Phaser.GameObjects.Container{
         let{scene, image,place, targetX, edgeX, x, y, bubble} = data
         let customerImg = scene.add.image(x,y,image);
         customerImg.flipX= true;
-        let bubbleImg = scene.add.image(x+300, y-400, bubble);
+        let bubbleImg = scene.add.image(x+269, y-400, bubble);
         //let orderImg = scene.add.image(x,y-10,order)
         //super(scene, x, y, [customerImg,bubbleImg,orderImg]);
         super(scene, x, y, [customerImg,bubbleImg]);
@@ -40,10 +39,12 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.targetX = targetX;
         this.isMovingAway = false;
         this.isStanding = false;
+        this.gotFood = false;
         //this.timedEvent = null;
         this.delay = 2;
         this.place = place;
-
+        this.timer = null;
+        this.customerScore = -50;
         //this.score = score;
         //this.removeCustomer(timeOffset);
     }
@@ -74,7 +75,7 @@ export default class Customer extends Phaser.GameObjects.Container{
                 //ukáže sa mu bublina a jedlo čo chce
                 this.bubble.visible = true;
                 //odíde po určitom čase
-                this.scene.time.addEvent({ delay: this.delay * 1000, callback: this.customerIsDone, callbackScope: this, loop: false });
+                this.timer = this.scene.time.addEvent({ delay: this.delay * 1000, callback: this.customerIsDone, callbackScope: this, loop: false });
             }
         }
     }
@@ -82,41 +83,50 @@ export default class Customer extends Phaser.GameObjects.Container{
         //zákazník už má toho dosť
         this.isMovingAway = true;
     }
+    moveCustomerAway(){
+        if (this.x < this.edgeX+105) {
+            this.x += this.speed;
+            //je na kraji
+            if (this.x >= this.edgeX+105){
+                // zákazník odišiel preč
+                // pridaj skóre
+                this.scene.score += this.customerScore;
 
-    //Niekto si myslí,že sa táto funkcia sa nepoužíva ale je mimo
-    walkOff(){
-        //stojí na mieste a nedostal svoje jedlo po dlhšom čase
-        if (this.isMovingAway && this.isStanding){
-            this.bubble.destroy();
-            //ide na kraj scény a ešte ďalej
-            if (this.x < this.edgeX+105) {
-                this.x += this.speed;
-                //je na kraji
-                if (this.x >= this.edgeX+105){
-                    // zákazník odišiel preč
-                    // body mínus
-                    this.scene.score -=50;
-
-                    //uvolni miesto
-                    if (this.place === 1){
-                        this.scene.firstPlaceIsEmpty = true;
-                    }
-                    else if (this.place === 2){
-                        this.scene.secondPlaceIsEmpty = true;
-                    }
-                    else if (this.place === 3){
-                        this.scene.thirdPlaceIsEmpty = true;
-                    }
-                    //vymaž zákazníka
-                    this.destroy();
+                //uvolni miesto
+                if (this.place === 1){
+                    this.scene.firstPlaceIsEmpty = true;
                 }
+                else if (this.place === 2){
+                    this.scene.secondPlaceIsEmpty = true;
+                }
+                else if (this.place === 3){
+                    this.scene.thirdPlaceIsEmpty = true;
+                }
+                //vymaž zákazníka
+                this.destroy();
             }
         }
     }
 
 
+    //Niekto si myslí,že sa táto funkcia sa nepoužíva ale je mimo
+    walkOff(){
+        //stojí na mieste a dostal svoje jedlo
+        if (this.gotFood && this.isStanding){
+            this.bubble.destroy();
+            this.timer.paused = true;
+            this.moveCustomerAway();
 
+        }
+        //stojí na mieste a nedostal svoje jedlo po dlhšom čase
+        else if (this.isMovingAway && this.isStanding){
+            this.bubble.destroy();
+            //ide na kraj scény a ešte ďalej
+            this.moveCustomerAway();
+        }
+    }
 
+    
     generateOrder(){
         let level = 1;  // Keď budeme mať premennú tak to dáme preč zatiaľ to je napevno
         if (level === 1){
@@ -137,9 +147,18 @@ export default class Customer extends Phaser.GameObjects.Container{
             console.log(random, foods[random]);
             return foods[random];
         }
+    }
+
+
+
+    takeFood(){
+        if (!this.gotFood){
+
+        }
 
 
     }
+
 
 
 

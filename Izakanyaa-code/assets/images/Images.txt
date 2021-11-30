@@ -1,2 +1,9 @@
-This file will contain names and extensions of images used in Phaser code
-download images in this file from MEGA
+Background.png
+bubble.png
+Curtains.png
+customer.png
+Evening Clock.png
+Morning Clock.png
+Night Clock.png
+Noon Clock.png
+Table.png
