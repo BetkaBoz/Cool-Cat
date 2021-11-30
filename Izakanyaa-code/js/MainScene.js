@@ -5,7 +5,6 @@ import Customer from "./Customer.js";
 import Cookware from "./Cookware.js";
 import Food from "./Food.js";
 
-
 let text;
 let scoreText;
 let circle;
@@ -16,13 +15,14 @@ let pot;
 let width;
 let height;
 let score;
-let customerCounter = 20;
+let customerCounter = 4;
 const customerCounterAll = customerCounter;
 var timerCustomer;
 var timedEvent;
 let targetX;
 let place;
 let clock;
+let endText;
 let scene;
 let ingredient;
 let level = 1;
@@ -31,17 +31,17 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
       super('MainScene');
         this.difficulty = "EASY"; //for now
+        this.level = 3;
         this.delay= this.changeDelay();
         this.firstPlaceIsEmpty = true;
         this.secondPlaceIsEmpty = true;
         this.thirdPlaceIsEmpty = true;
         this.score = 0;
-
     }
   
     preload() {
         this.load.image('bubble','./assets/images/bubble.png');
-        this.load.image('order','./assets/images/circle.jpg');
+        //this.load.image('order','./assets/images/circle.jpg');
         this.load.image('customer','./assets/images/customer.png');
         this.load.image('Mclock','./assets/images/Morning Clock.png');
         this.load.image('Nclock','./assets/images/Noon Clock.png');
@@ -53,9 +53,6 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('square','./assets/images/square.jpg');
         this.load.image('circle','./assets/images/circle.jpg');
 
-        //let bg = this.add.sprite(0, 0, 'background');
-        // change origin to the top-left of the sprite
-        //bg.setOrigin(0,0);
 
         width = this.cameras.main.width;
         height = this.cameras.main.height;
@@ -67,7 +64,6 @@ export default class MainScene extends Phaser.Scene {
         this.startGame(); //Matúš
 
     }
-
     onEvent(){
         //console.log("wat"+timer);
         pot.startBurn({timer: timer, time: 3000});
@@ -77,19 +73,45 @@ export default class MainScene extends Phaser.Scene {
         //console.log("DERG");
         timer.setEvent({time: 3000,endEvent: this.onEvent});
     }
-
     update(){
         this.myUpdate(); //Matúš
-
 
     }
 
     startGame(){
+        //pozadie
+        let bg = this.add.sprite(0, 0, 'background');
+        bg.setScale(2);
+        // change origin to the top-left of the sprite
+        bg.setOrigin(0,0);
+
+        //záclony
+        let curtains = this.add.sprite(0, 0, 'curtains');
+        curtains.setScale(2);
+        // change origin to the top-left of the sprite
+        curtains.setOrigin(0,0);
+
+        //stôl
+        let table = this.add.sprite(0, height/6 , 'table');
+        table.setScale(2);
+        table.setDepth(25);
+        // change origin to the top-left of the sprite
+        table.setOrigin(0,0);
+
         //vytvorenie hodín
-        clock= this.add.image(width/9,height/9,"Mclock");
+        clock= this.add.image(width/1.13,height/9,"Mclock");
+        //clock.setOrigin(0,0);
+        clock.setScale(1.25);
 
         //vytvorenie score textu
-        scoreText = this.add.text(width/2, 10, 'SCORE: ' + this.score, { font: '32px Courier', fill: '#00ff00' });
+        scoreText = this.add.text(5, 5, 'SCORE: ' + this.score, { font: 'bold 24px Arial', fill: '#000000'});
+        scoreText.setShadow(0, 0, 'rgb(255,255,255)', 30);
+
+        //vytvorenie konecneho textu
+        endText = this.add.text(width/8, height/2, '', { font: 'bold 100px Arial', fill: '#000000'});
+        endText.setShadow(0, 0, 'rgb(255,255,255)', 30);
+        endText.setDepth(69);
+        endText.visible = false;
 
         //vytvorenie skupiny
         this.customerGroup = this.add.group({
@@ -98,29 +120,30 @@ export default class MainScene extends Phaser.Scene {
         });
 
         //časovač na vytváranie zákazníkov
-        timerCustomer = this.time.addEvent({ delay: this.delay * 1000, callback: this.createCustomer, callbackScope: this, repeat: customerCounter -1 });
+        timerCustomer = this.time.addEvent({ delay: this.delay * 1000, callback: this.setUpCustomer, callbackScope: this, repeat: customerCounter -1 });
 
-
-/*
-        let customer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 350, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
-        let customer2 = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 250, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
-        let customer3 = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 150, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
-        this.add.existing(customer);
-        this.add.existing(customer2);
-        this.add.existing(customer3);
-
-        customer.setScale(0.4)
-        customer2.setScale(0.4)
-        customer3.setScale(0.4)
-
-        //console.log(customer.order)
-
-        this.customerGroup.add(customer);
-        this.customerGroup.add(customer2);
-        this.customerGroup.add(customer3);
-*/
     }
-    createCustomer(){
+    myUpdate(){
+        scoreText.setText('SCORE: ' + this.score);
+
+        // ak sú traja zákazníci na scéne zastav timer na generovanie zákazníkov
+        if (this.customerGroup.isFull()){
+            timerCustomer.paused = true;
+        }
+        else {
+            timerCustomer.paused = false;
+        }
+        //hýbanie so zákazníkmi
+        for (let i = 0; i < this.customerGroup.getChildren().length; i++) {
+            //console.log(this.customerGroup.getChildren()[i]) ;
+            this.customerGroup.getChildren()[i].moveCustomer();
+            this.customerGroup.getChildren()[i].walkOff();
+        }
+        this.changeClock();
+        this.checkIfEnd();
+    }
+
+    setUpCustomer(){
         /*
         //ak sa nenachádza customer na scéne daj ho do stredu okna
         if (this.customerGroup.getChildren().length === 0){
@@ -166,19 +189,44 @@ export default class MainScene extends Phaser.Scene {
             targetX = width/1.5;
         }
 
-        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:200, orderImg: "circle", bubble: "bubble"});
-        this.add.existing(customer);
-        customer.setScale(0.3);
-        this.customerGroup.add(customer);
+        //check if it is last boss
+        if (customerCounter === 0 && this.level === 3){
+            this.createFinalBoss(place,targetX,width);
+        }
+        else {
+            this.createCustomer(place,targetX,width);
 
-        console.log( customer.order );
+
+        }
+
+
+
         //console.log( this.customerGroup.getLength());
         //customer.isMoving = true;
         //customer.moveRight();
     }
+    createFinalBoss(place, targetX, width){
+        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, orderImg: "circle", bubble: "bubble"});
+        customer.setScale(0.6,0.3);
+        customer.order = "Chef’s ultimate secret bowl";
+        customer.bubble.setScale(0.8);
+        customer.delay = 5;
+        //customer.gotFood = true;
+        customer.customerScore = 2000;
+        this.add.existing(customer);
+        this.customerGroup.add(customer);
+        console.log( customer.order );
+    }
+    createCustomer(place,targetX,width){
+        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, orderImg: "circle", bubble: "bubble"});
+        customer.setScale(0.3)
+        this.add.existing(customer);
+        this.customerGroup.add(customer);
+        console.log( customer.order );
+    }
 
-    //delay ako často budú chodiť zákazníci
     changeDelay(){
+        //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
             this.delay = 10;
             return 1;
@@ -193,7 +241,6 @@ export default class MainScene extends Phaser.Scene {
             return 6;
         }
     }
-
     changeClock(){
         if (customerCounter< customerCounterAll *0.75 && customerCounter >= customerCounterAll *0.5){
             clock.setTexture('Nclock');
@@ -207,29 +254,22 @@ export default class MainScene extends Phaser.Scene {
 
 
     }
+    checkIfEnd(){
+        if (this.customerGroup.countActive(true)<1 && customerCounter ===0) {
+            //console.log("KONIEC")
+            endText.visible = true;
+            if (this.score >= 1000){
+                console.log("YOU WON!")
+                endText.setText("YOU WON!");
+            }
+            else {
+                console.log("YOU LOST")
+                endText.setText("YOU LOST");
 
-
-    myUpdate(){
-        scoreText.setText('SCORE: ' + this.score);
-
-        // ak sú traja zákazníci na scéne zastav timer na generovanie zákazníkov
-        if (this.customerGroup.isFull()){
-            timerCustomer.paused = true;
+            }
         }
-        else {
-            timerCustomer.paused = false;
-        }
-        //hýbanie so zákazníkmi
-        for (let i = 0; i < this.customerGroup.getChildren().length; i++) {
-            //console.log(this.customerGroup.getChildren()[i]) ;
-            //this.customerGroup.getChildren()[i].x += 10;
-            this.customerGroup.getChildren()[i].moveCustomer();
-            this.customerGroup.getChildren()[i].walkOff();
-        }
-
-        this.changeClock();
-
     }
+
 
 
 
