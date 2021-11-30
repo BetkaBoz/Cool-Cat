@@ -24,3 +24,5 @@ Route::post('register', [AuthController::class, 'register']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
 
 Route::post('save', [UserController::class, 'save']);
+Route::post('load', [UserController::class, 'load']);
+Route::post('newgame', [UserController::class, 'newGame']);
