@@ -6,6 +6,18 @@ import Register from "../views/auth/Register";
 
 const routes = [
     {
+        path: '/',
+        name: 'HomeOut',
+        component: Home,
+        meta: {guest: true}
+    },
+    {
+        path: '/home',
+        name: 'HomeIn',
+        component: Home,
+        meta: {requiresAuth: true}
+    },
+    {
         path: '/login',
         name: 'Login',
         component: Login,
@@ -18,13 +30,8 @@ const routes = [
         meta: {guest: true}
     },
     {
-        path: '/',
-        name: 'Home',
-        component: Home
-    },
-    {
-        path: '/about',
-        name: 'About',
+        path: '/game',
+        name: 'Game',
         meta: {requiresAuth: true},
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route

@@ -54,9 +54,10 @@ export default {
   methods: {
     login() {
       this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/login', this.formData).then(res => {
-        localStorage.setItem('token', res.data)
+        localStorage.setItem('token', res.data[0])
+        localStorage.setItem('user_id', res.data[1])
         this.$router.push('/')
-        createToast('Login Successful', {type: 'success'})
+        createToast('Login Successful', {type: 'success', timeout: 2000})
       }).catch(er => {
         this.errors = er.response.data.errors
       })

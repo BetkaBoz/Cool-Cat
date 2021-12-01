@@ -15,7 +15,7 @@ router.beforeEach((to, from, next) => {
     if (to.matched.some(record => record.meta.requiresAuth)) {
         if (!loggedIn()) {
             next({
-                path: '/login',
+                path: '/',
                 query: {redirect: to.fullPath}
             })
         } else {
@@ -24,7 +24,7 @@ router.beforeEach((to, from, next) => {
     } else if (to.matched.some(record => record.meta.guest)) {
         if (loggedIn()) {
             next({
-                path: '/',
+                path: '/game',
                 query: {redirect: to.fullPath}
             })
         } else {

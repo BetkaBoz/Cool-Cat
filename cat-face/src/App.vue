@@ -1,19 +1,22 @@
 <template>
   <nav class="navbar navbar-expand-md navbar-dark navbar-custom navbar-brand fixed-top">
     <div class="container px-5">
-      <router-link to="/" class="navbar-brand"><img src="@/assets/CC_logo.png" alt="Cool Cat" class="img-fluid logo">
+      <router-link v-if="this.$route.meta.guest" to="/" class="navbar-brand"><img src="@/assets/CC_logo.png" alt="Cool Cat" class="img-fluid logo">
+        Izakanyaa
+      </router-link>
+      <router-link v-if="this.$route.meta.requiresAuth" to="/home" class="navbar-brand"><img src="@/assets/CC_logo.png" alt="Cool Cat" class="img-fluid logo">
         Izakanyaa
       </router-link>
 
-      <div class="nav justify-content-end" v-if="!this.$route.meta.guest">
-        <router-link to="/about" class="nav-item nav-link">About</router-link>
-        <button @click="logout" class="btn btn-success my-2 my-sm-0">Logout</button>
-      </div>
-
-      <div class="nav justify-content-end" v-else>
+      <div class="nav justify-content-end" v-if="this.$route.meta.guest">
         <router-link to="/login" class="nav-link" style="color: rgba(255, 255, 255, 0.55);">Login</router-link>
         |
         <router-link to="/register" class="nav-link" style="color: rgba(255, 255, 255, 0.55);">Register</router-link>
+      </div>
+
+      <div class="nav justify-content-end" v-else-if="this.$route.meta.requiresAuth">
+        <router-link to="/game" class="nav-item nav-link">Game</router-link>
+        <button @click="logout" class="btn btn-success my-2 my-sm-0">Logout</button>
       </div>
     </div>
   </nav>
@@ -39,9 +42,6 @@ export default {
       console.log(er)
     })
   },
-  activated() {
-    console.log('activated')
-  },
   data() {
     return {
       currentUser: {},
@@ -52,12 +52,19 @@ export default {
     logout() {
       this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/logout').then(() => {
         localStorage.removeItem('token')
+        localStorage.removeItem('user_id')
+        this.clearSaveData()
         this.token = localStorage.getItem('token')
         this.$router.push('/login')
-        createToast('Logout Successful', {type: 'success'})
+        createToast('Logout Successful', {type: 'success', timeout: 2000})
       }).catch(er => {
         console.log(er)
       })
+    },
+    clearSaveData() {
+      localStorage.removeItem('difficulty')
+      localStorage.removeItem('level')
+      localStorage.removeItem('score')
     }
   }
 }
