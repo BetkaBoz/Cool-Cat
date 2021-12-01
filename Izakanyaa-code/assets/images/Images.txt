@@ -1,4 +1,4 @@
-Background.png
+Background3.png //posledne čo dala Betka 
 bubble.png
 Curtains.png
 customer.png
@@ -7,3 +7,15 @@ Morning Clock.png
 Night Clock.png
 Noon Clock.png
 Table.png
+
+/food       //všetky jedlá zatiaľ okrem Cabbage Salad a Daikon Salad
+Blob.png
+Shioyaki.png
+Ikayaki.png
+Onigiri.png
+Taiyaki.png
+Dorayaki.png
+Sushi.png
+Ebi_Furai.png
+Takoyaki.png
+Ultimate_secret_bowl.png

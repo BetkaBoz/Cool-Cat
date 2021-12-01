@@ -5,32 +5,40 @@ import "./game.js"
 var foods =["Shioyaki",
     "Ikayaki",
     "Onigiri",
-    "Cabbage Salad",
+    "Cabbage_Salad",
     "Taiyaki",
     "Dorayaki",
-    "Daikon Salad",
+    "Daikon_Salad",
     "Sushi",
-    "Ebi Furai",
+    "Ebi_Furai",
     "Takoyaki",
-    "Chef’s ultimate secret bowl"];
+    "Ultimate_secret_bowl"];
 
 export default class Customer extends Phaser.GameObjects.Container{
     constructor(data) {
-        let{scene, image,place, targetX, edgeX, x, y, bubble} = data
+        let{scene, image,place, targetX, edgeX, x, y,order, bubble} = data
         let customerImg = scene.add.image(x,y,image);
         customerImg.flipX= true;
         let bubbleImg = scene.add.image(x+269, y-400, bubble);
-        //let orderImg = scene.add.image(x,y-10,order)
+        let orderImg = scene.add.image(x+269, y-420);
+        //orderImg.setScale(1);
+        //let orderImg = scene.add.image(x+269,y-400,order)
         //super(scene, x, y, [customerImg,bubbleImg,orderImg]);
-        super(scene, x, y, [customerImg,bubbleImg]);
+        super(scene, x, y, [customerImg,bubbleImg,orderImg]);
         //this.customerImg = image;
         //this.bubbleImg = bubble;
         //this.orderImg = order;
         //this.customer = customerImg;
         this.bubble = bubbleImg;
         this.bubble.visible = false;
-        //this.order_image = orderImg;
         this.order = this.generateOrder();
+        this.order_image = orderImg;
+        this.order_image.setTexture(this.order);
+        this.order_image.visible = false;
+        this.setOrderScale();
+        //this.order_image = orderImg;
+        //this.order_image = scene.add.image(x+269, y-400, this.order);
+
         this.scene = scene;
         this.speed = 10;
         //this.timeLimit = timeLimit;
@@ -74,6 +82,7 @@ export default class Customer extends Phaser.GameObjects.Container{
                 this.isStanding = true;
                 //ukáže sa mu bublina a jedlo čo chce
                 this.bubble.visible = true;
+                this.order_image.visible = true;
                 //odíde po určitom čase
                 this.timer = this.scene.time.addEvent({ delay: this.delay * 1000, callback: this.customerIsDone, callbackScope: this, loop: false });
             }
@@ -114,6 +123,8 @@ export default class Customer extends Phaser.GameObjects.Container{
         //stojí na mieste a dostal svoje jedlo
         if (this.gotFood && this.isStanding){
             this.bubble.destroy();
+            this.order_image.destroy();
+            //zastav timer na "nasratie" zákazníka
             this.timer.paused = true;
             this.moveCustomerAway();
 
@@ -121,6 +132,7 @@ export default class Customer extends Phaser.GameObjects.Container{
         //stojí na mieste a nedostal svoje jedlo po dlhšom čase
         else if (this.isMovingAway && this.isStanding){
             this.bubble.destroy();
+            this.order_image.destroy();
             //ide na kraj scény a ešte ďalej
             this.moveCustomerAway();
         }
@@ -128,24 +140,34 @@ export default class Customer extends Phaser.GameObjects.Container{
 
     
     generateOrder(){
-        let level = 1;  // Keď budeme mať premennú tak to dáme preč zatiaľ to je napevno
-        if (level === 1){
+        if (this.scene.level === 1){
             const random = Math.floor(Math.random() * (foods.length - 6) ) ;
             this.order = foods[random];
             //console.log(random, foods[random]);
             return foods[random];
         }
-        else if (level === 2){
+        else if (this.scene.level === 2){
             const random = Math.floor(Math.random() * (foods.length - 3) ) ;
             this.order = foods[random];
             //console.log(random, foods[random]);
             return foods[random];
         }
-        else if (level === 3){
+        else if (this.scene.level === 3){
             const random = Math.floor(Math.random() * (foods.length -1 ) ) ;
             this.order = foods[random];
-            console.log(random, foods[random]);
+            //console.log(random, foods[random]);
             return foods[random];
+        }
+    }
+    setOrderScale(){
+        if (this.order === "Shioyaki"){
+            this.order_image.setScale(0.9);
+        }
+        else  if (this.order === "Ultimate_secret_bowl"){
+            this.order_image.setScale(0.65);
+        }
+        else  if (this.order === "Onigiri"){
+            this.order_image.setScale(1);
         }
     }
 

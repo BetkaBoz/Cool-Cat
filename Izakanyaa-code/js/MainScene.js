@@ -15,8 +15,6 @@ let pot;
 let width;
 let height;
 let score;
-let customerCounter = 4;
-const customerCounterAll = customerCounter;
 var timerCustomer;
 var timedEvent;
 let targetX;
@@ -33,13 +31,17 @@ export default class MainScene extends Phaser.Scene {
         this.difficulty = "EASY"; //for now
         this.level = 3;
         this.delay= this.changeDelay();
+        this.score = 0;
+        this.customerCounter = 4;
+        this.customerCounterAll = this.customerCounter;
         this.firstPlaceIsEmpty = true;
         this.secondPlaceIsEmpty = true;
         this.thirdPlaceIsEmpty = true;
-        this.score = 0;
+
     }
   
     preload() {
+        //ENVIRONMENT
         this.load.image('bubble','./assets/images/bubble.png');
         //this.load.image('order','./assets/images/circle.jpg');
         this.load.image('customer','./assets/images/customer.png');
@@ -47,19 +49,37 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Nclock','./assets/images/Noon Clock.png');
         this.load.image('Eclock','./assets/images/Evening Clock.png');
         this.load.image('NIclock','./assets/images/Night Clock.png');
-        this.load.image('background','./assets/images/Background.png');
+        //this.load.image('background','./assets/images/Background.png');
+        //this.load.image('background2','./assets/images/Background2.png');
+        this.load.image('background3','./assets/images/Background3.png');
         this.load.image('curtains','./assets/images/Curtains.png');
         this.load.image('table','./assets/images/Table.png');
         this.load.image('square','./assets/images/square.jpg');
         this.load.image('circle','./assets/images/circle.jpg');
 
+        //FOODS
+        this.load.image('Blob','./assets/images/food/Blob.png');
+        this.load.image('Shioyaki','./assets/images/food/Shioyaki.png');
+        this.load.image('Ikayaki','./assets/images/food/Ikayaki.png');
+        this.load.image('Onigiri','./assets/images/food/Onigiri.png');
+        this.load.image('Cabbage_Salad','./assets/images/food/Cabbage_Salad.png');
+        this.load.image('Taiyaki','./assets/images/food/Taiyaki.png');
+        this.load.image('Dorayaki','./assets/images/food/Dorayaki.png');
+        this.load.image('Daikon_Salad','./assets/images/food/Daikon_Salad.png');
+        this.load.image('Sushi','./assets/images/food/Sushi.png');
+        this.load.image('Ebi_Furai','./assets/images/food/Ebi_Furai.png');
+        this.load.image('Takoyaki','./assets/images/food/Takoyaki.png');
+        this.load.image('Ultimate_secret_bowl','./assets/images/food/Ultimate_secret_bowl.png');
 
-        width = this.cameras.main.width;
-        height = this.cameras.main.height;
+        //INGREDIENTS
+
+        //KITCHEN
+
+
+
     }
 
     create(){
-
         //štart hry keby ste nevedeli
         this.startGame(); //Matúš
 
@@ -79,18 +99,21 @@ export default class MainScene extends Phaser.Scene {
     }
 
     startGame(){
+        width = this.cameras.main.width;
+        height = this.cameras.main.height;
         //pozadie
-        let bg = this.add.sprite(0, 0, 'background');
+        let bg = this.add.sprite(0, 0, 'background3');
         bg.setScale(2);
         // change origin to the top-left of the sprite
         bg.setOrigin(0,0);
 
         //záclony
-        let curtains = this.add.sprite(0, 0, 'curtains');
-        curtains.setScale(2);
-        // change origin to the top-left of the sprite
-        curtains.setOrigin(0,0);
-
+        /*
+            let curtains = this.add.sprite(0, 0, 'curtains');
+            curtains.setScale(2);
+            // change origin to the top-left of the sprite
+            curtains.setOrigin(0,0);
+        */
         //stôl
         let table = this.add.sprite(0, height/6 , 'table');
         table.setScale(2);
@@ -99,12 +122,13 @@ export default class MainScene extends Phaser.Scene {
         table.setOrigin(0,0);
 
         //vytvorenie hodín
-        clock= this.add.image(width/1.13,height/9,"Mclock");
+        //clock= this.add.image(width/1.13,height/9,"Mclock");
+        clock= this.add.image(width/9,height/9,"Mclock");
         //clock.setOrigin(0,0);
         clock.setScale(1.25);
 
         //vytvorenie score textu
-        scoreText = this.add.text(5, 5, 'SCORE: ' + this.score, { font: 'bold 24px Arial', fill: '#000000'});
+        scoreText = this.add.text(width/2.8, 5, 'SCORE: ' + this.score, { font: 'bold 32px Arial', fill: '#000000'});
         scoreText.setShadow(0, 0, 'rgb(255,255,255)', 30);
 
         //vytvorenie konecneho textu
@@ -120,7 +144,7 @@ export default class MainScene extends Phaser.Scene {
         });
 
         //časovač na vytváranie zákazníkov
-        timerCustomer = this.time.addEvent({ delay: this.delay * 1000, callback: this.setUpCustomer, callbackScope: this, repeat: customerCounter -1 });
+        timerCustomer = this.time.addEvent({ delay: this.delay * 1000, callback: this.setUpCustomer, callbackScope: this, repeat: this.customerCounter -1 });
 
     }
     myUpdate(){
@@ -165,8 +189,8 @@ export default class MainScene extends Phaser.Scene {
             targetX = width;
         }
 */
-        customerCounter--;
-        console.log(customerCounter)
+        this.customerCounter--;
+        console.log(this.customerCounter)
         //better riešenie, ify na zabranie miesta
         if (this.firstPlaceIsEmpty){
             //stred okna
@@ -190,13 +214,11 @@ export default class MainScene extends Phaser.Scene {
         }
 
         //check if it is last boss
-        if (customerCounter === 0 && this.level === 3){
+        if (this.customerCounter === 0 && this.level === 3){
             this.createFinalBoss(place,targetX,width);
         }
         else {
             this.createCustomer(place,targetX,width);
-
-
         }
 
 
@@ -206,10 +228,12 @@ export default class MainScene extends Phaser.Scene {
         //customer.moveRight();
     }
     createFinalBoss(place, targetX, width){
-        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, orderImg: "circle", bubble: "bubble"});
+        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, order: "Ikayaki", bubble: "bubble"});
         customer.setScale(0.6,0.3);
-        customer.order = "Chef’s ultimate secret bowl";
+        customer.order = "Ultimate_secret_bowl";
+        customer.order_image.setTexture(customer.order);
         customer.bubble.setScale(0.8);
+        customer.setOrderScale();
         customer.delay = 5;
         //customer.gotFood = true;
         customer.customerScore = 2000;
@@ -218,7 +242,7 @@ export default class MainScene extends Phaser.Scene {
         console.log( customer.order );
     }
     createCustomer(place,targetX,width){
-        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, orderImg: "circle", bubble: "bubble"});
+        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, order: "Ikayaki", bubble: "bubble"});
         customer.setScale(0.3)
         this.add.existing(customer);
         this.customerGroup.add(customer);
@@ -242,20 +266,20 @@ export default class MainScene extends Phaser.Scene {
         }
     }
     changeClock(){
-        if (customerCounter< customerCounterAll *0.75 && customerCounter >= customerCounterAll *0.5){
+        if (this.customerCounter< this.customerCounterAll *0.75 && this.customerCounter >= this.customerCounterAll *0.5){
             clock.setTexture('Nclock');
         }
-        else if(customerCounter<= customerCounterAll *0.5  && customerCounter >= customerCounterAll *0.25){
+        else if(this.customerCounter<= this.customerCounterAll *0.5  && this.customerCounter >= this.customerCounterAll *0.25){
             clock.setTexture('Eclock');
         }
-        else if (customerCounter <= customerCounterAll *0.25){
+        else if (this.customerCounter <= this.customerCounterAll *0.25){
             clock.setTexture('NIclock');
         }
 
 
     }
     checkIfEnd(){
-        if (this.customerGroup.countActive(true)<1 && customerCounter ===0) {
+        if (this.customerGroup.countActive(true)<1 && this.customerCounter ===0) {
             //console.log("KONIEC")
             endText.visible = true;
             if (this.score >= 1000){
@@ -265,7 +289,6 @@ export default class MainScene extends Phaser.Scene {
             else {
                 console.log("YOU LOST")
                 endText.setText("YOU LOST");
-
             }
         }
     }
