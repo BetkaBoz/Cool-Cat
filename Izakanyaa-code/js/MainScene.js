@@ -4,16 +4,14 @@ import Timer from "./Timer.js";
 import Customer from "./Customer.js";
 import Cookware from "./Cookware.js";
 import Food from "./Food.js";
-import PreparationPlate from "../../../../../../wamp64/www/Izakanyaa/js/PreparationPlate";
-import Ingredient from "../../../../../../wamp64/www/Izakanyaa/js/Ingredient";
+import PreparationPlate from "./PreparationPlate.js";
+import Ingredient from "./Ingredient.js";
 
-let text;
 let scoreText;
 let circle;
-let test_int;
-let dropOff;
+let prepPlate;
 var timer;
-let pot;
+let pan;
 let width;
 let height;
 let score;
@@ -26,6 +24,7 @@ let endText;
 let scene;
 let ingredient;
 let level = 1;
+let foods = [];
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -45,10 +44,10 @@ export default class MainScene extends Phaser.Scene {
     preload() {
         //ENVIRONMENT
         this.load.image('bubble','./assets/images/bubble.png');
-        //this.load.image('order','./assets/images/circle.jpg');
+        // this.load.image('order','./assets/images/circle.jpg');
         this.load.image('customer','./assets/images/customer.png');
         this.load.image('Mclock','./assets/images/Morning Clock.png');
-        this.load.image('Nclock','./assets/images/Noon Clock.png');
+        this.load.image('Nclock','./assets/images/Noon_Clock.png');
         this.load.image('Eclock','./assets/images/Evening Clock.png');
         this.load.image('NIclock','./assets/images/Night Clock.png');
         //this.load.image('background','./assets/images/Background.png');
@@ -64,18 +63,32 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Shioyaki','./assets/images/food/Shioyaki.png');
         this.load.image('Ikayaki','./assets/images/food/Ikayaki.png');
         this.load.image('Onigiri','./assets/images/food/Onigiri.png');
-        this.load.image('Cabbage_Salad','./assets/images/food/Cabbage_Salad.png');
+        this.load.image('Cabbage_Salad','./assets/images/food/Salad.png');
         this.load.image('Taiyaki','./assets/images/food/Taiyaki.png');
         this.load.image('Dorayaki','./assets/images/food/Dorayaki.png');
-        this.load.image('Daikon_Salad','./assets/images/food/Daikon_Salad.png');
+        this.load.image('Daikon_Salad','./assets/images/food/Daikon.png');
         this.load.image('Sushi','./assets/images/food/Sushi.png');
         this.load.image('Ebi_Furai','./assets/images/food/Ebi_Furai.png');
         this.load.image('Takoyaki','./assets/images/food/Takoyaki.png');
         this.load.image('Ultimate_secret_bowl','./assets/images/food/Ultimate_secret_bowl.png');
 
         //INGREDIENTS
+        this.load.image('Mackerel','./assets/images/ingredients/Meat/Mackerel.png');
+        this.load.image('Octopus','./assets/images/ingredients/Meat/Octopus.png');
+        this.load.image('Salmon','./assets/images/ingredients/Meat/Salmon.png');
+        this.load.image('Shrimp','./assets/images/ingredients/Meat/Shrimp.png');
+        this.load.image('Squid','./assets/images/ingredients/Meat/Squid.png');
+        this.load.image('Anko','./assets/images/ingredients/Seasonings/Anko.png');
+        this.load.image('Mayo','./assets/images/ingredients/Seasonings/Mayonnaise.png');
+        this.load.image('Salt','./assets/images/ingredients/Seasonings/Salt shaker.png');
+        this.load.image('Seaweed','./assets/images/ingredients/Seasonings/Seaweed plate.png');
+        this.load.image('Soy_Sauce','./assets/images/ingredients/Seasonings/Soy sauce.png');
+        this.load.image('Cabbage','./assets/images/ingredients/Vegetables/Cabbage.png');
+        this.load.image('Daikon','./assets/images/ingredients/Vegetables/Daikon.png');
+        this.load.image('Spring_Onion','./assets/images/ingredients/Vegetables/Spring onion.png');
 
         //KITCHEN
+        this.load.image('Plate','./assets/images/food/Plate.png');
 
 
 
@@ -84,12 +97,12 @@ export default class MainScene extends Phaser.Scene {
     create(){
         //štart hry keby ste nevedeli
         this.startGame(); //Matúš
-
+        this.testingCreate(); //Timo
     }
 
     update(){
         this.myUpdate(); //Matúš
-
+        this.testUpdate(); //Timo
     }
 
     startGame(){
@@ -296,14 +309,16 @@ export default class MainScene extends Phaser.Scene {
     //TIMO
     testingCreate(){
         scene = this;
-        let potImg = scene.add.image(0, 0, "circle");
-        timer = new Timer({scene: scene, x: 400, y: 300});
-        pot = new Cookware({scene: scene, x: 400, y:300, objectImg: potImg, type: "pot", timer: timer});
-        dropOff = new PreparationPlate({scene: scene, x: 100, y:100, plateImg:"circle", ingredients:[], foods:foods});
-        dropOff.plate.setTint(0xB0FFFF);
-        dropOff.setHit(dropOff);
-        this.addFoods();
+        let panImg = scene.add.image(0, 0, "circle");
+        timer = new Timer({scene: scene, x: 0, y: 0});
+        pan = new Cookware({scene: scene, x: 100, y:height-50, objectImg: panImg, type: "pan", timer: timer});
+        prepPlate = new PreparationPlate({scene: scene, x: 300, y:height-50, plateImg:"Plate", ingredients:[], foods:foods});
+        prepPlate.plate.setScale(0.5);
+        prepPlate.width = prepPlate.width/2;
+        prepPlate.height = prepPlate.height/2;
+        prepPlate.setHit(prepPlate);
         //TEMP
+        this.addFoods();
         this.addIngredients();
         this.setInteractivity();
     }
@@ -311,26 +326,30 @@ export default class MainScene extends Phaser.Scene {
     //function used to set input.on functions to elements in scene
     //TIMO
     setInteractivity(){
-        dropOff.on('dragend',function (){
-            pot.checkOverlap(dropOff);
-            if(pot.isCooking && !pot.isBurning) {
+        prepPlate.on('dragend',function (){
+            pan.checkOverlap(prepPlate);
+            if(pan.isCooking && !pan.isBurning) {
                 this.scene.addIngredients();
             }
-            dropOff.x = dropOff.plate.x;
-            dropOff.y = dropOff.plate.y;
+            prepPlate.x = prepPlate.plate.x;
+            prepPlate.y = prepPlate.plate.y;
         })
         scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
             gameObject.x = dragX;
             gameObject.y = dragY;
         })
-        pot.object.on('pointerdown',function (){
-            if(!pot.isCooking && pot.isBurning){
-                let food = foods.find(element => element.name == pot.cookedFood);
-                food.x = 100;
-                food.y = 300;
-                food.setAlpha(1);
-                pot.isBurning = false;
-                pot.isCooking = false;
+        pan.object.on('pointerdown',function (){
+            if(!pan.isCooking && pan.isBurning){
+                let food = foods.find(element => element.name == pan.cookedFood);
+                if(food){
+                    food.x = pan.x;
+                    food.y = pan.y-75;
+                    food.setAlpha(1);
+                }else {
+                    console.log(pan.cookedFood);
+                }
+                pan.isBurning = false;
+                pan.isCooking = false;
                 timer.timerControl("stop");
             }
         })
@@ -339,22 +358,24 @@ export default class MainScene extends Phaser.Scene {
     //function used to test out the creation of ingredients
     //TIMO
     addIngredients(){
-        ingredientOne = new Ingredient({scene:scene, x : 500, y:100, img: "square", name: "banana"});
-        ingredientOne.setInteractive();
-        scene.input.setDraggable(ingredientOne);
-        ingredientOne.on('drag', function (){
+        ingredient = new Ingredient({scene:scene, x : width-100, y:height-50, img: "Mackerel", name: "mackerel"});
+        ingredient.setInteractive();
+        scene.input.setDraggable(ingredient);
+        ingredient.setDepth(70);
+        ingredient.on('drag', function (){
             this.setTint(0xB0FFFF);
         })
-        ingredientOne.on('dragend', function(){
+        ingredient.on('dragend', function(){
             this.clearTint();
-            dropOff.checkOverlap(this);
+            prepPlate.checkOverlap(this);
         })
-        ingredientOne = new Ingredient({scene:scene, x : 500, y:200, img: "square", name: "orange"});
-        ingredientOne.setInteractive();
-        scene.input.setDraggable(ingredientOne);
-        ingredientOne.on('dragend', function(){
+        ingredient = new Ingredient({scene:scene, x : width-50, y:height-50, img: "Salt", name: "salt"});
+        ingredient.setInteractive();
+        scene.input.setDraggable(ingredient);
+        ingredient.setDepth(70);
+        ingredient.on('dragend', function(){
             this.clearTint();
-            dropOff.checkOverlap(this);
+            prepPlate.checkOverlap(this);
         })
     }
 
@@ -362,32 +383,36 @@ export default class MainScene extends Phaser.Scene {
     //this function should only be called in <createLevel> function
     //TIMO
     addFoods(){
-        let ingredients;
-        let food;
-
-        ingredients = ['apple','banana','orange'];
-        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
+        let ingredients,food;
+        ingredients = ['mackerel','salt'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Shioyaki', ingredients: ingredients, cookMethod: "pan", prepTime: 3000});
         food.setAlpha(0);
         food.setX(-100);
-        food.setFoodName("Apple Split");
+        food.setFoodName("Shioyaki");
+        food.setScale(0.25);
+        food.setDepth(70);
         foods.push(food);
 
-        ingredients = ['banana','orange'];
+        ingredients = ['mackerel','salt'];
         food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
         food.setAlpha(0);
         food.setX(-100);
-        food.setFoodName("Banana Split");
+        food.setScale(0.25);
+        food.setDepth(70);
+        food.setFoodName("TEST");
         foods.push(food);
 
         ingredients = ['apple','orange'];
-        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pan", prepTime: 3000});
         food.setAlpha(0);
         food.setX(-100);
+        food.setScale(0.25);
+        food.setDepth(70);
         food.setFoodName("Orange Split");
         foods.push(food);
         if(level >1){
             ingredients = ['orange'];
-            food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
+            food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pan", prepTime: 3000});
             food.setAlpha(0);
             food.setX(-100);
             food.setFoodName("Literal Orange");
@@ -406,15 +431,15 @@ export default class MainScene extends Phaser.Scene {
     //this is used to set different function to Timer in Cookware
     //will be changed
     //TIMO
-    onEvent(){
-        pot.startBurn({timer: timer, time: 3000});
-    }
+    // onEvent(){
+    //     pan.startBurn({timer: timer, time: 3000});
+    // }
 
     //this function is only used for testing
     //TIMO
     testUpdate(){
-        if(pot.isCooking || pot.isBurning){
-            pot.draw();
+        if(pan.isCooking || pan.isBurning){
+            pan.draw();
         }
     }
 

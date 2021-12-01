@@ -1,4 +1,4 @@
-import Ingredient from "./Ingredient";
+import Ingredient from "./Ingredient.js";
 
 export default class PreparationPlate extends Phaser.GameObjects.Container {
     constructor(data){
@@ -12,16 +12,23 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         this.isGarbage = false;
         this.setSize(5,5);
         this.width = this.plate.width;
-        this.height = this.plate.height * 2;
+        this.height = this.plate.height;
         this.plate.x = this.x;
         this.plate.y = this.y;
         this.setInteractive();
         scene.input.setDraggable(this);
+        this.on('pointerover',function (){
+            this.plate.setTint(0xB0FFFF);
+        })
+        this.on('pointerout',function (){
+            this.plate.clearTint();
+        })
+        // this.setHit(this);
         this.scene.add.existing(this);
     }
 
     setHit(self){
-        self.input.hitArea.setTo(0,-this.height/4,this.width,this.height);
+        self.input.hitArea.setTo(0,0,this.width,this.height);
     }
 
     addIngredient(ingredient){
@@ -37,8 +44,8 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
 
     checkOverlap(ingredient){
         if(ingredient instanceof Ingredient && !(ingredient.isUsed)) {
-            if (ingredient.y >= this.y - this.height && ingredient.y <= this.y + this.height) {
-                if (ingredient.x >= this.x - this.width && ingredient.x <= this.x + this.width) {
+            if (ingredient.y >= this.y - this.height/2 && ingredient.y <= this.y + this.height/2) {
+                if (ingredient.x >= this.x - this.width/2 && ingredient.x <= this.x + this.width/2) {
                     this.addIngredient(ingredient);
                 }
             }
@@ -52,6 +59,12 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         }else{
             this.isGarbage = false;
         }
+    }
+
+    clearIngredients() {
+        this.ingredients.forEach(element => element.destroy());
+        this.ingredients.splice(0,this.ingredients.length);
+        this.potentialFood = this.food;
     }
 
 }

@@ -19,3 +19,23 @@ Sushi.png
 Ebi_Furai.png
 Takoyaki.png
 Ultimate_secret_bowl.png
+Plate.png
+
+/ingredients/Meat
+Mackerel.png
+Octopus.png
+Salmon.png
+Shrimp.png
+Squid.png
+
+/ingredients/Seasonings/
+Anko.png
+Mayonnaise.png
+Salt shaker.png
+Seaweed plate.png
+Soy sauce.png
+
+/ingredients/Vegetables/
+Cabbage.png
+Daikon.png
+Spring onion.png
