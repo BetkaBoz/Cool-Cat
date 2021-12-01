@@ -10,27 +10,41 @@ export default class Timer extends Phaser.GameObjects.Container{
         this.timedEvent = null;
         this.graphics = this.scene.add.graphics();
         this.showTimer = true;
+        this.scene.add.existing(this);
     }
 
     setEvent(data){
         if(this.scene == null){
             this.scene = parent.scene;
         }
-        let{time, endEvent} = data;
-        //console.log(time);
-        this.timedEvent = this.scene.time.delayedCall(time, endEvent, [], this.scene);
+        let{time, endEvent, args} = data;
+        this.timedEvent = this.scene.time.delayedCall(time, endEvent, args, this.scene);
+    }
+
+    timerControl(action){
+        switch (action){
+            case "pause":
+                this.timedEvent.paused = true;
+                break;
+            case "resume":
+                this.timedEvent.paused = false;
+                break;
+            case "stop":
+                this.setVisiblity(false);
+                this.draw();
+                this.timedEvent.remove();
+                break;
+            default:
+                console.log("WRONG COMMAND BUDDY");
+        }
     }
 
     setVisiblity(visible){
-        //console.log(this.showTimer);
         this.showTimer = visible;
     }
 
-    draw(){   
-        //this.graphics = this.scene.add.graphics();
-        //console.log(this.showTimer);
+    draw(){
         if(this.showTimer){
-            // console.log("should be true");
             let colour;
             if(this.timedEvent.getOverallProgress() <= 0.33){
                 colour = 0x57f542;
@@ -49,7 +63,6 @@ export default class Timer extends Phaser.GameObjects.Container{
             this.graphics.arc(this.x, this.y, radius,Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(angle));
             this.graphics.strokePath();
         }else{
-            //console.log("FUCK");
             this.graphics.clear();
             this.graphics.arc(this.x, this.y, 0,Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(0));
             this.graphics.strokePath();

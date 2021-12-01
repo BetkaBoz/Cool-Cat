@@ -3,7 +3,7 @@ import Ingredient from "./Ingredient";
 export default class PreparationPlate extends Phaser.GameObjects.Container {
     constructor(data){
         let{scene, x, y, plateImg, ingredients, foods} = data;
-        let plateObj = plateImg;
+        let plateObj = scene.add.sprite(0,0,plateImg);
         super(scene, x, y, []);
         this.plate = plateObj;
         this.ingredients = ingredients;
@@ -13,6 +13,10 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         this.setSize(5,5);
         this.width = this.plate.width;
         this.height = this.plate.height * 2;
+        this.plate.x = this.x;
+        this.plate.y = this.y;
+        this.setInteractive();
+        scene.input.setDraggable(this);
         this.scene.add.existing(this);
     }
 
@@ -33,8 +37,8 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
 
     checkOverlap(ingredient){
         if(ingredient instanceof Ingredient && !(ingredient.isUsed)) {
-            if (ingredient.y >= this.y - this.plate.height && ingredient.y <= this.y + this.plate.height) {
-                if (ingredient.x >= this.x - this.plate.width && ingredient.x <= this.x + this.plate.width) {
+            if (ingredient.y >= this.y - this.height && ingredient.y <= this.y + this.height) {
+                if (ingredient.x >= this.x - this.width && ingredient.x <= this.x + this.width) {
                     this.addIngredient(ingredient);
                 }
             }
@@ -48,7 +52,6 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         }else{
             this.isGarbage = false;
         }
-        this.potentialFood.forEach(element => console.log(element.name));
     }
 
 }

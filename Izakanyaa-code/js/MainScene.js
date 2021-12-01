@@ -4,6 +4,8 @@ import Timer from "./Timer.js";
 import Customer from "./Customer.js";
 import Cookware from "./Cookware.js";
 import Food from "./Food.js";
+import PreparationPlate from "../../../../../../wamp64/www/Izakanyaa/js/PreparationPlate";
+import Ingredient from "../../../../../../wamp64/www/Izakanyaa/js/Ingredient";
 
 let text;
 let scoreText;
@@ -84,15 +86,7 @@ export default class MainScene extends Phaser.Scene {
         this.startGame(); //Matúš
 
     }
-    onEvent(){
-        //console.log("wat"+timer);
-        pot.startBurn({timer: timer, time: 3000});
-    }
-    oneEvent(){
-        text.setText("DERG");
-        //console.log("DERG");
-        timer.setEvent({time: 3000,endEvent: this.onEvent});
-    }
+
     update(){
         this.myUpdate(); //Matúš
 
@@ -296,44 +290,71 @@ export default class MainScene extends Phaser.Scene {
 
 
 
+
+
     //function used only for testing
     //TIMO
     testingCreate(){
         scene = this;
-        let potImg = scene.add.image(100, 200, "circle");
+        let potImg = scene.add.image(0, 0, "circle");
         timer = new Timer({scene: scene, x: 400, y: 300});
-        this.add.existing(timer);
-        pot = new Cookware({scene: scene, x: 400, y:300, objectImg: potImg, type: "pot"});
-        this.add.existing(pot);
-        pot.setCookEndEvent(this.onEvent);
-        pot.setStart(timer);
-        let plateObj = scene.add.sprite(0,0,"circle");
-        dropOff = new PreparationPlate({scene: scene, x: 100, y:100, plateImg:plateObj, ingredients:[], foods:foods});
+        pot = new Cookware({scene: scene, x: 400, y:300, objectImg: potImg, type: "pot", timer: timer});
+        dropOff = new PreparationPlate({scene: scene, x: 100, y:100, plateImg:"circle", ingredients:[], foods:foods});
         dropOff.plate.setTint(0xB0FFFF);
+        dropOff.setHit(dropOff);
         this.addFoods();
+        //TEMP
         this.addIngredients();
+        this.setInteractivity();
+    }
+
+    //function used to set input.on functions to elements in scene
+    //TIMO
+    setInteractivity(){
+        dropOff.on('dragend',function (){
+            pot.checkOverlap(dropOff);
+            if(pot.isCooking && !pot.isBurning) {
+                this.scene.addIngredients();
+            }
+            dropOff.x = dropOff.plate.x;
+            dropOff.y = dropOff.plate.y;
+        })
         scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
             gameObject.x = dragX;
             gameObject.y = dragY;
-            gameObject.setTint(0xB0FFFF);
-            gameObject.setDepth(0);
         })
-
-
-        scene.input.on('pointerup', function(){
-            dropOff.checkOverlap(ingredientOne);
-        });
-
+        pot.object.on('pointerdown',function (){
+            if(!pot.isCooking && pot.isBurning){
+                let food = foods.find(element => element.name == pot.cookedFood);
+                food.x = 100;
+                food.y = 300;
+                food.setAlpha(1);
+                pot.isBurning = false;
+                pot.isCooking = false;
+                timer.timerControl("stop");
+            }
+        })
     }
 
     //function used to test out the creation of ingredients
     //TIMO
     addIngredients(){
-        ingredient = new Ingredient({scene:scene, x : 500, y:100, img: "square", name: "banana"});
-        ingredient.setInteractive();
-        scene.input.setDraggable(ingredient);
-        ingredient.on('dragend', function(){
+        ingredientOne = new Ingredient({scene:scene, x : 500, y:100, img: "square", name: "banana"});
+        ingredientOne.setInteractive();
+        scene.input.setDraggable(ingredientOne);
+        ingredientOne.on('drag', function (){
+            this.setTint(0xB0FFFF);
+        })
+        ingredientOne.on('dragend', function(){
             this.clearTint();
+            dropOff.checkOverlap(this);
+        })
+        ingredientOne = new Ingredient({scene:scene, x : 500, y:200, img: "square", name: "orange"});
+        ingredientOne.setInteractive();
+        scene.input.setDraggable(ingredientOne);
+        ingredientOne.on('dragend', function(){
+            this.clearTint();
+            dropOff.checkOverlap(this);
         })
     }
 
@@ -345,28 +366,28 @@ export default class MainScene extends Phaser.Scene {
         let food;
 
         ingredients = ['apple','banana','orange'];
-        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
         food.setAlpha(0);
         food.setX(-100);
         food.setFoodName("Apple Split");
         foods.push(food);
 
         ingredients = ['banana','orange'];
-        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
         food.setAlpha(0);
         food.setX(-100);
         food.setFoodName("Banana Split");
         foods.push(food);
 
         ingredients = ['apple','orange'];
-        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
         food.setAlpha(0);
         food.setX(-100);
         food.setFoodName("Orange Split");
         foods.push(food);
         if(level >1){
             ingredients = ['orange'];
-            food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot"});
+            food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
             food.setAlpha(0);
             food.setX(-100);
             food.setFoodName("Literal Orange");
@@ -389,25 +410,21 @@ export default class MainScene extends Phaser.Scene {
         pot.startBurn({timer: timer, time: 3000});
     }
 
-    timoUpdate(){
+    //this function is only used for testing
+    //TIMO
+    testUpdate(){
         if(pot.isCooking || pot.isBurning){
-            timer.draw();
+            pot.draw();
         }
     }
 
-
+    //This function contains code that might get used later to create proper functions
+    //Will be deleted once useless
+    //TIMO
     createStuff(){
-        score = 0;
-
         let test = this.add.image(300, 50, 'square');
-        dropOff = this.add.image(100, 250, 'square');
-        dropOff.setScale(1.5,1.0);
-        //firstCustomer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 0, y:200, timeLimit: 3000, timeOffset: 0, order: "circle", bubble: "square", score: score});
-        timer = new Timer({scene: this, x: 400, y: 300, time: 3000, showTimer: true,endEvent: this.onEvent});
-
         let selected = null;
         circle = null;
-        test_int = 0;
         test.setInteractive();
         test.on('pointerdown', function(){
             circle = scene.add.image(this.x, this.y,'circle');
@@ -432,31 +449,6 @@ export default class MainScene extends Phaser.Scene {
             }
         })
 
-        scene.input.on('pointerup', function(){
-            if(dropOff == null){
-                dropOff = dropOff_help;
-            }
-            if(selected != null){
-                if(selected.y >= dropOff.y-dropOff.height && selected.y <= dropOff.y+dropOff.height){
-                    if(selected.x >= dropOff.x-dropOff.width && selected.x <= dropOff.x+dropOff.width){
-                        test_int++;
-                        text.setText("" + test_int);
-                    }
-                }
-                selected.y ++;
-                selected.clearTint();
-                selected.destroy();
-                selected = null;
-            }
-        })
-
-        /*scene.input.on('pointerdown',function(gameObject){
-            if(gameObject = circle){
-                gameObject.body.setGravity(0);
-                gameObject.body.setAllowGravity(false);
-            }
-        })*/
-
         scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
             gameObject.x = dragX;
             gameObject.y = dragY;
@@ -465,29 +457,6 @@ export default class MainScene extends Phaser.Scene {
                 gameObject.body.setGravity(0);
                 gameObject.body.setAllowGravity(false);
             }*/
-        })
-        dropOff.setInteractive();
-        dropOff.on('pointerdown', function(){
-            if(selected != null){
-                test_int++;
-                selected.destroy();
-                selected = null;
-            }else{
-                if(circle != null){
-                    test_int++;
-                    circle.destroy();
-                    circle = null;
-                }
-            }
-            text.setText("FUUUUUCK"/*[
-                'x: ' + pointer.x,
-                'y: ' + pointer.y,
-                'int: ' + test_int,
-                'circle x: ' + circle.x,
-                'circle y: ' + circle.y,
-                'dropoff x: ' + dropOff.x,
-                'dropoff y: ' + dropOff.y
-            ]*/);
         })
     }
 }
