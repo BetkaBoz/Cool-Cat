@@ -7,11 +7,17 @@ import Food from "./Food.js";
 import PreparationPlate from "./PreparationPlate.js";
 import Ingredient from "./Ingredient.js";
 
+
+
+let text;
 let scoreText;
 let circle;
 let prepPlate;
+let test_int;
+let dropOff;
 var timer;
 let pan;
+let pot;
 let width;
 let height;
 let score;
@@ -38,7 +44,6 @@ export default class MainScene extends Phaser.Scene {
         this.firstPlaceIsEmpty = true;
         this.secondPlaceIsEmpty = true;
         this.thirdPlaceIsEmpty = true;
-
     }
   
     preload() {
@@ -47,7 +52,7 @@ export default class MainScene extends Phaser.Scene {
         // this.load.image('order','./assets/images/circle.jpg');
         this.load.image('customer','./assets/images/customer.png');
         this.load.image('Mclock','./assets/images/Morning Clock.png');
-        this.load.image('Nclock','./assets/images/Noon_Clock.png');
+        this.load.image('Nclock','./assets/images/Noon Clock.png');
         this.load.image('Eclock','./assets/images/Evening Clock.png');
         this.load.image('NIclock','./assets/images/Night Clock.png');
         //this.load.image('background','./assets/images/Background.png');
@@ -63,10 +68,10 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Shioyaki','./assets/images/food/Shioyaki.png');
         this.load.image('Ikayaki','./assets/images/food/Ikayaki.png');
         this.load.image('Onigiri','./assets/images/food/Onigiri.png');
-        this.load.image('Cabbage_Salad','./assets/images/food/Salad.png');
+        this.load.image('Salad','./assets/images/food/Salad.png');
         this.load.image('Taiyaki','./assets/images/food/Taiyaki.png');
         this.load.image('Dorayaki','./assets/images/food/Dorayaki.png');
-        this.load.image('Daikon_Salad','./assets/images/food/Daikon.png');
+        this.load.image('Daikon','./assets/images/food/Daikon.png');
         this.load.image('Sushi','./assets/images/food/Sushi.png');
         this.load.image('Ebi_Furai','./assets/images/food/Ebi_Furai.png');
         this.load.image('Takoyaki','./assets/images/food/Takoyaki.png');
@@ -157,6 +162,8 @@ export default class MainScene extends Phaser.Scene {
     myUpdate(){
         scoreText.setText('SCORE: ' + this.score);
 
+        //this.cameras.main.shake(500);
+
         // ak sú traja zákazníci na scéne zastav timer na generovanie zákazníkov
         if (this.customerGroup.isFull()){
             timerCustomer.paused = true;
@@ -222,6 +229,7 @@ export default class MainScene extends Phaser.Scene {
 
         //check if it is last boss
         if (this.customerCounter === 0 && this.level === 3){
+            this.cameras.main.shake(40);
             this.createFinalBoss(place,targetX,width);
         }
         else {
@@ -241,7 +249,7 @@ export default class MainScene extends Phaser.Scene {
         customer.order_image.setTexture(customer.order);
         customer.bubble.setScale(0.8);
         customer.setOrderScale();
-        customer.delay = 5;
+        customer.delay = 1;
         //customer.gotFood = true;
         customer.customerScore = 2000;
         this.add.existing(customer);
@@ -250,12 +258,11 @@ export default class MainScene extends Phaser.Scene {
     }
     createCustomer(place,targetX,width){
         let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, order: "Ikayaki", bubble: "bubble"});
-        customer.setScale(0.3)
+        customer.setScale(0.3);
         this.add.existing(customer);
         this.customerGroup.add(customer);
         console.log( customer.order );
     }
-
     changeDelay(){
         //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
@@ -292,10 +299,13 @@ export default class MainScene extends Phaser.Scene {
             if (this.score >= 1000){
                 console.log("YOU WON!")
                 endText.setText("YOU WON!");
+                //this.cameras.main.fade(2550);
+                //this.time.addEvent({delay: 5000, callback: this.scene.stop, callbackScope: this, loop: false });
             }
             else {
                 console.log("YOU LOST")
                 endText.setText("YOU LOST");
+
             }
         }
     }

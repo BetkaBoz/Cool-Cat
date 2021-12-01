@@ -5,10 +5,10 @@ import "./game.js"
 var foods =["Shioyaki",
     "Ikayaki",
     "Onigiri",
-    "Cabbage_Salad",
+    "Salad",
     "Taiyaki",
     "Dorayaki",
-    "Daikon_Salad",
+    "Daikon",
     "Sushi",
     "Ebi_Furai",
     "Takoyaki",
@@ -166,8 +166,11 @@ export default class Customer extends Phaser.GameObjects.Container{
         else  if (this.order === "Ultimate_secret_bowl"){
             this.order_image.setScale(0.65);
         }
-        else  if (this.order === "Onigiri"){
-            this.order_image.setScale(1);
+        else  if (this.order === "Salad"){
+            this.order_image.setScale(1.3);
+        }
+        else  if (this.order === "Daikon"){
+            this.order_image.setScale(1.5);
         }
     }
 
