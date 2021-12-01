@@ -1,5 +1,5 @@
 import Timer from "./Timer";
-import PreparationPlate from "./PreparationPlate";
+import PreparationPlate from "./PreparationPlate.js";
 export default class Cookware extends Phaser.GameObjects.Container{
     constructor(data){
         let{scene, x, y, objectImg, type, timer} = data;
@@ -23,8 +23,8 @@ export default class Cookware extends Phaser.GameObjects.Container{
     checkOverlap(prep){
         let finalFood;
         if(prep instanceof PreparationPlate){
-            if (prep.y >= this.y - this.object.height && prep.y <= this.y + this.object.height) {
-                if (prep.x >= this.x - this.object.width && prep.x <= this.x + this.object.width) {
+            if (prep.y >= this.y - this.object.height/2 && prep.y <= this.y + this.object.height/2) {
+                if (prep.x >= this.x - this.object.width/2 && prep.x <= this.x + this.object.width/2) {
                     if(prep.isGarbage){
                         this.cookedFood = "Garbage";
                     }else{
@@ -37,8 +37,7 @@ export default class Cookware extends Phaser.GameObjects.Container{
                     }
                     if(this.cookedFood != "nothing"){
                         this.startCooking(finalFood.prepTime);
-                        prep.ingredients.forEach(element => element.destroy());
-                        prep.ingredients.splice(0,prep.ingredients.length);
+                        prep.clearIngredients();
                     }
                 }
             }
