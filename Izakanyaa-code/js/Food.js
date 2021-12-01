@@ -14,11 +14,12 @@ var foods = ["Shioyaki",
 */
 export default class Food extends Phaser.GameObjects.Sprite{
     constructor(data) {
-        let{scene, x, y, image, ingredients, cookMethod} = data;
+        let{scene, x, y, image, ingredients, cookMethod, prepTime} = data;
         super(scene, x, y, image);//objectImg
         this.name = image;
         this.ingredients = ingredients;
         this.cookMethod = cookMethod;
+        this.prepTime = prepTime;
         this.scene = scene;
         this.x = x;
         this.y = y;
