@@ -26,3 +26,4 @@ Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanct
 Route::post('save', [UserController::class, 'save']);
 Route::post('load', [UserController::class, 'load']);
 Route::post('newgame', [UserController::class, 'newGame']);
+Route::post('difficulty', [UserController::class, 'difficulty']);
