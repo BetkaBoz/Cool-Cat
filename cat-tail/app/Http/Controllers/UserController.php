@@ -93,4 +93,26 @@ class UserController extends Controller
 
         return $existingSave;
     }
+
+    public function difficulty(Request $request)
+    {
+        $request->validate([
+            'user_id' => ['required', 'integer'],
+            'difficulty' => ['required', 'string']
+        ]);
+
+        $user = User::where('id', $request->user_id)->first();
+        if (!$user) {
+            throw ValidationException::withMessages(['The provided user does not exist.']);
+        }
+
+        $existingSave = Save::where('user_id', $request->user_id)->first();
+
+        if (!$existingSave) $existingSave = $this->newSave($request->user_id, $existingSave);
+        $existingSave->difficulty = $request->difficulty;
+        $existingSave->save();
+
+        return response()->json(['msg' => ('Difficulty changed to '.$existingSave->difficulty)]);
+    }
+
 }

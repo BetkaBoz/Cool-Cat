@@ -3,6 +3,7 @@
   <div class="container-fluid">
     <button @click="newGame">New Game</button>
     <button @click="loadGame">Load Game</button>
+    <button @click="loadGame">Change Difficulty</button>
   </div>
   <br/><br/><br/>
 </template>
