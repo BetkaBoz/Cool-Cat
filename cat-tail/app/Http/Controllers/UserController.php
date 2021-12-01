@@ -11,7 +11,6 @@ class UserController extends Controller
     private function newSave($user_id, $existingSave)
     {
         if ($existingSave) {
-            $existingSave->difficulty = "EASY";
             $existingSave->level = 1;
             $existingSave->score = 0;
             $existingSave->save();
