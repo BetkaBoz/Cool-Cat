@@ -54,6 +54,17 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
 
     updateFoods(){
         this.ingredients.forEach(ingredient => this.potentialFood = this.potentialFood.filter(element => element.ingredients.find(word => word == ingredient.name)));
+        if(this.potentialFood.length == 1 && this.potentialFood[0].cookMethod == "mix" && this.potentialFood[0].ingredients.length == this.ingredients.length){
+            let found = this.food.find(element => element.name == this.potentialFood[0].name);
+            if(found){
+                found.x = this.x+this.width;
+                found.y = this.y-75;
+                found.setAlpha(1);
+                this.clearIngredients();
+            }else {
+                console.log(this.potentialFood.name);
+            }
+        }
         if(!this.potentialFood){
             this.isGarbage = true;
         }else{

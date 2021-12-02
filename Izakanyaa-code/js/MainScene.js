@@ -83,13 +83,17 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Salmon','./assets/images/ingredients/Meat/Salmon.png');
         this.load.image('Shrimp','./assets/images/ingredients/Meat/Shrimp.png');
         this.load.image('Squid','./assets/images/ingredients/Meat/Squid.png');
+        this.load.image('Liquid_Dough','./assets/images/ingredients/Other/Liqiud dough bowl.png');
+        this.load.image('Panko','./assets/images/ingredients/Other/Panko Bowl.png');
+        this.load.image('Rice','./assets/images/ingredients/Other/Rice Bowl.png');
+        this.load.image('Tenkasu','./assets/images/ingredients/Other/Tenkasu Bowl lighter.png');
         this.load.image('Anko','./assets/images/ingredients/Seasonings/Anko.png');
         this.load.image('Mayo','./assets/images/ingredients/Seasonings/Mayonnaise.png');
         this.load.image('Salt','./assets/images/ingredients/Seasonings/Salt shaker.png');
         this.load.image('Seaweed','./assets/images/ingredients/Seasonings/Seaweed plate.png');
         this.load.image('Soy_Sauce','./assets/images/ingredients/Seasonings/Soy sauce.png');
         this.load.image('Cabbage','./assets/images/ingredients/Vegetables/Cabbage.png');
-        this.load.image('Daikon','./assets/images/ingredients/Vegetables/Daikon.png');
+        this.load.image('Daikon_Chopped','./assets/images/ingredients/Vegetables/Daikon.png');
         this.load.image('Spring_Onion','./assets/images/ingredients/Vegetables/Spring onion.png');
 
         //KITCHEN
@@ -393,50 +397,84 @@ export default class MainScene extends Phaser.Scene {
     //this function should only be called in <createLevel> function
     //TIMO
     addFoods(){
+        level = 3;
+        console.log("level: "+level);
         let ingredients,food;
         ingredients = ['mackerel','salt'];
-        food = new Food({scene:scene, x:100, y:100, image: 'Shioyaki', ingredients: ingredients, cookMethod: "pan", prepTime: 3000});
-        food.setAlpha(0);
-        food.setX(-100);
+        food = new Food({scene:scene, x:100, y:100, image: 'Shioyaki', ingredients: ingredients, cookMethod: "bake", prepTime: 3000});
         food.setFoodName("Shioyaki");
-        food.setScale(0.25);
-        food.setDepth(70);
         foods.push(food);
 
-        ingredients = ['mackerel','salt'];
-        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pot", prepTime: 3000});
-        food.setAlpha(0);
-        food.setX(-100);
-        food.setScale(0.25);
-        food.setDepth(70);
-        food.setFoodName("TEST");
+        ingredients = ['squid','soy sauce'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Ikayaki', ingredients: ingredients, cookMethod: "fry", prepTime: 3000});
+        food.setFoodName("Ikayaki");
         foods.push(food);
 
-        ingredients = ['apple','orange'];
-        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pan", prepTime: 3000});
-        food.setAlpha(0);
-        food.setX(-100);
-        food.setScale(0.25);
-        food.setDepth(70);
-        food.setFoodName("Orange Split");
+        ingredients = ['rice','mackerel', 'seaweed'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Onigiri', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
+        food.setFoodName("Onigiri");
+        foods.push(food);
+
+        ingredients = ['liquid dough','anko'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Taiyaki', ingredients: ingredients, cookMethod: "fry", prepTime: 3000});
+        food.setFoodName("Taiyaki");
+        foods.push(food);
+
+        ingredients = ['cabbage','salt','soy sauce'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
+        food.setFoodName("Salad");
+        foods.push(food);
+
+        ingredients = ['none'];
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "nothing", prepTime: 3000});
+        food.setFoodName("Garbage");
+        foods.push(food);
+
+        ingredients = ['none'];
+        food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "nothing", prepTime: 3000});
+        food.setFoodName("Burnt");
         foods.push(food);
         if(level >1){
-            ingredients = ['orange'];
-            food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "pan", prepTime: 3000});
-            food.setAlpha(0);
-            food.setX(-100);
-            food.setFoodName("Literal Orange");
+            ingredients = ['liquid dough','anko'];
+            food = new Food({scene:scene, x:100, y:100, image: 'Dorayaki', ingredients: ingredients, cookMethod: "bake", prepTime: 3000});
+            food.setFoodName("Dorayaki");
+            foods.push(food);
+
+            ingredients = ['rice','salmon', 'seaweed'];
+            food = new Food({scene:scene, x:100, y:100, image: 'Sushi', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
+            food.setFoodName("Sushi");
+            foods.push(food);
+
+            ingredients = ['daikon', 'salt'];
+            food = new Food({scene:scene, x:100, y:100, image: 'Daikon', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
+            food.setFoodName("Daikon");
             foods.push(food);
             if(level = 3){
-                ingredients = ['orange'];
+                ingredients = ['shrimp','panko','liquid dough'];
+                food = new Food({scene:scene, x:100, y:100, image: 'Ebi Furai', ingredients: ingredients, cookMethod: "fry"});
+                food.setFoodName("Ebi Furai");
+                foods.push(food);
+
+                ingredients = ['octopus','tenkasu','liquid dough','spring onions', 'mayo'];
+                food = new Food({scene:scene, x:100, y:100, image: 'Takoyaki', ingredients: ingredients, cookMethod: "fry"});
+                food.setFoodName("Takoyaki");
+                foods.push(food);
+
+                //TODO: Figure how to actually make this!!!
+                ingredients = ['UGHHH'];
                 food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "frier"});
-                food.setAlpha(0);
-                food.setX(-100);
-                food.setFoodName("WHAT?");
+                food.setFoodName("Ultimate Secrete Bowl");
                 foods.push(food);
             }
         }
+        foods.forEach(element => {
+            element.setAlpha(0);
+            element.setX(-100);
+            element.setScale(0.5);
+            element.setDepth(70);
+        })
     }
+
 
     //this is used to set different function to Timer in Cookware
     //will be changed

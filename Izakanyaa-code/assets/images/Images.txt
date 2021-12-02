@@ -39,3 +39,9 @@ Soy sauce.png
 Cabbage.png
 Daikon.png
 Spring onion.png
+
+/ingredients/Other/
+Liqiud dough bowl.png
+Panko Bowl.png
+Rice Bowl.png
+Tenkasu Bowl lighter.png
