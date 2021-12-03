@@ -47,29 +47,56 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
             if (ingredient.y >= this.y - this.height/2 && ingredient.y <= this.y + this.height/2) {
                 if (ingredient.x >= this.x - this.width/2 && ingredient.x <= this.x + this.width/2) {
                     this.addIngredient(ingredient);
+                    return true;
                 }
             }
         }
+        return false;
     }
 
     updateFoods(){
         this.ingredients.forEach(ingredient => this.potentialFood = this.potentialFood.filter(element => element.ingredients.find(word => word == ingredient.name)));
-        if(this.potentialFood.length == 1 && this.potentialFood[0].cookMethod == "mix" && this.potentialFood[0].ingredients.length == this.ingredients.length){
-            let found = this.food.find(element => element.name == this.potentialFood[0].name);
-            if(found){
-                found.x = this.x+this.width;
-                found.y = this.y-75;
-                found.setAlpha(1);
-                this.clearIngredients();
-            }else {
-                console.log(this.potentialFood.name);
-            }
-        }
         if(!this.potentialFood){
             this.isGarbage = true;
         }else{
+        if(this.potentialFood.length == 1 && this.potentialFood[0].cookMethod == "mix"&& this.potentialFood[0].ingredients.length == this.ingredients.length){
+            if(this.arraysEqual(this.potentialFood[0].ingredients,this.ingredients)){
+                let found = this.food.find(element => element.name == this.potentialFood[0].name);
+                if(found){
+                    found.x = this.x+this.width;
+                    found.y = this.y-75;
+                    found.setAlpha(1);
+                    this.clearIngredients();
+                }else {
+                    console.log(this.potentialFood.name);
+                }
+            }else{
+                this.isGarbage = true;
+            }
+        }
             this.isGarbage = false;
         }
+    }
+
+    arraysEqual(first, second){
+        first.sort();
+        second.sort(function (a,b){
+            if(a.name < b.name){
+                return -1;
+            }
+            if(a.name > b.name){
+                return 1;
+            }
+            if(a.name = b.name){
+                return 0;
+            }
+        })
+        for(let idx = 0; idx < first.length; idx++){
+            if(first[idx] != second[idx].name){
+                return false;
+            }
+        }
+        return true;
     }
 
     clearIngredients() {
