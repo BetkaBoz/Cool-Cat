@@ -7,6 +7,7 @@ import Food from "./Food.js";
 import PreparationPlate from "./PreparationPlate.js";
 import Ingredient from "./Ingredient.js";
 import Button from "./Button.js";
+import FoodSlots from "../../../../../../wamp64/www/Izakanyaa/js/FoodSlots";
 
 
 let text;
@@ -456,8 +457,8 @@ export default class MainScene extends Phaser.Scene {
         scene = this;
         let panImg = scene.add.image(0, 0, "circle");
         timer = new Timer({scene: scene, x: 0, y: 0});
-        pan = new Cookware({scene: scene, x: 100, y:height-50, objectImg: panImg, type: "pan", timer: timer});
-        prepPlate = new PreparationPlate({scene: scene, x: 300, y:height-50, plateImg:"Plate", ingredients:[], foods:foods});
+        pan = new Cookware({scene: scene, x: 100, y:height-50, objectImg: panImg, type: "bake", timer: timer});
+        prepPlate = new PreparationPlate({scene: scene, x: width/2, y:height-50, plateImg:"Plate", ingredients:[], foods:foods});
         prepPlate.plate.setScale(0.5);
         prepPlate.width = prepPlate.width/2;
         prepPlate.height = prepPlate.height/2;
@@ -465,14 +466,25 @@ export default class MainScene extends Phaser.Scene {
         //TEMP
         this.addButtons();
         this.addFoods();
-        // this.addIngredients();
+        this.createFoodSlots();
         this.setInteractivity();
+    }
+
+    createFoodSlots(){
+        let foodSlot;
+        slots = scene.add.group({maxSize:3});
+        foodSlot = new FoodSlots({scene:scene, x:width/4, y: height/1.55, slotImg:'Plate'});
+        slots.add(foodSlot);
+        foodSlot = new FoodSlots({scene:scene, x:width/2, y: height/1.55, slotImg:'Plate'});
+        slots.add(foodSlot);
+        foodSlot = new FoodSlots({scene:scene, x:width-width/4, y: height/1.55, slotImg:'Plate'});
+        slots.add(foodSlot);
     }
 
     addButtons(){
         let button
         //meat
-        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Mackerel Button"});
+        button = new Button({scene: scene, x: width-100,y: height-50,img: 'square', name: "Mackerel Button"});
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -565,7 +577,7 @@ export default class MainScene extends Phaser.Scene {
         button.addFunction("leave",function (){
             isOver[0] = false;
         });
-        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Salt Button"});
+        button = new Button({scene: scene, x: width-100,y: height-100,img: 'square', name: "Salt Button"});
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -731,9 +743,6 @@ export default class MainScene extends Phaser.Scene {
         prepPlate.on('dragend',function (){
             if(prepPlate.ingredients.length > 0){
                 pan.checkOverlap(prepPlate);
-                if(pan.isCooking && !pan.isBurning) {
-                    this.scene.addIngredients();
-                }
             }
             prepPlate.x = prepPlate.plate.x;
             prepPlate.y = prepPlate.plate.y;
@@ -741,34 +750,30 @@ export default class MainScene extends Phaser.Scene {
 
         pan.object.on('pointerdown',function (){
             if(!pan.isCooking && pan.isBurning){
-                let food = foods.find(element => element.name == pan.cookedFood);
-                if(food){
-                    food.x = pan.x;
-                    food.y = pan.y-75;
-                    food.setAlpha(1);
+                let found = foods.find(element => element.name == pan.cookedFood);
+                if(found){
+                    let alreadyFilled = false;
+                    for(let i = 0; i < 3;i++){
+                        if(!slots.getChildren()[i].isFilled && !alreadyFilled){
+                            let food = new Food({scene:scene, x:0, y:0, image:found.name, ingredients:[], cookMethod:null, prepTime:null}) ;//found
+                            console.log(food.name);
+                            slots.getChildren()[i].addFood(food);
+                            slots.getChildren()[i].makeInteractive(function (){
+                                console.log("boop");
+                                slots.getChildren()[i].food.x = slots.getChildren()[i].x;
+                                slots.getChildren()[i].food.y = slots.getChildren()[i].y;
+                            });
+                            alreadyFilled = true;
+                        }
+                    }
                 }else {
                     console.log(pan.cookedFood);
                 }
                 pan.isBurning = false;
                 pan.isCooking = false;
-                timer.timerControl("stop");
+                pan.timer.timerControl("stop");
             }
         })
-    }
-
-    //function used to test out the creation of ingredients
-    //TIMO
-
-    addIngredients(){
-        ingredient = new Ingredient({scene:scene, x : width-100, y:height-50,plate:prepPlate, img: "Daikon_Chopped", name: "daikon"});
-        ingredient = new Ingredient({scene:scene, x : width-50, y:height-50,plate:prepPlate, img: "Salt", name: "salt"});
-        // ingredient.setInteractive();
-        // scene.input.setDraggable(ingredient);
-        // ingredient.setDepth(70);
-        // ingredient.on('dragend', function(){
-        //     this.clearTint();
-        //     prepPlate.checkOverlap(this);
-        // })
     }
 
     //function fills Foods array with instances of Food classed used in the level
@@ -800,7 +805,7 @@ export default class MainScene extends Phaser.Scene {
 
         ingredients = ['cabbage','salt','soy sauce'];
         food = new Food({scene:scene, x:100, y:100, image: 'Cabbage_Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
-        food.setFoodName("Salad");
+        food.setFoodName("Cabbage_Salad");
         foods.push(food);
 
         ingredients = ['none'];
@@ -825,12 +830,12 @@ export default class MainScene extends Phaser.Scene {
 
             ingredients = ['daikon', 'salt'];
             food = new Food({scene:scene, x:100, y:100, image: 'Daikon_Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
-            food.setFoodName("Daikon");
+            food.setFoodName("Daikon_Salad");
             foods.push(food);
             if(level = 3){
                 ingredients = ['shrimp','panko','liquid dough'];
                 food = new Food({scene:scene, x:100, y:100, image: 'Ebi Furai', ingredients: ingredients, cookMethod: "fry"});
-                food.setFoodName("Ebi Furai");
+                food.setFoodName("Ebi_Furai");
                 foods.push(food);
 
                 ingredients = ['octopus','tenkasu','liquid dough','spring onions', 'mayo'];
@@ -841,7 +846,7 @@ export default class MainScene extends Phaser.Scene {
                 //TODO: Figure how to actually make this!!!
                 ingredients = ['UGHHH'];
                 food = new Food({scene:scene, x:100, y:100, image: 'square', ingredients: ingredients, cookMethod: "frier"});
-                food.setFoodName("Ultimate Secrete Bowl");
+                food.setFoodName("Ultimate_Secrete_Bowl");
                 foods.push(food);
             }
         }
@@ -866,36 +871,6 @@ export default class MainScene extends Phaser.Scene {
         if(pan.isCooking || pan.isBurning){
             pan.draw();
         }
-    }
-
-    //This function contains code that might get used later to create proper functions
-    //Will be deleted once useless
-    //TIMO
-    createStuff(){
-        let test = this.add.image(300, 50, 'square');
-        let selected = null;
-        circle = null;
-        test.setInteractive();
-        test.on('pointerdown', function(){
-            circle = scene.add.image(this.x, this.y,'circle');
-            circle.setInteractive();
-            scene.input.setDraggable(circle);
-            scene.selected = circle;
-            selected = circle;
-            circle.on('dragend', function(){
-                this.clearTint();
-            })
-        })
-
-        scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-            gameObject.setTint(0x44ff4);
-            /*if(gameObject = circle){
-                gameObject.body.setGravity(0);
-                gameObject.body.setAllowGravity(false);
-            }*/
-        })
     }
 }
 /*

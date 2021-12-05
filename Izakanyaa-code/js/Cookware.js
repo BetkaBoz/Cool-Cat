@@ -1,4 +1,4 @@
-import Timer from "./Timer.js";
+import Timer from "./Timer";
 import PreparationPlate from "./PreparationPlate.js";
 export default class Cookware extends Phaser.GameObjects.Container{
     constructor(data){
@@ -30,13 +30,18 @@ export default class Cookware extends Phaser.GameObjects.Container{
                     }else{
                         finalFood = prep.potentialFood.find(word => word.cookMethod == this.type);
                         if(!finalFood){
+                            console.log("here");
                             this.cookedFood = "Garbage";
                         }else{
                             this.cookedFood = finalFood.name;
                         }
                     }
                     if(this.cookedFood != "nothing"){
-                        this.startCooking(finalFood.prepTime);
+                        if(!finalFood){
+                            this.startCooking(3000);
+                        }else{
+                            this.startCooking(finalFood.prepTime);
+                        }
                         prep.clearIngredients();
                     }
                 }
