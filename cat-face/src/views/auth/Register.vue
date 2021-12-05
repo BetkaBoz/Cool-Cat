@@ -73,7 +73,7 @@ export default {
             this.formData.name = this.formData.email = this.formData.password = this.formData.password_confirmation = ''
             this.errors = {}
             this.$router.push('/login')
-            createToast('Register Successful', {type: 'success', timeout: 2000})
+            createToast('Register Successful', {type: 'success', timeout: 4000})
           }
       ).catch(er => {
         this.errors = er.response.data.errors
