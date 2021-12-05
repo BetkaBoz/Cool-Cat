@@ -8,7 +8,6 @@ import PreparationPlate from "./PreparationPlate.js";
 import Ingredient from "./Ingredient.js";
 
 
-
 let text;
 let scoreText;
 let circle;
@@ -31,25 +30,34 @@ let scene;
 let ingredient;
 let level = 1;
 let foods = [];
+let cookBookText;
+
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
       super('MainScene');
-        this.difficulty = "EASY"; //for now
-        this.level = 3;
-        this.delay= this.changeDelay();
-        this.score = 0;
-        this.customerCounter = 4;
-        this.customerCounterAll = this.customerCounter;
+        this.difficulty = null;
+        this.score = null;
+        this.level = null;
+        this.delayComing= null;
+        this.delayLeaving = null;
+        this.customerCounter = null;
+        this.customerCounterAll = null;
+        this.bossTimer = null;
+
         this.firstPlaceIsEmpty = true;
         this.secondPlaceIsEmpty = true;
         this.thirdPlaceIsEmpty = true;
+
+        this.isCookBookOpenable = true;
+        this.isLevelOver = false;
+        this.isBossDone = true;
+        this.setUpGame();
     }
   
     preload() {
         //ENVIRONMENT
         this.load.image('bubble','./assets/images/bubble.png');
-        // this.load.image('order','./assets/images/circle.jpg');
         this.load.image('customer','./assets/images/customer.png');
         this.load.image('Mclock','./assets/images/Morning Clock.png');
         this.load.image('Nclock','./assets/images/Noon Clock.png');
@@ -60,18 +68,18 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('background3','./assets/images/Background3.png');
         this.load.image('curtains','./assets/images/Curtains.png');
         this.load.image('table','./assets/images/Table.png');
-        this.load.image('square','./assets/images/square.jpg');
-        this.load.image('circle','./assets/images/circle.jpg');
+        //this.load.image('square','./assets/images/square.jpg');
+        //this.load.image('circle','./assets/images/circle.jpg');
 
         //FOODS
         this.load.image('Blob','./assets/images/food/Blob.png');
         this.load.image('Shioyaki','./assets/images/food/Shioyaki.png');
         this.load.image('Ikayaki','./assets/images/food/Ikayaki.png');
         this.load.image('Onigiri','./assets/images/food/Onigiri.png');
-        this.load.image('Salad','./assets/images/food/Salad.png');
+        this.load.image('Cabbage_Salad','./assets/images/food/Salad.png');
         this.load.image('Taiyaki','./assets/images/food/Taiyaki.png');
         this.load.image('Dorayaki','./assets/images/food/Dorayaki.png');
-        this.load.image('Daikon','./assets/images/food/Daikon.png');
+        this.load.image('Daikon_Salad','./assets/images/food/Daikon.png');
         this.load.image('Sushi','./assets/images/food/Sushi.png');
         this.load.image('Ebi_Furai','./assets/images/food/Ebi_Furai.png');
         this.load.image('Takoyaki','./assets/images/food/Takoyaki.png');
@@ -102,21 +110,115 @@ export default class MainScene extends Phaser.Scene {
 
 
     }
-
     create(){
         //štart hry keby ste nevedeli
         this.startGame(); //Matúš
         this.testingCreate(); //Timo
     }
-
     update(){
         this.myUpdate(); //Matúš
         this.testUpdate(); //Timo
     }
-
     startGame(){
         width = this.cameras.main.width;
         height = this.cameras.main.height;
+
+        this.cameras.main.fadeIn(2000);
+
+        this.createEnvironment();
+
+        //vytvorenie skupiny
+        this.customerGroup = this.add.group({
+            //key: 'customer',
+            maxSize: 3,
+        });
+
+        //časovač na vytváranie zákazníkov
+        timerCustomer = this.time.addEvent({ delay: this.delayComing * 1000, callback: this.setUpCustomer, callbackScope: this, repeat: this.customerCounter -1 });
+    }
+    myUpdate(){
+        scoreText.setText('SCORE: ' + this.score);
+
+        //this.cameras.main.shake(500);
+
+        // ak sú traja zákazníci na scéne zastav timer na generovanie zákazníkov
+        if (this.customerGroup.isFull()){
+            timerCustomer.paused = true;
+        }
+        else {
+            timerCustomer.paused = false;
+        }
+        //hýbanie so zákazníkmi
+        /*
+        for (let i = 0; i < this.customerGroup.getChildren().length; i++) {
+            //console.log(this.customerGroup.getChildren()[i]) ;
+            this.customerGroup.getChildren()[i].moveCustomer();
+            this.customerGroup.getChildren()[i].walkOff();
+
+            if (this.customerGroup.getChildren().length > 0 ){
+                if ( this.customerGroup.getChildren()[i].isStanding){
+                    this.customerGroup.getChildren()[i].draw();
+                    //console.log(this.customerGroup.getChildren()[i].timer.getOverallProgress());
+                }
+            }
+        }*/
+        this.customerGroup.getChildren().forEach(function(sprite) {
+            sprite.moveCustomer();
+            sprite.walkOff();
+
+            //if (this.customerGroup.getChildren().length > 0 ){
+                if (sprite.isStanding){
+                    sprite.draw();
+                    //console.log(this.customerGroup.getChildren()[i].timer.getOverallProgress());
+                }
+           // }
+
+        }, this);
+
+        this.changeClock();
+        this.checkIfEnd();
+    }
+    setUpGame(){
+        //nastaví hodnoty podľa local storage hodnoty
+        console.log("--------------------")
+        console.log("SETTING UP GAME")
+        if (window.localStorage.getItem("difficulty")){
+            this.difficulty = window.localStorage.getItem("difficulty");
+            console.log("FOUND DIFFICULTY: " + this.difficulty)
+        }
+        else {
+            this.difficulty = "EASY"
+            console.log("NO DIFF. DETECTED, GAME IS ON DIFF.: " + this.difficulty)
+        }
+
+        if (window.localStorage.getItem("level")){
+            this.level = window.localStorage.getItem("level");
+            console.log("FOUND LEVEL: " + this.level)
+        }
+        else {
+            this.level = 3;
+            console.log("NO LEVEL DETECTED, GAME IS ON LEVEL: " + this.level)
+        }
+
+        if (window.localStorage.getItem("score")){
+            this.score = window.localStorage.getItem("score");
+            console.log("FOUND SCORE: " + this.score)
+        }
+        else {
+            this.score = 0;
+            console.log("NO SCORE DETECTED, GAME IS ON SCORE: " + this.score)
+        }
+        this.changeDelay();
+        console.log("CUSTOMER DELAY IS: " + this.delayComing);
+
+        this.changeCustomerCounter();
+        console.log("THE NUMBER OF ALL CUSTOMERS IS: " + this.customerCounterAll);
+
+        console.log("SETUP IS COMPLETED")
+        console.log("--------------------")
+
+    }
+    createEnvironment(){
         //pozadie
         let bg = this.add.sprite(0, 0, 'background3');
         bg.setScale(2);
@@ -139,130 +241,131 @@ export default class MainScene extends Phaser.Scene {
 
         //vytvorenie hodín
         //clock= this.add.image(width/1.13,height/9,"Mclock");
-        clock= this.add.image(width/9,height/9,"Mclock");
+        clock= this.add.image(width/9,height/10,"Mclock");
         //clock.setOrigin(0,0);
-        clock.setScale(1.25);
+        clock.setScale(1.1);
 
         //vytvorenie score textu
         scoreText = this.add.text(width/2.8, 5, 'SCORE: ' + this.score, { font: 'bold 32px Arial', fill: '#000000'});
         scoreText.setShadow(0, 0, 'rgb(255,255,255)', 30);
 
         //vytvorenie konecneho textu
-        endText = this.add.text(width/8, height/2, '', { font: 'bold 100px Arial', fill: '#000000'});
+        endText = this.add.text(width/8, height/2, '', { font: 'bold 100px Arial', fill: '#ff0000'});
         endText.setShadow(0, 0, 'rgb(255,255,255)', 30);
-        endText.setDepth(69);
+        endText.setDepth(500);
         endText.visible = false;
 
-        //vytvorenie skupiny
-        this.customerGroup = this.add.group({
-            //key: 'customer',
-            maxSize: 3,
-        });
-
-        //časovač na vytváranie zákazníkov
-        timerCustomer = this.time.addEvent({ delay: this.delay * 1000, callback: this.setUpCustomer, callbackScope: this, repeat: this.customerCounter -1 });
+        this.changeEnvironment();
 
     }
-    myUpdate(){
-        scoreText.setText('SCORE: ' + this.score);
+    cantOpenCookBook(){
 
-        //this.cameras.main.shake(500);
-
-        // ak sú traja zákazníci na scéne zastav timer na generovanie zákazníkov
-        if (this.customerGroup.isFull()){
-            timerCustomer.paused = true;
+        if (!this.isCookBookOpenable){
+            cookBookText = this.add.text(width/8, height/1.7, 'COOKBOOK IS DISABLED ON HARD DIFFICULTY!', { font: 'bold 20px Arial', fill: '#000000'});
+            cookBookText.setShadow(0, 0, 'rgb(255,255,255)', 30);
+            cookBookText.setDepth(30);
+            this.time.addEvent({ delay: 4000, callback: this.setTextInvisible, callbackScope: this, loop: false });
         }
-        else {
-            timerCustomer.paused = false;
-        }
-        //hýbanie so zákazníkmi
-        for (let i = 0; i < this.customerGroup.getChildren().length; i++) {
-            //console.log(this.customerGroup.getChildren()[i]) ;
-            this.customerGroup.getChildren()[i].moveCustomer();
-            this.customerGroup.getChildren()[i].walkOff();
-        }
-        this.changeClock();
-        this.checkIfEnd();
     }
+    setTextInvisible(){
+        cookBookText.visible = false;
+        return 0;
+    }
+    changeEnvironment(){
+        //zmena prostredia podľa levelu
+        if (this.level === 1){
 
+        }
+        else if  (this.level === 2){
+            /*
+            let lantern =  this.add.sprite(0, 0, 'curtains');
+            lantern.setScale(2);
+            // change origin to the top-left of the sprite
+            lantern.setOrigin(0,0);
+            */
+
+        }
+        else if  (this.level === 3){
+            /*
+            let lantern =  this.add.sprite(0, 0, 'curtains');
+            lantern.setScale(2);
+            // change origin to the top-left of the sprite
+            lantern.setOrigin(0,0);
+
+            let luckyCat =  this.add.sprite(0, 0, 'curtains');
+            luckyCat.setScale(2);
+            // change origin to the top-left of the sprite
+            luckyCat.setOrigin(0,0);
+
+            let bonsai =  this.add.sprite(0, 0, 'curtains');
+            bonsai.setScale(2);
+            // change origin to the top-left of the sprite
+            bonsai.setOrigin(0,0);
+            */
+
+        }
+    }
     setUpCustomer(){
-        /*
-        //ak sa nenachádza customer na scéne daj ho do stredu okna
-        if (this.customerGroup.getChildren().length === 0){
-            targetX = width/2;
-            this.firstPlaceIsEmpty = false;
-        }
-        //ak je jeden tak do 1/3 okna
-        else if (this.customerGroup.getChildren().length === 1){
-            targetX = width/3;
-            this.secondPlaceIsEmpty = false;
-        }
-        //ak sú dvaja tak do 1/7 okna
-        else if (this.customerGroup.getChildren().length === 2){
-            targetX = width/7;
-            this.thirdPlaceIsEmpty = false;
-        }
-        //viac ako traja by nemali nikdy byť
-        else {
-            targetX = width;
-        }
-*/
         this.customerCounter--;
         console.log(this.customerCounter)
         //better riešenie, ify na zabranie miesta
-        if (this.firstPlaceIsEmpty){
-            //stred okna
-            targetX = width/2;
-            place = 1;
-            this.firstPlaceIsEmpty = false;
-        }
-        else if (this.secondPlaceIsEmpty){
-            targetX = width/3;
-            place = 2;
-            this.secondPlaceIsEmpty = false;
-        }
-        else if (this.thirdPlaceIsEmpty){
-            targetX = width/7;
-            place = 3;
-            this.thirdPlaceIsEmpty = false;
-        }
-        //viac ako traja BY nemali nikdy byť ale nikdy nevieš
-        else {
-            targetX = width/1.5;
-        }
+
+
 
         //check if it is last boss
         if (this.customerCounter === 0 && this.level === 3){
-            this.cameras.main.shake(40);
-            this.createFinalBoss(place,targetX,width);
+            //FINAL BOSS TIME
+            //this.cameras.main.shake(40);
+            this.isBossDone = false;
+            this.checkPlaceForBoss();
         }
         else {
+            if (this.firstPlaceIsEmpty){
+                //stred okna
+                targetX = width/1.3;
+                place = 1;
+                this.firstPlaceIsEmpty = false;
+            }
+            else if (this.secondPlaceIsEmpty){
+                targetX = width/2;
+                place = 2;
+                this.secondPlaceIsEmpty = false;
+            }
+            else if (this.thirdPlaceIsEmpty){
+                targetX = width/5;
+                place = 3;
+                this.thirdPlaceIsEmpty = false;
+            }
+            //viac ako traja BY nemali nikdy byť ale nikdy nevieš
+            else {
+                targetX = width/1.5;
+            }
+            //this.time.addEvent({ delay: this.delay * 1000, callback: this.customerIsDone, callbackScope: this, loop: false });
             this.createCustomer(place,targetX,width);
         }
 
 
-
-        //console.log( this.customerGroup.getLength());
-        //customer.isMoving = true;
-        //customer.moveRight();
     }
-    createFinalBoss(place, targetX, width){
-        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, order: "Ikayaki", bubble: "bubble"});
+    createFinalBoss(targetX, width){
+        let customer = new Customer({scene: this, image: "customer",place: 2 ,targetX: targetX, edgeX: width, x: -100, y:205, bubble: "bubble"});
         customer.setScale(0.6,0.3);
         customer.order = "Ultimate_secret_bowl";
         customer.order_image.setTexture(customer.order);
         customer.bubble.setScale(0.8);
         customer.setOrderScale();
-        customer.delay = 1;
+        customer.delay = 3;
         //customer.gotFood = true;
-        customer.customerScore = 2000;
+        customer.customerScore = 500;
         this.add.existing(customer);
         this.customerGroup.add(customer);
         console.log( customer.order );
     }
     createCustomer(place,targetX,width){
-        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, order: "Ikayaki", bubble: "bubble"});
+        let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, bubble: "bubble"});
         customer.setScale(0.3);
+        //customer.order = "Ebi_Furai";
+        //customer.order_image.setTexture(customer.order);
+        customer.setOrderScale();
         this.add.existing(customer);
         this.customerGroup.add(customer);
         console.log( customer.order );
@@ -270,17 +373,45 @@ export default class MainScene extends Phaser.Scene {
     changeDelay(){
         //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
-            this.delay = 10;
-            return 1;
+            this.delayComing = 1;// 10
+            this.delayLeaving = 5;// 25
         }
         else if  (this.difficulty === "MEDIUM"){
-            this.delay = 8;
-            return 8;
+            this.delayComing = 8;//8
+            this.delayLeaving = 20;// 20
 
         }
         else if  (this.difficulty === "HARD"){
-            this.delay = 6;
-            return 6;
+            this.delayComing = 6;//6
+            this.delayLeaving = 15;// 15
+            this.isCookBookOpenable = false;//nezobrazia sa recepty
+        }
+    }
+    changeCustomerCounter(){
+        //počet zákazníkov v každom leveli
+        if (this.level === 1){
+            this.customerCounter = 2;// 12
+        }
+        else if  (this.level === 2){
+            this.customerCounter = 16;//16
+        }
+        else if  (this.level === 3){
+            this.customerCounter = 4;//20
+        }
+        this.customerCounterAll = this.customerCounter;
+    }
+    checkPlaceForBoss(){
+        if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){
+            this.bossTimer = this.time.addEvent({ delay: 1000, callback: this.checkPlaceForBoss , callbackScope: this, loop: true });
+        }
+        else {
+            if (!this.isBossDone){
+                this.createFinalBoss(width/2,width);
+            }
+            //this.bossTimer.paused =true;
+            this.isBossDone = true;
+
+
         }
     }
     changeClock(){
@@ -293,24 +424,23 @@ export default class MainScene extends Phaser.Scene {
         else if (this.customerCounter <= this.customerCounterAll *0.25){
             clock.setTexture('NIclock');
         }
-
-
     }
     checkIfEnd(){
-        if (this.customerGroup.countActive(true)<1 && this.customerCounter ===0) {
+        if (this.customerGroup.countActive(true)<1 && this.customerCounter ===0 && this.isLevelOver === false && this.isBossDone) {
             //console.log("KONIEC")
+            this.isLevelOver = true;
             endText.visible = true;
             if (this.score >= 1000){
                 console.log("YOU WON!")
                 endText.setText("YOU WON!");
-                //this.cameras.main.fade(2550);
+
                 //this.time.addEvent({delay: 5000, callback: this.scene.stop, callbackScope: this, loop: false });
             }
             else {
                 console.log("YOU LOST")
                 endText.setText("YOU LOST");
-
             }
+            this.cameras.main.fade(5000);
         }
     }
 

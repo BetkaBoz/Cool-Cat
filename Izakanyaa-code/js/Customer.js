@@ -5,10 +5,10 @@ import "./game.js"
 var foods =["Shioyaki",
     "Ikayaki",
     "Onigiri",
-    "Salad",
+    "Cabbage_Salad",
     "Taiyaki",
     "Dorayaki",
-    "Daikon",
+    "Daikon_Salad",
     "Sushi",
     "Ebi_Furai",
     "Takoyaki",
@@ -16,63 +16,42 @@ var foods =["Shioyaki",
 
 export default class Customer extends Phaser.GameObjects.Container{
     constructor(data) {
-        let{scene, image,place, targetX, edgeX, x, y,order, bubble} = data
+        let{scene,image,place,targetX,edgeX,x,y,bubble} = data
         let customerImg = scene.add.image(x,y,image);
         customerImg.flipX= true;
         let bubbleImg = scene.add.image(x+269, y-400, bubble);
+        bubbleImg.flipX= true;
         let orderImg = scene.add.image(x+269, y-420);
-        //orderImg.setScale(1);
-        //let orderImg = scene.add.image(x+269,y-400,order)
-        //super(scene, x, y, [customerImg,bubbleImg,orderImg]);
-        super(scene, x, y, [customerImg,bubbleImg,orderImg]);
-        //this.customerImg = image;
-        //this.bubbleImg = bubble;
-        //this.orderImg = order;
-        //this.customer = customerImg;
+        let graphics = scene.add.graphics({x: x+55, y: y-275});
+        super(scene, x, y, [customerImg,bubbleImg,orderImg,graphics]);
+        this.graphics = graphics;
         this.bubble = bubbleImg;
         this.bubble.visible = false;
+
         this.order = this.generateOrder();
         this.order_image = orderImg;
         this.order_image.setTexture(this.order);
         this.order_image.visible = false;
-        this.setOrderScale();
-        //this.order_image = orderImg;
-        //this.order_image = scene.add.image(x+269, y-400, this.order);
 
+        this.place = place;
         this.scene = scene;
-        this.speed = 10;
-        //this.timeLimit = timeLimit;
-        //this.counterX = counterX;
         this.edgeX = edgeX;
         this.targetX = targetX;
+
+        this.delay = scene.delayLeaving;//v sekundách
+        this.speed = 10;
+
         this.isMovingAway = false;
         this.isStanding = false;
         this.gotFood = false;
-        //this.timedEvent = null;
-        this.delay = 2;
-        this.place = place;
-        this.timer = null;
-        this.customerScore = -50;
-        //this.score = score;
-        //this.removeCustomer(timeOffset);
-    }
-/*
-    moveRight(){
-        if(this.isMovingAway) {
-            if (this.x < this.targetX) {
-                this.x += 10;
+        this.gotWrongFood = false;
+        this.countPoints = false;
 
-            } else {
-                this.isMovingAway = false;
-                if(this.targetX > this.counterX){
-                    this.removeCustomer();
-                }else{
-                    this.startOrder();
-                }
-            }
-        }
+
+        this.timer = null;
+        this.showTimer = true;
+        this.customerScore = 50;
     }
-*/
     moveCustomer(){
         //ak je X súradnica menšia tak sa približuj k požadovanej pozíciíí
         if (this.x < this.targetX) {
@@ -93,12 +72,14 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.isMovingAway = true;
     }
     moveCustomerAway(){
+        //ide na kraj scény a ešte ďalej
         if (this.x < this.edgeX+105) {
             this.x += this.speed;
             //je na kraji
             if (this.x >= this.edgeX+105){
                 // zákazník odišiel preč
                 // pridaj skóre
+                console.log(this.customerScore);
                 this.scene.score += this.customerScore;
 
                 //uvolni miesto
@@ -120,25 +101,46 @@ export default class Customer extends Phaser.GameObjects.Container{
 
     //Niekto si myslí,že sa táto funkcia sa nepoužíva ale je mimo
     walkOff(){
-        //stojí na mieste a dostal svoje jedlo
-        if (this.gotFood && this.isStanding){
+        //stojí na mieste a dostal jedlo(aj zlé)
+        if (this.gotFood && this.isStanding || this.gotWrongFood && this.isStanding){
+            this.showTimer = false;
             this.bubble.destroy();
             this.order_image.destroy();
             //zastav timer na "nasratie" zákazníka
             this.timer.paused = true;
+            if (!this.countPoints){
+                if (this.gotWrongFood){
+                    //zlé jedlo
+                    this.customerScore = 0;
+                }else {
+                    if(this.timer.getOverallProgress() <= 0.33){
+                        //vynikajúce 150B
+                        this.customerScore = this.customerScore * 3;
+                    }else if (this.timer.getOverallProgress() <= 0.66){
+                        //veľmi dobre 100B
+                        this.customerScore = this.customerScore * 2;
+                    }
+                    else{
+                        //dobre 50B
+                    }
+                }
+                this.countPoints = true;
+            }
             this.moveCustomerAway();
-
         }
         //stojí na mieste a nedostal svoje jedlo po dlhšom čase
         else if (this.isMovingAway && this.isStanding){
+            this.showTimer = false;
             this.bubble.destroy();
             this.order_image.destroy();
-            //ide na kraj scény a ešte ďalej
+            if (!this.countPoints){
+                //-50
+                this.customerScore = this.customerScore * (-1);
+                this.countPoints = true;
+            }
             this.moveCustomerAway();
         }
     }
-
-    
     generateOrder(){
         if (this.scene.level === 1){
             const random = Math.floor(Math.random() * (foods.length - 6) ) ;
@@ -166,40 +168,51 @@ export default class Customer extends Phaser.GameObjects.Container{
         else  if (this.order === "Ultimate_secret_bowl"){
             this.order_image.setScale(0.65);
         }
-        else  if (this.order === "Salad"){
+        else  if (this.order === "Cabbage_Salad"){
             this.order_image.setScale(1.3);
         }
-        else  if (this.order === "Daikon"){
+        else  if (this.order === "Daikon_Salad"){
             this.order_image.setScale(1.5);
         }
+        else  if (this.order === "Ebi_Furai"){
+            this.order_image.x += 10;
+        }
     }
-
-
-
-    takeFood(){
+    takeFood(food){
         if (!this.gotFood){
-
+            if (food.name === this.order){
+                console.log("dostal jedlo")
+                this.gotFood = true;
+            }
+            else {
+                console.log("dostal ZLÉ jedlo")
+                this.gotWrongFood = true;
+            }
         }
-
-
     }
-
-
-
-
-    /*
-    startOrder(){
-        let showTimer = true;
-        this.timedEvent = new Timer({scene: this.scene, x: this.x, y: this.y-10, time: this.timeLimit, showTimer, endEvent: this.walkOff});
-    }
-
-    removeCustomer(timeOffset){
-        let showTimer = false;
-        this.customer.setX(-20);
-        if(!(this.timedEvent == null)){
-            this.timedEvent.destroy();
+    draw(){
+        if(this.showTimer){
+            let colour;
+            if(this.timer.getOverallProgress() <= 0.33){
+                colour = 0x58db70;
+            }else{
+                if(this.timer.getOverallProgress() <= 0.66){
+                    colour = 0xf2b93d;
+                }else{
+                    colour = 0xed463e;
+                }
+            }
+            this.graphics.clear();
+            this.graphics.lineStyle(35, colour, 1);
+            this.graphics.beginPath();
+            let angle = (360 * this.timer.getOverallProgress()-90);
+            let radius = 50;
+            this.graphics.arc(this.graphics.x,this.graphics.y, radius,Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(angle));
+            this.graphics.strokePath();
+        }else{
+            this.graphics.clear();
+            this.graphics.arc(this.x, this.y, 0,Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(0));
+            this.graphics.strokePath();
         }
-        this.timedEvent = new Timer({scene: this.scene, x: this.x, y: this.y-10, time: timeOffset, showTimer, endEvent: this.newCustomer});
     }
-    */
 }
