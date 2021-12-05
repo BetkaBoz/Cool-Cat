@@ -6,6 +6,7 @@ import Cookware from "./Cookware.js";
 import Food from "./Food.js";
 import PreparationPlate from "./PreparationPlate.js";
 import Ingredient from "./Ingredient.js";
+import Button from "./Button.js";
 
 
 let text;
@@ -31,7 +32,7 @@ let ingredient;
 let level = 1;
 let foods = [];
 let cookBookText;
-
+let isOver = [false,false,false,false];
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -462,26 +463,282 @@ export default class MainScene extends Phaser.Scene {
         prepPlate.height = prepPlate.height/2;
         prepPlate.setHit(prepPlate);
         //TEMP
+        this.addButtons();
         this.addFoods();
-        this.addIngredients();
+        // this.addIngredients();
         this.setInteractivity();
+    }
+
+    addButtons(){
+        let button
+        //meat
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Mackerel Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mackerel", name: "mackerel"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Octopus Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Octopus", name: "octopus"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Salmon Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Salmon", name: "salmon"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Shrimp Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Shrimp", name: "shrimp"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Squid Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Squid", name: "squid"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+
+        //Seasoning
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Anko Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Anko", name: "anko"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Mayonnaise Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mayo", name: "mayo"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Salt Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Salt", name: "salt"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Seaweed Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Seaweed", name: "seaweed"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Soy sauce Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Soy_sauce", name: "soy sauce"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        //Other
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Liqiud dough Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Liqiud_dough", name: "liqiud dough"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Panko Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Panko", name: "panko"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Rice Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Rice", name: "rice"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Tenkasu Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Tenkasu", name: "tenkasu"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+
+        //Vegetables
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Cabbage Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Cabbage", name: "cabbage"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Daikon Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Daikon_Chopped", name: "daikon"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
+        button = new Button({scene: scene, x: width-200,y: height-50,img: 'square', name: "Spring onion Button"});
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Spring_onion", name: "spring onions"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+        });
     }
 
     //function used to set input.on functions to elements in scene
     //TIMO
+
     setInteractivity(){
-        prepPlate.on('dragend',function (){
-            pan.checkOverlap(prepPlate);
-            if(pan.isCooking && !pan.isBurning) {
-                this.scene.addIngredients();
+        scene.input.on('pointermove', function(pointer) {
+            //check here is a scene has a selected gameObject
+            if(ingredient){
+                ingredient.setTint(0x44ff4);
+                ingredient.setPosition(pointer.x, pointer.y);
             }
-            prepPlate.x = prepPlate.plate.x;
-            prepPlate.y = prepPlate.plate.y;
         })
+
+        scene.input.on('pointerup', function (){
+            if(ingredient){
+                if(!prepPlate.checkOverlap(ingredient)){
+                    ingredient.destroy();
+                }else {
+                    ingredient.emit('dragend');
+                }
+                ingredient = undefined;
+            }
+        })
+
         scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
             gameObject.x = dragX;
             gameObject.y = dragY;
         })
+
+        prepPlate.on('dragend',function (){
+            if(prepPlate.ingredients.length > 0){
+                pan.checkOverlap(prepPlate);
+                if(pan.isCooking && !pan.isBurning) {
+                    this.scene.addIngredients();
+                }
+            }
+            prepPlate.x = prepPlate.plate.x;
+            prepPlate.y = prepPlate.plate.y;
+        })
+
         pan.object.on('pointerdown',function (){
             if(!pan.isCooking && pan.isBurning){
                 let food = foods.find(element => element.name == pan.cookedFood);
@@ -501,26 +758,17 @@ export default class MainScene extends Phaser.Scene {
 
     //function used to test out the creation of ingredients
     //TIMO
+
     addIngredients(){
-        ingredient = new Ingredient({scene:scene, x : width-100, y:height-50, img: "Mackerel", name: "mackerel"});
-        ingredient.setInteractive();
-        scene.input.setDraggable(ingredient);
-        ingredient.setDepth(70);
-        ingredient.on('drag', function (){
-            this.setTint(0xB0FFFF);
-        })
-        ingredient.on('dragend', function(){
-            this.clearTint();
-            prepPlate.checkOverlap(this);
-        })
-        ingredient = new Ingredient({scene:scene, x : width-50, y:height-50, img: "Salt", name: "salt"});
-        ingredient.setInteractive();
-        scene.input.setDraggable(ingredient);
-        ingredient.setDepth(70);
-        ingredient.on('dragend', function(){
-            this.clearTint();
-            prepPlate.checkOverlap(this);
-        })
+        ingredient = new Ingredient({scene:scene, x : width-100, y:height-50,plate:prepPlate, img: "Daikon_Chopped", name: "daikon"});
+        ingredient = new Ingredient({scene:scene, x : width-50, y:height-50,plate:prepPlate, img: "Salt", name: "salt"});
+        // ingredient.setInteractive();
+        // scene.input.setDraggable(ingredient);
+        // ingredient.setDepth(70);
+        // ingredient.on('dragend', function(){
+        //     this.clearTint();
+        //     prepPlate.checkOverlap(this);
+        // })
     }
 
     //function fills Foods array with instances of Food classed used in the level
@@ -551,7 +799,7 @@ export default class MainScene extends Phaser.Scene {
         foods.push(food);
 
         ingredients = ['cabbage','salt','soy sauce'];
-        food = new Food({scene:scene, x:100, y:100, image: 'Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
+        food = new Food({scene:scene, x:100, y:100, image: 'Cabbage_Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
         food.setFoodName("Salad");
         foods.push(food);
 
@@ -576,7 +824,7 @@ export default class MainScene extends Phaser.Scene {
             foods.push(food);
 
             ingredients = ['daikon', 'salt'];
-            food = new Food({scene:scene, x:100, y:100, image: 'Daikon', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
+            food = new Food({scene:scene, x:100, y:100, image: 'Daikon_Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
             food.setFoodName("Daikon");
             foods.push(food);
             if(level = 3){
@@ -604,7 +852,6 @@ export default class MainScene extends Phaser.Scene {
             element.setDepth(70);
         })
     }
-
 
     //this is used to set different function to Timer in Cookware
     //will be changed
@@ -638,18 +885,6 @@ export default class MainScene extends Phaser.Scene {
             circle.on('dragend', function(){
                 this.clearTint();
             })
-        })
-
-        scene.input.on('pointermove', function(pointer) {
-            //check here is a scene has a selected gameObject
-
-            if(selected != null){
-                //text.setText('TRIGGERED');
-                selected.setTint(0x44ff4);
-                selected.setPosition(pointer.x, pointer.y);
-            }else{
-                //text.setText('NOT');
-            }
         })
 
         scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
