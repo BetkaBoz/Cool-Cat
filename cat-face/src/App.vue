@@ -66,7 +66,7 @@ export default {
         this.clearSaveData()
         this.token = localStorage.getItem('token')
         this.$router.push('/login')
-        createToast('Logout Successful', {type: 'success', timeout: 4000})
+        createToast('Logout Successful', {type: 'success', position:"bottom-right", timeout: 4000})
       }).catch(er => {
         console.log(er)
       })

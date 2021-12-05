@@ -57,7 +57,7 @@ export default {
         localStorage.setItem('token', res.data[0])
         localStorage.setItem('user_id', res.data[1])
         this.$router.push('/')
-        createToast('Login Successful', {type: 'success', timeout: 4000})
+        createToast('Login Successful', {type: 'success', position:"bottom-right", timeout: 4000})
       }).catch(er => {
         this.errors = er.response.data.errors
       })
