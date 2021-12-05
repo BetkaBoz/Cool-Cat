@@ -1,9 +1,13 @@
 <template>
   <br/><br/><br/>
-  <div class="container-fluid">
-    <button @click="newGame">New Game</button>
-    <button @click="loadGame">Load Game</button>
-    <button @click="circleThroughDifficulties">Change Difficulty</button>
+  <div class="container-game">
+    <br/><br/><br/><br/>
+    <img alt="New Game" src="../assets/Btn_New_Game.png" @click="newGame">
+    <br/><br/><br/>
+    <img alt="Load Game" src="../assets/Btn_Continue.png" @click="loadGame">
+    <br/><br/><br/>
+    <img alt="Change Difficulty" src="../assets/Btn_Difficulty.png" @click="circleThroughDifficulties">
+    <br/><br/><br/><br/>
   </div>
   <br/><br/><br/>
 </template>
@@ -20,7 +24,7 @@ export default {
   methods: {
     newGame() {
       this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/newgame', {user_id: localStorage.getItem('user_id')}).then(res => {
-        createToast(res.data.msg, {type: 'success', timeout: 2000})
+        createToast(res.data.msg, {type: 'success', position:"bottom-right", timeout: 4000})
         this.loadGame()
       }).catch(er => {
         this.errors = er.response.data.errors
@@ -52,7 +56,7 @@ export default {
         user_id: localStorage.getItem('user_id'),
         difficulty: $difficulty
       }).then(res => {
-        createToast(res.data.msg, {type: 'success', timeout: 2000})
+        createToast(res.data.msg, {type: 'info', position:"bottom-right", timeout: 4000})
         if (localStorage.getItem('difficulty')) localStorage.setItem('difficulty', $difficulty)
       }).catch(er => {
         this.errors = er.response.data.errors
@@ -61,3 +65,16 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+.container-game {
+  background-color: rgba(0, 0, 0, 0.85);
+  width: 80%;
+  margin: auto;
+}
+img {
+  width: 25%;
+  height: auto;
+  cursor: pointer;
+}
+</style>
