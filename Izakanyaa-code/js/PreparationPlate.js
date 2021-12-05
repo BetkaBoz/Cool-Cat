@@ -32,7 +32,6 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
     }
 
     addIngredient(ingredient){
-        let self = this;
         ingredient.removeInteractive();
         this.ingredients.push(ingredient);
         this.add(ingredient);
@@ -56,7 +55,7 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
 
     updateFoods(){
         this.ingredients.forEach(ingredient => this.potentialFood = this.potentialFood.filter(element => element.ingredients.find(word => word == ingredient.name)));
-        if(!this.potentialFood){
+        if(!this.potentialFood || this.checkForDupes(this.ingredients)){
             this.isGarbage = true;
         }else{
         if(this.potentialFood.length == 1 && this.potentialFood[0].cookMethod == "mix"&& this.potentialFood[0].ingredients.length == this.ingredients.length){
@@ -76,6 +75,18 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         }
             this.isGarbage = false;
         }
+    }
+
+    checkForDupes(array){
+        for(let i = 0; i < array.length-1;i++){
+            for(let j = i+1; j< array.length;j++){
+                console.log(array[i],array[j]);
+                if(array[i].name == array[j].name){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     arraysEqual(first, second){
