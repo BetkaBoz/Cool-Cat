@@ -7,7 +7,7 @@ import Food from "./Food.js";
 import PreparationPlate from "./PreparationPlate.js";
 import Ingredient from "./Ingredient.js";
 import Button from "./Button.js";
-import FoodSlots from "../../../../../../wamp64/www/Izakanyaa/js/FoodSlots";
+import FoodSlots from "./FoodSlots.js";
 
 
 let text;
@@ -34,6 +34,7 @@ let level = 1;
 let foods = [];
 let cookBookText;
 let isOver = [false,false,false,false];
+let slots;
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
