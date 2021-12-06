@@ -42,6 +42,7 @@
 <script>
 import {createToast} from 'mosha-vue-toastify';
 import 'mosha-vue-toastify/dist/style.css'
+import Game from '@/views/Game'
 
 export default {
   created() {
@@ -75,6 +76,9 @@ export default {
       localStorage.removeItem('difficulty')
       localStorage.removeItem('level')
       localStorage.removeItem('score')
+    },
+    components: {
+      Game
     }
   }
 }

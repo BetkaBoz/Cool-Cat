@@ -1,3 +1,5 @@
+import Phaser from 'phaser'
+
 export default class Timer extends Phaser.GameObjects.Container{
 
     constructor(data){

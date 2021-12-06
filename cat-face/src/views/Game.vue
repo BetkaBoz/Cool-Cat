@@ -9,6 +9,11 @@
     <img alt="Change Difficulty" src="../assets/Btn_Difficulty.png" @click="circleThroughDifficulties">
     <br/><br/><br/><br/>
   </div>
+
+  <div :id="containerId" v-if="downloaded"/>
+  <div class="placeholder" v-else>
+    Downloading...
+  </div>
   <br/><br/><br/>
 </template>
 
@@ -16,9 +21,19 @@
 import {createToast} from "mosha-vue-toastify";
 
 export default {
+  async mounted() {
+    const game = await import(/* webpackChunkName: "game" */ '@/../../Izakanyaa-code/js/game')
+    this.downloaded = true
+    this.$nextTick(() => {
+      this.gameInstance = game.launch(this.containerId)
+    })
+  },
   data() {
     return {
-      diffClickCnt: 0
+      diffClickCnt: 0,
+      downloaded: false,
+      gameInstance: null,
+      containerId: 'game-container'
     }
   },
   methods: {
