@@ -109,8 +109,7 @@ export default class MainScene extends Phaser.Scene {
 
         //KITCHEN
         this.load.image('Plate','./assets/images/food/Plate.png');
-
-
+        this.load.spritesheet('Cookware', './assets/images/Cookware_Spritesheet.png',  {frameWidth: 390, frameHeight: 300});
 
     }
     create(){

@@ -63,7 +63,7 @@ export default class Customer extends Phaser.GameObjects.Container{
             repeat: -1
         });
         this.customerImg.play('move');
-        
+
     }
     moveCustomer(){
         //ak je X súradnica menšia tak sa približuj k požadovanej pozíciíí
