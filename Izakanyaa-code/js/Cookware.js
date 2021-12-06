@@ -1,4 +1,4 @@
-import Timer from "./Timer";
+import Timer from "./Timer.js";
 import PreparationPlate from "./PreparationPlate.js";
 export default class Cookware extends Phaser.GameObjects.Container{
     constructor(data){
