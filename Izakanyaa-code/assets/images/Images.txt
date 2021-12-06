@@ -1,4 +1,7 @@
-Background3.png //posledne čo dala Betka 
+Customer_Spritesheet.png
+Cookware_Spritesheet.png
+
+Background3.png //posledne čo dala Betka
 bubble.png
 Curtains.png
 customer.png

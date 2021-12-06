@@ -17,13 +17,15 @@ var foods =["Shioyaki",
 export default class Customer extends Phaser.GameObjects.Container{
     constructor(data) {
         let{scene,image,place,targetX,edgeX,x,y,bubble} = data
-        let customerImg = scene.add.image(x,y,image);
+        let customerImg = scene.add.sprite(x,y,image);
         customerImg.flipX= true;
         let bubbleImg = scene.add.image(x+269, y-400, bubble);
         bubbleImg.flipX= true;
         let orderImg = scene.add.image(x+269, y-420);
         let graphics = scene.add.graphics({x: x+55, y: y-275});
         super(scene, x, y, [customerImg,bubbleImg,orderImg,graphics]);
+
+        this.customerImg = customerImg;
         this.graphics = graphics;
         this.bubble = bubbleImg;
         this.bubble.visible = false;
@@ -51,6 +53,17 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.timer = null;
         this.showTimer = true;
         this.customerScore = 50;
+
+        //animation of customer
+        this.scene.anims.create({
+            key: 'move',
+            frames: this.scene.anims.generateFrameNumbers('customer', {
+                frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]}),
+            frameRate: 8,
+            repeat: -1
+        });
+        this.customerImg.play('move');
+
     }
     moveCustomer(){
         //ak je X súradnica menšia tak sa približuj k požadovanej pozíciíí

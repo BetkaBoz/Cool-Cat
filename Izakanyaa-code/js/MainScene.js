@@ -61,7 +61,7 @@ export default class MainScene extends Phaser.Scene {
     preload() {
         //ENVIRONMENT
         this.load.image('bubble','./assets/images/bubble.png');
-        this.load.image('customer','./assets/images/customer.png');
+        this.load.spritesheet('customer', './assets/images/Customer_Spritesheet.png',  {frameWidth: 640, frameHeight: 640});
         this.load.image('Mclock','./assets/images/Morning Clock.png');
         this.load.image('Nclock','./assets/images/Noon Clock.png');
         this.load.image('Eclock','./assets/images/Evening Clock.png');
@@ -109,8 +109,7 @@ export default class MainScene extends Phaser.Scene {
 
         //KITCHEN
         this.load.image('Plate','./assets/images/food/Plate.png');
-
-
+        this.load.spritesheet('Cookware', './assets/images/Cookware_Spritesheet.png',  {frameWidth: 390, frameHeight: 300});
 
     }
     create(){
@@ -363,6 +362,7 @@ export default class MainScene extends Phaser.Scene {
         this.customerGroup.add(customer);
         console.log( customer.order );
     }
+
     createCustomer(place,targetX,width){
         let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, bubble: "bubble"});
         customer.setScale(0.3);
@@ -373,6 +373,7 @@ export default class MainScene extends Phaser.Scene {
         this.customerGroup.add(customer);
         console.log( customer.order );
     }
+
     changeDelay(){
         //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
@@ -390,6 +391,7 @@ export default class MainScene extends Phaser.Scene {
             this.isCookBookOpenable = false;//nezobrazia sa recepty
         }
     }
+
     changeCustomerCounter(){
         //počet zákazníkov v každom leveli
         if (this.level === 1){
@@ -403,6 +405,7 @@ export default class MainScene extends Phaser.Scene {
         }
         this.customerCounterAll = this.customerCounter;
     }
+
     checkPlaceForBoss(){
         if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){
             this.bossTimer = this.time.addEvent({ delay: 1000, callback: this.checkPlaceForBoss , callbackScope: this, loop: true });
@@ -417,6 +420,7 @@ export default class MainScene extends Phaser.Scene {
 
         }
     }
+
     changeClock(){
         if (this.customerCounter< this.customerCounterAll *0.75 && this.customerCounter >= this.customerCounterAll *0.5){
             clock.setTexture('Nclock');
@@ -428,6 +432,7 @@ export default class MainScene extends Phaser.Scene {
             clock.setTexture('NIclock');
         }
     }
+
     checkIfEnd(){
         if (this.customerGroup.countActive(true)<1 && this.customerCounter ===0 && this.isLevelOver === false && this.isBossDone) {
             //console.log("KONIEC")
