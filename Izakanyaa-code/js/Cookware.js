@@ -3,10 +3,9 @@ import PreparationPlate from "./PreparationPlate.js";
 export default class Cookware extends Phaser.GameObjects.Container{
     constructor(data){
         let{scene, x, y, objectImg, type, timer} = data;
-        let object = scene.add.sprite(0,0,objectImg);
         super(scene, x, y, [timer,objectImg]);//objectImg
-        this.object = object;
-        this.object.setScale(0.45);
+        this.object = objectImg;
+        this.object.setScale(0.6);
         // this.object.setX(0);
         // this.object.setY(0);
         this.onEnd = null;
@@ -19,6 +18,12 @@ export default class Cookware extends Phaser.GameObjects.Container{
         this.isCooking = false;
         this.isBurning = false;
         this.object.setInteractive();
+        this.object.on("pointerover",function(){
+            this.setTint(0xBBFFCC);
+        })
+        this.object.on("pointerout",function(){
+            this.clearTint();
+        })
         this.scene.add.existing(this);
 
         //animation for different cookware
