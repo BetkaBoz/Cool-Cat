@@ -1,7 +1,7 @@
 Customer_Spritesheet.png
 Cookware_Spritesheet.png
 
-Background3.png //posledne čo dala Betka
+Background3.png //posledne čo dala Betka 
 bubble.png
 Curtains.png
 customer.png
@@ -22,7 +22,6 @@ Sushi.png
 Ebi_Furai.png
 Takoyaki.png
 Ultimate_secret_bowl.png
-Plate.png
 
 /ingredients/Meat
 Mackerel.png
@@ -48,3 +47,18 @@ Liqiud dough bowl.png
 Panko Bowl.png
 Rice Bowl.png
 Tenkasu Bowl lighter.png
+
+        
+/kitchen/
+Plate.png
+Nothing.png
+Pot.png
+Fryer.png
+Btn_Meat.png
+Bar_Meat.png
+Btn_Seasoning.png
+Bar_Seasoning.png
+Btn_Others.png
+Bar_Others.png
+Btn_Veggies.png
+Bar_Veggies.png
