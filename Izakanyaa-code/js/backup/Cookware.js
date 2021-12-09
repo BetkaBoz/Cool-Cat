@@ -1,12 +1,12 @@
 import Timer from "./Timer.js";
 import PreparationPlate from "./PreparationPlate.js";
-const keys = [ 'fry', 'mix', 'cook', 'bake'];
 export default class Cookware extends Phaser.GameObjects.Container{
     constructor(data){
         let{scene, x, y, objectImg, type, timer} = data;
+        let object = scene.add.sprite(0,0,objectImg);
         super(scene, x, y, [timer,objectImg]);//objectImg
-        this.object = objectImg;
-        this.object.setScale(0.57);
+        this.object = object;
+        this.object.setScale(0.45);
         // this.object.setX(0);
         // this.object.setY(0);
         this.onEnd = null;
@@ -18,15 +18,7 @@ export default class Cookware extends Phaser.GameObjects.Container{
         this.cookedFood = "nothing";
         this.isCooking = false;
         this.isBurning = false;
-        this.timer.setDepth(25);
-        this.setDepth(25);
         this.object.setInteractive();
-        this.object.on("pointerover",function(){
-            this.setTint(0xBBFFCC);
-        })
-        this.object.on("pointerout",function(){
-            this.clearTint();
-        })
         this.scene.add.existing(this);
 
         //animation for different cookware
@@ -43,18 +35,19 @@ export default class Cookware extends Phaser.GameObjects.Container{
             repeat: -1
         });
         this.scene.anims.create({
-            key: 'bake',
+            key: 'cook',
             frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [8,9,10,11,12,13,14,15,16,17]}),
             frameRate: 8,
-            repeat: 1
+            repeat: -1
         });
         this.scene.anims.create({
-            key: 'cook',
+            key: 'bake',
             frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [18,19,20,21]}),
             frameRate: 8,
             repeat: -1
         });
 
+        const keys = [ 'fry', 'mix', 'cook', 'bake'];
     }
 
     checkOverlap(prep){
@@ -67,17 +60,13 @@ export default class Cookware extends Phaser.GameObjects.Container{
                     }else{
                         finalFood = prep.potentialFood.find(word => word.cookMethod == this.type);
                         if(!finalFood){
+                            console.log("here");
                             this.cookedFood = "Garbage";
                         }else{
-                            if(prep.arraysEqual(finalFood,prep.ingredients)){
-                                this.cookedFood = finalFood.name;
-                            }else{
-                                this.cookedFood = "Garbage";
-                            }                            
+                            this.cookedFood = finalFood.name;
                         }
                     }
                     if(this.cookedFood != "nothing"){
-                        console.log(this.cookedFood);
                         if(!finalFood){
                             this.startCooking(3000);
                         }else{
@@ -111,7 +100,7 @@ export default class Cookware extends Phaser.GameObjects.Container{
             self.isBurning = true;
             self.isCooking = false;
 
-            // self.object.play(keys[0]); //stop animation of chosen cookware
+            this.object.stop(keys[type]);   //stop animation of chosen cookware
         }
     }
 
@@ -120,7 +109,8 @@ export default class Cookware extends Phaser.GameObjects.Container{
             this.timer.setEvent({time: time, endEvent: this.startBurn, args:[{time: 3000, self: this}]});
             this.timer.setVisiblity(true);
             this.isCooking = true;
-            this.object.play(this.type);   //play animation of chosen cookware
+
+            this.object.play(keys[type]);   //play animation of chosen cookware
         }
     }
 }

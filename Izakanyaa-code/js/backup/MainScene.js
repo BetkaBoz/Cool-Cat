@@ -72,8 +72,8 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('background3','./assets/images/Background3.png');
         this.load.image('curtains','./assets/images/Curtains.png');
         this.load.image('table','./assets/images/Table.png');
-        this.load.image('square','./assets/images/square.jpg');
-        this.load.image('circle','./assets/images/circle.jpg');
+        //this.load.image('square','./assets/images/square.jpg');
+        //this.load.image('circle','./assets/images/circle.jpg');
 
         //FOODS
         this.load.image('Blob','./assets/images/food/Blob.png');
@@ -91,12 +91,11 @@ export default class MainScene extends Phaser.Scene {
 
         //INGREDIENTS
         this.load.image('Mackerel','./assets/images/ingredients/Meat/Mackerel.png');
-        this.load.image('Mackerel_Sliced','./assets/images/ingredients/Meat/Mackerel meat.png');
         this.load.image('Octopus','./assets/images/ingredients/Meat/Octopus.png');
-        this.load.image('Salmon','./assets/images/ingredients/Meat/Salmon meat.png');
+        this.load.image('Salmon','./assets/images/ingredients/Meat/Salmon.png');
         this.load.image('Shrimp','./assets/images/ingredients/Meat/Shrimp.png');
         this.load.image('Squid','./assets/images/ingredients/Meat/Squid.png');
-        this.load.image('Liquid_Dough','./assets/images/ingredients/Other/Liquid dough bowl.png');
+        this.load.image('Liquid_Dough','./assets/images/ingredients/Other/Liqiud dough bowl.png');
         this.load.image('Panko','./assets/images/ingredients/Other/Panko Bowl.png');
         this.load.image('Rice','./assets/images/ingredients/Other/Rice Bowl.png');
         this.load.image('Tenkasu','./assets/images/ingredients/Other/Tenkasu Bowl lighter.png');
@@ -105,14 +104,12 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Salt','./assets/images/ingredients/Seasonings/Salt shaker.png');
         this.load.image('Seaweed','./assets/images/ingredients/Seasonings/Seaweed plate.png');
         this.load.image('Soy_Sauce','./assets/images/ingredients/Seasonings/Soy sauce.png');
-        this.load.image('Cabbage','./assets/images/ingredients/Vegetables/Cabbage chopped.png');
-        this.load.image('Daikon_Chopped','./assets/images/ingredients/Vegetables/Daikon chopped.png');
-        this.load.image('Spring_Onion','./assets/images/ingredients/Vegetables/Spring onion chopped.png');
+        this.load.image('Cabbage','./assets/images/ingredients/Vegetables/Cabbage.png');
+        this.load.image('Daikon_Chopped','./assets/images/ingredients/Vegetables/Daikon.png');
+        this.load.image('Spring_Onion','./assets/images/ingredients/Vegetables/Spring onion.png');
 
         //KITCHEN
-        this.load.image('Kitchen_Table','./assets/images/kitchen/Background_Kitchen_Table.png');
-        this.load.image('Kitchen_BG','./assets/images/kitchen/Background_Kitchen_Wall.png');
-        this.load.image('Plate','./assets/images/kitchen/Plate.png');
+        this.load.image('Plate','./assets/images/food/Plate.png');
         this.load.spritesheet('Cookware', './assets/images/Cookware_Spritesheet.png',  {frameWidth: 390, frameHeight: 300});
         this.load.image('Nothing','./assets/images/kitchen/Nothing.png');
         this.load.image('Pot','./assets/images/kitchen/Pot.png');
@@ -218,7 +215,7 @@ export default class MainScene extends Phaser.Scene {
         }
 
         if (window.localStorage.getItem("score")){
-            this.score = Number(window.localStorage.getItem("score"));
+            this.score = window.localStorage.getItem("score");
             console.log("FOUND SCORE: " + this.score)
         }
         else {
@@ -377,6 +374,7 @@ export default class MainScene extends Phaser.Scene {
         this.customerGroup.add(customer);
         console.log( customer.order );
     }
+
     createCustomer(place,targetX,width){
         let customer = new Customer({scene: this, image: "customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205, bubble: "bubble"});
         customer.setScale(0.3);
@@ -387,6 +385,7 @@ export default class MainScene extends Phaser.Scene {
         this.customerGroup.add(customer);
         console.log( customer.order );
     }
+
     changeDelay(){
         //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
@@ -404,6 +403,7 @@ export default class MainScene extends Phaser.Scene {
             this.isCookBookOpenable = false;//nezobrazia sa recepty
         }
     }
+
     changeCustomerCounter(){
         //počet zákazníkov v každom leveli
         if (this.level === 1){
@@ -417,6 +417,7 @@ export default class MainScene extends Phaser.Scene {
         }
         this.customerCounterAll = this.customerCounter;
     }
+
     checkPlaceForBoss(){
         if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){
             this.bossTimer = this.time.addEvent({ delay: 1000, callback: this.checkPlaceForBoss , callbackScope: this, loop: true });
@@ -431,6 +432,7 @@ export default class MainScene extends Phaser.Scene {
 
         }
     }
+
     changeClock(){
         if (this.customerCounter< this.customerCounterAll *0.75 && this.customerCounter >= this.customerCounterAll *0.5){
             clock.setTexture('Nclock');
@@ -442,6 +444,7 @@ export default class MainScene extends Phaser.Scene {
             clock.setTexture('NIclock');
         }
     }
+
     checkIfEnd(){
         if (this.customerGroup.countActive(true)<1 && this.customerCounter ===0 && this.isLevelOver === false && this.isBossDone) {
             //console.log("KONIEC")
@@ -457,7 +460,7 @@ export default class MainScene extends Phaser.Scene {
                 console.log("YOU LOST")
                 endText.setText("YOU LOST");
             }
-            //this.cameras.main.fade(5000);
+            this.cameras.main.fade(5000);
         }
     }
 
@@ -470,27 +473,20 @@ export default class MainScene extends Phaser.Scene {
     //TIMO
     testingCreate(){
         scene = this;
-        let kitchenBG
-        // kitchenBG = scene.add.image(width/2,0,"Kitchen_BG");
-        // kitchenBG.setOrigin(0,0);
-        // kitchenBG.setScale(1.9);
-        // kitchenBG.setDepth(25);
-        kitchenBG = scene.add.image(width/2,59,"Kitchen_Table");
-        kitchenBG.setOrigin(0,0);
-        kitchenBG.setScale(1.7);
-        kitchenBG.setDepth(25);
-        let panImg = scene.add.sprite(0, 0, "Fryer");
-        //panImg.setScale(0.45);
-        let potImg = scene.add.sprite(0, 0, "Pot");
+        let panImg = scene.add.image(0, 0, "Fryer");
+        panImg.setScale(0.45);
+        let potImg = scene.add.image(0, 0, "Pot");
+        potImg.setScale(0.45);
         timer = []
         timer.push(new Timer({scene: scene, x: 0, y: 0}));
-        timer[timer.length-1].setDepth(27)
-        pan = new Cookware({scene: scene, x: 1070, y:335, objectImg: panImg, type: "fry", timer: timer[timer.length-1]});
+        pan = new Cookware({scene: scene, x: 75, y:height-50, objectImg: panImg, type: "fry", timer: timer[timer.length-1]});
         timer.push(new Timer({scene: scene, x: 0, y: 0}));
-        pot = new Cookware({scene: scene, x: 874, y:230, objectImg: potImg , type: "bake", timer: timer[timer.length-1]});
-        prepPlate = new PreparationPlate({scene: scene, x: 825, y:382, plateImg:"Plate", ingredients:[], foods:foods});
+        pot = new Cookware({scene: scene, x: (pan.object.width/2)+10, y:height-100, objectImg: potImg, type: "bake", timer: timer[timer.length-1]});
+        prepPlate = new PreparationPlate({scene: scene, x: width/2, y:height-50, plateImg:"Plate", ingredients:[], foods:foods});
+        prepPlate.plate.setScale(0.5);
+        prepPlate.width = prepPlate.width/2;
+        prepPlate.height = prepPlate.height/2;
         prepPlate.setHit(prepPlate);
-        prepPlate.setDepth(25);
         ingredientBar = [];
         ingredientBar.push(scene.add.group({maxSize:7}));
         ingredientBar.push(scene.add.group({maxSize:4}));
@@ -517,10 +513,10 @@ export default class MainScene extends Phaser.Scene {
     hideButtons(){
         for(let i = 0; i<4;i++){//width-76
             if(!isOver[i]){
-                ingredientBar[i].getChildren()[0].setNewPos(width+185);     
+                ingredientBar[i].getChildren()[0].setNewPos(width+152);     
                 ingredientBar[i].getChildren()[0].setSpeed(12);  
                 for(let j = 1; j<ingredientBar[i].getLength();j++){
-                    ingredientBar[i].getChildren()[j].setNewPos(width-55);        
+                    ingredientBar[i].getChildren()[j].setNewPos(width-76);        
                     ingredientBar[i].getChildren()[j].setSpeed(12);                
                 }
             }else{
@@ -545,18 +541,16 @@ export default class MainScene extends Phaser.Scene {
     addButtons(){
         let button
 
-        button = new Button({scene: scene, x: width-55,y: 65,img: 'Meat_Btn', name: "Meat Button",depth:27});
-        button.setScale(0.4,0.3);
+        button = new Button({scene: scene, x: width-76,y: 65,img: 'Meat_Btn', name: "Meat Button",depth:27});
+        button.setScale(0.5,0.4);
         button.addFunction("click",function(){
             isOver[0] = true;
-            isOver[1] = false;
-            isOver[2] = false;
-            isOver[3] = false;
         });
-        //button.addFunction("leave",function(){
-        //    isOver[0] = false;
-        //});
-        button = new Button({scene: scene, x: width+152,y: 65,img: 'Meat_Bar', name: "Meat Bar",depth:26, originalX:970});
+        button.addFunction("leave",function(){
+            isOver[0] = false;
+        });
+
+        button = new Button({scene: scene, x: ((width/4)*3)-20,y: 65,img: 'Meat_Bar', name: "Meat Bar",depth:26});
         ingredientBar[0].add(button);
         button.setScale(0.4);
         button.addFunction("hover",function(){
@@ -566,19 +560,16 @@ export default class MainScene extends Phaser.Scene {
             isOver[0] = false;
         });
 
-        button = new Button({scene: scene, x: width-55,y: 185,img: 'Veggies_Btn', name: "Veggies Button",depth:27});
-        button.setScale(0.4,0.3);
+        button = new Button({scene: scene, x: width-76,y: 185,img: 'Veggies_Btn', name: "Veggies Button",depth:27});
+        button.setScale(0.5,0.4);
         button.addFunction("click",function(){
-            isOver[0] = false;
             isOver[1] = true;
-            isOver[2] = false;
-            isOver[3] = false;
         });
-        //button.addFunction("leave",function(){
-        //    isOver[1] = false;
-        //});
+        button.addFunction("leave",function(){
+            isOver[1] = false;
+        });
 
-        button = new Button({scene: scene, x: width+152,y: 185,img: 'Veggies_Bar', name: "Veggies Bar",depth:26, originalX:970});
+        button = new Button({scene: scene, x: ((width/4)*3)-20,y: 185,img: 'Veggies_Bar', name: "Veggies Bar",depth:26});
         button.setScale(0.4);
         ingredientBar[1].add(button);
         button.addFunction("hover",function(){
@@ -588,19 +579,16 @@ export default class MainScene extends Phaser.Scene {
             isOver[1] = false;
         });
 
-        button = new Button({scene: scene, x: width-55,y: 305,img: 'Seasoning_Btn', name: "Seasoning Button",depth:27});
-        button.setScale(0.4,0.3);
+        button = new Button({scene: scene, x: width-76,y: 305,img: 'Seasoning_Btn', name: "Seasoning Button",depth:27});
+        button.setScale(0.5,0.4);
         button.addFunction("click",function(){
-            isOver[0] = false;
-            isOver[1] = false;
             isOver[2] = true;
-            isOver[3] = false;
         });
-        //button.addFunction("leave",function(){
-        //    isOver[2] = false;
-        //});
+        button.addFunction("leave",function(){
+            isOver[2] = false;
+        });
 
-        button = new Button({scene: scene, x: width+152,y: 305,img: 'Seasoning_Bar', name: "Seasoning Bar",depth:26, originalX:970});
+        button = new Button({scene: scene, x: ((width/4)*3)-20,y: 305,img: 'Seasoning_Bar', name: "Seasoning Bar",depth:26});
         button.setScale(0.4);
         ingredientBar[2].add(button);
         button.addFunction("hover",function(){
@@ -610,19 +598,16 @@ export default class MainScene extends Phaser.Scene {
             isOver[2] = false;
         });
 
-        button = new Button({scene: scene, x: width-55,y: 425,img: 'Others_Btn', name: "Other Button",depth:27});
-        button.setScale(0.4,0.3);
+        button = new Button({scene: scene, x: width-76,y: 425,img: 'Others_Btn', name: "Other Button",depth:27});
+        button.setScale(0.5,0.4);
         button.addFunction("click",function(){
-            isOver[0] = false;
-            isOver[1] = false;
-            isOver[2] = false;
             isOver[3] = true;
         });
-        //button.addFunction("leave",function(){
-        //    isOver[3] = false;
-        //});
+        button.addFunction("leave",function(){
+            isOver[3] = false;
+        });
 
-        button = new Button({scene: scene, x: width+152,y: 425,img: 'Others_Bar', name: "Other Bar",depth:26, originalX:970});
+        button = new Button({scene: scene, x: ((width/4)*3)-20,y: 425,img: 'Others_Bar', name: "Other Bar",depth:26});
         button.setScale(0.4);
         ingredientBar[3].add(button);
         button.addFunction("hover",function(){
@@ -633,65 +618,24 @@ export default class MainScene extends Phaser.Scene {
         });
 
         //meat
-        button = new Button({scene: scene, x: width-76,y: 65,img: 'square', name: "Mackerel Button",depth:26, originalX:740});
+        button = new Button({scene: scene, x: 710,y: 65,img: 'square', name: "Mackerel Button",depth:26});
         ingredientBar[0].add(button);
-        button.setAlpha(0.1);
         button.addFunction("click",function (pointer){
-            console.log("FFF");
             if(ingredient){
                 ingredient.destroy();
-                console.log("FFFF");
             }
-            console.log("x: "+pointer.x +" y: "+pointer.y);
             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mackerel", name: "mackerel"});
-            console.log("x: "+ingredient.x +" y: "+ingredient.y);
-            ingredient.setDepth(27);
         });
         button.addFunction("hover",function (){
             isOver[0] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[0] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-        button = new Button({scene: scene, x: width-76,y: 65,img: 'square', name: "Shrimp Button",depth:26, originalX:830});
+        button = new Button({scene: scene, x: 800,y: 65,img: 'square', name: "Octopus Button",depth:26});
         ingredientBar[0].add(button);
-        button.setAlpha(0.01);
-        button.addFunction("click",function (pointer){
-            if(ingredient){
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Shrimp", name: "shrimp"});
-        });
-        button.addFunction("hover",function (){
-            isOver[0] = true;
-            //this.setAlpha(0.1);
-        });
-        button.addFunction("leave",function (){
-            isOver[0] = false;
-            //this.setAlpha(0.01);
-        });
-        button = new Button({scene: scene, x: width-76,y: 65,img: 'square', name: "Squid Button",depth:26, originalX:910});
-        ingredientBar[0].add(button);
-        button.setAlpha(0.01);
-        button.addFunction("click",function (pointer){
-            if(ingredient){
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Squid", name: "squid"});
-        });
-        button.addFunction("hover",function (){
-            isOver[0] = true;
-            //this.setAlpha(0.1);
-        });
-        button.addFunction("leave",function (){
-            isOver[0] = false;
-            //this.setAlpha(0.01);
-        });
-        button = new Button({scene: scene, x: width-76,y: 65,img: 'square', name: "Octopus Button",depth:26, originalX:990});
-        ingredientBar[0].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -700,32 +644,14 @@ export default class MainScene extends Phaser.Scene {
         });
         button.addFunction("hover",function (){
             isOver[0] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[0] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-        button = new Button({scene: scene, x: width-76,y: 65,img: 'square', name: "Sliced Mackerel Button",depth:26, originalX:1055});
+        button = new Button({scene: scene, x: 880,y: 65,img: 'square', name: "Salmon Button",depth:26});
         ingredientBar[0].add(button);
-        button.setAlpha(0.01);
-        button.addFunction("click",function (pointer){
-            if(ingredient){
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mackerel_Sliced", name: "mackerel_sliced"});
-        });
-        button.addFunction("hover",function (){
-            isOver[0] = true;
-            //this.setAlpha(0.1);
-        });
-        button.addFunction("leave",function (){
-            isOver[0] = false;
-            //this.setAlpha(0.01);
-        });
-        button = new Button({scene: scene, x: width-76,y: 65,img: 'square', name: "Salmon Button",depth:26, originalX:1130});
-        ingredientBar[0].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -734,70 +660,64 @@ export default class MainScene extends Phaser.Scene {
         });
         button.addFunction("hover",function (){
             isOver[0] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[0] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
+        });
+        button = new Button({scene: scene, x: 960,y: 65,img: 'square', name: "Shrimp Button",depth:26});
+        ingredientBar[0].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Shrimp", name: "shrimp"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+            button.setAlpha(0);
+        });
+        button = new Button({scene: scene, x: 1025,y: 65,img: 'square', name: "Chopped Makrel Button",depth:26});
+        ingredientBar[0].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Squid", name: "squid"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+            button.setAlpha(0);
+        });
+        button = new Button({scene: scene, x: 1100,y: 65,img: 'square', name: "Squid Button",depth:26});
+        ingredientBar[0].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Squid", name: "squid"});
+        });
+        button.addFunction("hover",function (){
+            isOver[0] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[0] = false;
+            button.setAlpha(0);
         });
 
-         //Vegetables 1
-         button = new Button({scene: scene, x: width-76,y: 185,img: 'square', name: "Daikon Button",depth:26, originalX:780});
-         ingredientBar[1].add(button);
-         button.setAlpha(0.01);
-         button.addFunction("click",function (pointer){
-             if(ingredient){
-                 ingredient.destroy();
-             }
-             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Daikon_Chopped", name: "daikon"});
-         });
-         button.addFunction("hover",function (){
-             isOver[1] = true;
-             //this.setAlpha(0.1);
-         });
-         button.addFunction("leave",function (){
-             isOver[1] = false;
-             //this.setAlpha(0.01);
-         });
-         button = new Button({scene: scene, x: width-76,y: 185,img: 'square', name: "Cabbage Button",depth:26, originalX:920});
-         ingredientBar[1].add(button);
-         button.setAlpha(0.01);
-         button.addFunction("click",function (pointer){
-             if(ingredient){
-                 ingredient.destroy();
-             }
-             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Cabbage", name: "cabbage"});
-         });
-         button.addFunction("hover",function (){
-             isOver[1] = true;
-             //this.setAlpha(0.1);
-         });
-         button.addFunction("leave",function (){
-             isOver[1] = false;
-             //this.setAlpha(0.01);
-         });
-         button = new Button({scene: scene, x: width-76,y: 185,img: 'square', name: "Spring onion Button",depth:26, originalX:1060});
-         ingredientBar[1].add(button);
-         button.setAlpha(0.01);
-         button.addFunction("click",function (pointer){
-             if(ingredient){
-                 ingredient.destroy();
-             }
-             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Spring_Onion", name: "spring onions"});
-         });
-         button.addFunction("hover",function (){
-             isOver[1] = true;
-             //this.setAlpha(0.1);
-         });
-         button.addFunction("leave",function (){
-             isOver[1] = false;
-             //this.setAlpha(0.01);
-         });
-
         //Seasoning
-        button = new Button({scene: scene, x: width-76,y: 305,img: 'square', name: "Mayonnaise Button",depth:26, originalX:770});
+        button = new Button({scene: scene, x: 740,y: 305,img: 'square', name: "Mayonnaise Button",depth:26});
         ingredientBar[2].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -806,32 +726,14 @@ export default class MainScene extends Phaser.Scene {
         });
         button.addFunction("hover",function (){
             isOver[2] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[2] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-        button = new Button({scene: scene, x: width-76,y: 305,img: 'square', name: "Soy sauce Button",depth:26,originalX:870});
+        button = new Button({scene: scene, x: 840,y: 305,img: 'square', name: "Salt Button",depth:26});
         ingredientBar[2].add(button);
-        button.setAlpha(0.01);
-        button.addFunction("click",function (pointer){
-            if(ingredient){
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Soy_Sauce", name: "soy sauce"});
-        });
-        button.addFunction("hover",function (){
-            isOver[2] = true;
-            //this.setAlpha(0.1);
-        });
-        button.addFunction("leave",function (){
-            isOver[2] = false;
-            //this.setAlpha(0.01);
-        });
-        button = new Button({scene: scene, x: width-76,y: 305,img: 'square', name: "Salt Button",depth:26,originalX: 970});
-        ingredientBar[2].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -840,15 +742,14 @@ export default class MainScene extends Phaser.Scene {
         });
         button.addFunction("hover",function (){
             isOver[2] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[2] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-        button = new Button({scene: scene, x: width-76,y: 305,img: 'square', name: "Seaweed Button",depth:26,originalX:1091.5});
+        button = new Button({scene: scene, x: 940,y: 305,img: 'square', name: "Seaweed Button",depth:26});
         ingredientBar[2].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -857,34 +758,63 @@ export default class MainScene extends Phaser.Scene {
         });
         button.addFunction("hover",function (){
             isOver[2] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[2] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-
-        //Other 3
-        button = new Button({scene: scene, x: width-76,y: 425,img: 'square', name: "Tenkasu Button",depth:26,originalX:730});
-        ingredientBar[3].add(button);
-        button.setAlpha(0.01);
+        button = new Button({scene: scene, x: 1061.5,y: 305,img: 'square', name: "Soy sauce Button",depth:26});
+        ingredientBar[2].add(button);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Tenkasu", name: "tenkasu"});
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Soy_sauce", name: "soy sauce"});
+        });
+        button.addFunction("hover",function (){
+            isOver[2] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[2] = false;
+            button.setAlpha(0);
+        });
+        //Other 3
+        button = new Button({scene: scene, x: 700,y: 425,img: 'square', name: "Anko Button",depth:26});
+        ingredientBar[3].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Anko", name: "anko"});
+        });
+        button.addFunction("hover",function (){
+            isOver[2] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[2] = false;
+            button.setAlpha(0);
+        });
+        button = new Button({scene: scene, x: 790,y: 425,img: 'square', name: "Liqiud dough Button",depth:26});
+        ingredientBar[3].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Liqiud_dough", name: "liqiud dough"});
         });
         button.addFunction("hover",function (){
             isOver[3] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[3] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-        button = new Button({scene: scene, x: width-76,y: 425,img: 'square', name: "Panko Button",depth:26, originalX:820});
+        button = new Button({scene: scene, x: 900,y: 425,img: 'square', name: "Panko Button",depth:26});
         ingredientBar[3].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -893,32 +823,14 @@ export default class MainScene extends Phaser.Scene {
         });
         button.addFunction("hover",function (){
             isOver[3] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0);
         });
         button.addFunction("leave",function (){
             isOver[3] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-        button = new Button({scene: scene, x: width-76,y: 425,img: 'square', name: "Liqiud dough Button",depth:26,originalX:930});
+        button = new Button({scene: scene, x: 1010,y: 425,img: 'square', name: "Rice Button",depth:26});
         ingredientBar[3].add(button);
-        button.setAlpha(0.01);
-        button.addFunction("click",function (pointer){
-            if(ingredient){
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Liquid_Dough", name: "liqiud dough"});
-        });
-        button.addFunction("hover",function (){
-            isOver[3] = true;
-            //this.setAlpha(0.1);
-        });
-        button.addFunction("leave",function (){
-            isOver[3] = false;
-            //this.setAlpha(0.01);
-        });
-        button = new Button({scene: scene, x: width-76,y: 425,img: 'square', name: "Rice Button",depth:26,originalX:1040});
-        ingredientBar[3].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
@@ -927,28 +839,77 @@ export default class MainScene extends Phaser.Scene {
         });
         button.addFunction("hover",function (){
             isOver[3] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[3] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
         });
-        button = new Button({scene: scene, x: width-76,y: 425,img: 'square', name: "Anko Button",depth:26,originalX:1140});
+        button = new Button({scene: scene, x: 1110,y: 425,img: 'square', name: "Tenkasu Button",depth:26});
         ingredientBar[3].add(button);
-        button.setAlpha(0.01);
         button.addFunction("click",function (pointer){
             if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Anko", name: "anko"});
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Tenkasu", name: "tenkasu"});
         });
         button.addFunction("hover",function (){
             isOver[3] = true;
-            //this.setAlpha(0.1);
+            button.setAlpha(0.3);
         });
         button.addFunction("leave",function (){
             isOver[3] = false;
-            //this.setAlpha(0.01);
+            button.setAlpha(0);
+        });
+
+        //Vegetables 1
+        button = new Button({scene: scene, x: 750,y: 185,img: 'square', name: "Cabbage Button",depth:26});
+        ingredientBar[1].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Cabbage", name: "cabbage"});
+        });
+        button.addFunction("hover",function (){
+            isOver[1] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[1] = false;
+            button.setAlpha(0);
+        });
+        button = new Button({scene: scene, x: 890,y: 185,img: 'square', name: "Daikon Button",depth:26});
+        ingredientBar[1].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Daikon_Chopped", name: "daikon"});
+        });
+        button.addFunction("hover",function (){
+            isOver[1] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[1] = false;
+            button.setAlpha(0);
+        });
+        button = new Button({scene: scene, x: 1030,y: 185,img: 'square', name: "Spring onion Button",depth:26});
+        ingredientBar[1].add(button);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Spring_onion", name: "spring onions"});
+        });
+        button.addFunction("hover",function (){
+            isOver[1] = true;
+            button.setAlpha(0.3);
+        });
+        button.addFunction("leave",function (){
+            isOver[1] = false;
+            button.setAlpha(0);
         });
     }
 
@@ -959,6 +920,7 @@ export default class MainScene extends Phaser.Scene {
         scene.input.on('pointermove', function(pointer) {
             //check here is a scene has a selected gameObject
             if(ingredient){
+                ingredient.setTint(0x44ff4);
                 ingredient.setPosition(pointer.x, pointer.y);
             }
         })
@@ -1014,39 +976,14 @@ export default class MainScene extends Phaser.Scene {
                 pan.timer.timerControl("stop");
             }
         })
-
-        pot.object.on('pointerdown',function (){
-            if(!pot.isCooking && pot.isBurning){
-                let found = foods.find(element => element.name == pot.cookedFood);
-                if(found){
-                    let alreadyFilled = false;
-                    for(let i = 0; i < 3;i++){
-                        if(!slots.getChildren()[i].isFilled && !alreadyFilled){
-                            let food = new Food({scene:scene, x:0, y:0, image:found.name, ingredients:[], cookMethod:null, prepTime:null}) ;//found
-                            console.log(food.name);
-                            slots.getChildren()[i].addFood(food);
-                            slots.getChildren()[i].makeInteractive(function (){
-                                console.log("boop");
-                                slots.getChildren()[i].food.x = slots.getChildren()[i].x;
-                                slots.getChildren()[i].food.y = slots.getChildren()[i].y;
-                            });
-                            alreadyFilled = true;
-                        }
-                    }
-                }else {
-                    console.log(pot.cookedFood);
-                }
-                pot.isBurning = false;
-                pot.isCooking = false;
-                pot.timer.timerControl("stop");
-            }
-        })
     }
 
     //function fills Foods array with instances of Food classed used in the level
     //this function should only be called in <createLevel> function
     //TIMO
     addFoods(){
+        level = 3;
+        console.log("level: "+level);
         let ingredients,food;
         ingredients = ['mackerel','salt'];
         food = new Food({scene:scene, x:100, y:100, image: 'Shioyaki', ingredients: ingredients, cookMethod: "bake", prepTime: 3000});
@@ -1135,9 +1072,6 @@ export default class MainScene extends Phaser.Scene {
     testUpdate(){
         if(pan.isCooking || pan.isBurning){
             pan.draw();
-        }
-        if(pot.isCooking || pot.isBurning){
-            pot.draw();
         }
         this.hideButtons();
         this.moveButtons();
