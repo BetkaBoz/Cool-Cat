@@ -10,10 +10,9 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         this.potentialFood = foods;
         this.food = foods;
         this.isGarbage = false;
-        this.plate.setScale(0.56);
         this.setSize(5,5);
         this.width = this.plate.width;
-        this.height = this.plate.height/2;
+        this.height = this.plate.height;
         this.plate.x = this.x;
         this.plate.y = this.y;
         this.setInteractive();
@@ -90,16 +89,9 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         return false;
     }
 
-    arraysEqual(food, ingre){
-        if(!food || !ingre){
-            return false;
-        }
-        if(food.length != ingre.length){
-            console.log("YaaY");
-            return false;
-        }
-        food.sort();
-        ingre.sort(function (a,b){
+    arraysEqual(first, second){
+        first.sort();
+        second.sort(function (a,b){
             if(a.name < b.name){
                 return -1;
             }
@@ -110,13 +102,11 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
                 return 0;
             }
         })
-        for(let idx = 0; idx < food.length; idx++){
-            if(food[idx] != ingre[idx].name){
-                console.log("yaay!");
+        for(let idx = 0; idx < first.length; idx++){
+            if(first[idx] != second[idx].name){
                 return false;
             }
         }
-        console.log("WHYYYYY");
         return true;
     }
 

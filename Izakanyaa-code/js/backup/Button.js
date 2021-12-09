@@ -1,20 +1,12 @@
 export default class Button extends Phaser.GameObjects.Sprite{
     constructor(data) {
-        let {scene,x,y,img,name,depth,originalX,originalY,functionCode,functionType} = data;
+        let {scene,x,y,img,name,depth,functionCode,functionType} = data;
         super(scene,x,y,img);
         this.scene = scene;
         this.x = x;
-        if(originalX){
-            this.originalX = originalX;
-        }else{
-            this.originalX = x;
-        }
+        this.originalX = x;
         this.y = y;
-        if(originalY){
-            this.originalY = originalY;
-        }else{
-            this.originalY = y;
-        }
+        this.originalY = y;
         this.name = name;
         this.targetX = x;
         this.targetY = y;
