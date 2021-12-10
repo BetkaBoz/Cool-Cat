@@ -8,7 +8,6 @@ import PreparationPlate from "./PreparationPlate.js";
 import Ingredient from "./Ingredient.js";
 import Button from "./Button.js";
 import FoodSlots from "./FoodSlots.js";
-import Decoration from "./Decoration.js";
 
 let text;
 let scoreText;
@@ -49,6 +48,7 @@ let summaryText03;
 let summaryText04;
 let summaryText05;
 let summaryTextALL;
+let summaryPreviousScore;
 let summaryArray = [];
 let rectangle;
 let bigChungusSummary;
@@ -60,6 +60,7 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
       super('MainScene');
         this.difficulty = null;
+        this.scoreFromPreviousLevels = null;
         this.score = null;
         this.level = null;
         this.delayComing= null;
@@ -82,10 +83,6 @@ export default class MainScene extends Phaser.Scene {
         this.badCustomers = 0;
         this.veryBadCustomers = 0;
         this.bossScore = 0;
-
-
-
-
 
         this.setUpGame();
     }
@@ -116,10 +113,6 @@ export default class MainScene extends Phaser.Scene {
 
         //this.load.image('square','./assets/images/square.jpg');
         //this.load.image('circle','./assets/images/circle.jpg');
-
-
-
-
 
         //FOODS
         this.load.image('Blob','./assets/images/food/Blob.png');
@@ -183,6 +176,8 @@ export default class MainScene extends Phaser.Scene {
         this.testUpdate(); //Timo
     }
     startGame(){
+
+
         width = this.cameras.main.width;
         height = this.cameras.main.height;
 
@@ -253,11 +248,13 @@ export default class MainScene extends Phaser.Scene {
             console.log("FOUND SCORE: " + this.score)
         }
         else {
-            this.score = 0;
-            console.log("NO SCORE DETECTED, GAME IS ON SCORE: " + this.score)
+            this.scoreFromPreviousLevels = 0;
+            console.log("NO SCORE DETECTED, GAME IS ON SCORE: " + this.scoreFromPreviousLevels)
         }
+        this.score = 0;
         this.changeDelay();
-        console.log("CUSTOMER DELAY IS: " + this.delayComing);
+        console.log("CUSTOMER COMING DELAY IS: " + this.delayComing);
+        console.log("CUSTOMER LEAVING DELAY IS: " + this.delayLeaving);
 
         this.changeCustomerCounter();
         console.log("THE NUMBER OF ALL CUSTOMERS IS: " + this.customerCounterAll);
@@ -272,13 +269,7 @@ export default class MainScene extends Phaser.Scene {
         bg.setScale(2);
         // change origin to the top-left of the sprite
         bg.setOrigin(0,0);
-        //záclony
-        /*
-            let curtains = this.add.sprite(0, 0, 'curtains');
-            curtains.setScale(2);
-            // change origin to the top-left of the sprite
-            curtains.setOrigin(0,0);
-        */
+
         //stôl
         let table = this.add.sprite(0, height/6 , 'Table');
         table.setScale(2);
@@ -290,6 +281,25 @@ export default class MainScene extends Phaser.Scene {
         clock.setOrigin(0,0);
         clock.setScale(1.25);
 
+        //vytvorenie bonsaiu
+        this.anims.create({
+            key: 'glow',
+            frames: this.anims.generateFrameNumbers('Bonsai', {
+                frames: [0,1,2,3,4,5,6,7,8,9,10]}),
+            frameRate: 2,
+            repeat: -1
+        });
+
+        this.bonsai = this.add.sprite(570,330,'Bonsai',0);
+        this.bonsai.setScale(0.5);
+        this.bonsai.setDepth(69);
+        this.bonsai.play("glow");
+
+        let shadow = this.add.sprite(580, 345, 'Bonsai');
+        shadow.setScale(0.45)
+        shadow.setDepth(68)
+        shadow.setTint(0x000000)
+        shadow.setAlpha(0.3)
 
         //vytvorenie score textu
         scoreText = this.add.text(199, 5, 'SCORE: ' + this.score, { font: 'bold 32px Arial', fill: '#000000'});
@@ -301,12 +311,13 @@ export default class MainScene extends Phaser.Scene {
         endText.setDepth(500);
         endText.visible = false;
 
-        let bonsai = new Decoration({scene:this,image: "Bonsai",x: 500,y: 500});
-        bonsai.setDepth(5000);
-        bonsai.setScale(5)
-        this.add.existing(bonsai);
-        this.changeEnvironment();
 
+
+
+
+
+
+        this.changeEnvironment();
         //sumár
         summary = this.add.image(0, 0,"Summary_screen")
         summary.setOrigin(0,0);
@@ -328,13 +339,19 @@ export default class MainScene extends Phaser.Scene {
         summaryText04 = this.add.text(700, 360, '', { font: 'bold 40px Arial', fill: '#86d3ff'});
         summaryText05 = this.add.text(700, 430, '', { font: 'bold 40px Arial', fill: '#86d3ff'});
 
+        /*
+        if (this.scoreFromPreviousLevels >= 0){//len >
+            summaryPreviousScore = this.add.text(500, 500, this.scoreFromPreviousLevels+'      +', { font: 'bold 48px Arial', fill: '#86d3ff'});
+            summaryArray.push(summaryPreviousScore);
+        }
+        */
         summaryTextALL = this.add.text(675, 500, '', { font: 'bold 48px Arial', fill: '#86d3ff'});
 
         summaryArray.push(summaryText10,summaryText20,summaryText30,summaryText40,summaryText50,
-                        summaryText01,summaryText02,summaryText03,summaryText04,summaryText05,
-                        rectangle,summaryTextALL);
+                          summaryText01,summaryText02,summaryText03,summaryText04,summaryText05,
+                          rectangle,summaryTextALL);
 
-        for (let i = 0; i<summaryArray.length;i++){
+        for (let i = 0; i<summaryArray.length;i++ ){
             summaryArray[i].setDepth(1001);
             summaryArray[i].visible = false;
         }
@@ -517,7 +534,6 @@ export default class MainScene extends Phaser.Scene {
             if (this.score >= 1000){
                 //console.log("YOU WON!")
                 endText.setTexture('YouWon')
-                //this.time.addEvent({delay: 5000, callback: this.scene.stop, callbackScope: this, loop: false });
             }
             else {
                 //console.log("YOU LOST")
@@ -546,12 +562,18 @@ export default class MainScene extends Phaser.Scene {
         summaryText04.setText(this.badCustomers+ '    =   '+0);
         summaryText05.setText(this.veryBadCustomers+ '    =   '+this.veryBadCustomers * (-50));
         summaryTextALL.setText('           '+this.score);
+
+        this.scoreFromPreviousLevels += this.score;//TOTAL SCORE
+
         if (this.level ===3){
             bigChungusSummaryText.setText('+'+ this.bossScore);
         }
 
     }
 
+    savePosition(){
+
+    }
 
 
 
