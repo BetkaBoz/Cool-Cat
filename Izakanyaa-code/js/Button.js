@@ -1,7 +1,7 @@
 export default class Button extends Phaser.GameObjects.Sprite{
     constructor(data) {
-        let {scene,x,y,img,name,depth,originalX,originalY,functionCode,functionType} = data;
-        super(scene,x,y,img);
+        let {scene,x,y,img,name,depth,originalX,originalY,frame,functionCode,functionType} = data;
+        super(scene,x,y,img,frame);
         this.scene = scene;
         this.x = x;
         if(originalX){
@@ -31,8 +31,11 @@ export default class Button extends Phaser.GameObjects.Sprite{
         this.on('pointerout',function(){
             this.clearTint();
         });
+        this.scaleX = 1;
+        this.scaleY = 1;
         this.scene.add.existing(this);
     }
+
 
     addFunction(functionType,functionCode){
         switch (functionType){
@@ -47,6 +50,10 @@ export default class Button extends Phaser.GameObjects.Sprite{
                 });
                 this.on('pointerover',functionCode);
                 break;
+            case "overlap":
+                this.off('dragenter');
+                this.on('dragenter',functionCode);
+                break;
             case "leave":
                 this.off('pointerout');
                 this.on('pointerout',function(){
@@ -58,6 +65,26 @@ export default class Button extends Phaser.GameObjects.Sprite{
                 console.log("Something went wrong");
                 break;
         }
+    }
+
+    //animation will always mess up width and height so we have to use this
+    changeScale(ratioX,ratioY){
+        if(!ratioY){
+            ratioY = ratioX;
+        }
+        this.scaleX = ratioX;
+        this.scaleY = ratioY;
+    }
+
+    checkOverlap(gameObject){
+        let offsetX = this.width*(this.scaleX/2);
+        let offsetY = this.height*(this.scaleY/2);
+        if (gameObject.y >= this.y - offsetY && gameObject.y <= this.y + offsetY) {
+            if (gameObject.x >= this.x - offsetX && gameObject.x <= this.x + offsetX) {
+                return true;
+            }
+        }
+        return false;
     }
 
     setNewPos(newX,newY){

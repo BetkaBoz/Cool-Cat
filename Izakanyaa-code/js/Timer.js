@@ -3,7 +3,7 @@
 export default class Timer extends Phaser.GameObjects.Container{
 
     constructor(data){
-        let{scene, x, y, showTimer} = data;
+        let{scene, x, y, showTimer,depth} = data;
         let graphics = scene.add.graphics();
         super(scene, x, y, [graphics]);
         this.graphics = null
@@ -11,6 +11,9 @@ export default class Timer extends Phaser.GameObjects.Container{
         this.showTimer = showTimer;
         this.timedEvent = null;
         this.graphics = this.scene.add.graphics();
+        if(depth){
+            this.graphics.setDepth(depth);
+        }
         this.showTimer = true;
         this.scene.add.existing(this);
     }
@@ -58,10 +61,10 @@ export default class Timer extends Phaser.GameObjects.Container{
                 }
             }
             this.graphics.clear();
-            this.graphics.lineStyle(2, colour, 1);
+            this.graphics.lineStyle(10, colour, 1);
             this.graphics.beginPath();
             let angle = (360 * this.timedEvent.getOverallProgress()-90);
-            let radius = 10;
+            let radius = 15;
             this.graphics.arc(this.x, this.y, radius,Phaser.Math.DegToRad(-90), Phaser.Math.DegToRad(angle));
             this.graphics.strokePath();
         }else{

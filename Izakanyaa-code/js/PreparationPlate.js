@@ -24,6 +24,12 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         this.on('pointerout',function (){
             this.plate.clearTint();
         })
+        this.scene.anims.create({
+            key: 'mix',
+            frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [4,5,6,7]}),
+            frameRate: 8,
+            repeat: -1
+        });
         // this.setHit(this);
         this.scene.add.existing(this);
     }
@@ -63,9 +69,7 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
             if(this.arraysEqual(this.potentialFood[0].ingredients,this.ingredients)){
                 let found = this.food.find(element => element.name == this.potentialFood[0].name);
                 if(found){
-                    found.x = this.x+this.width;
-                    found.y = this.y-75;
-                    found.setAlpha(1);
+                    this.scene.fillSlot(found);
                     this.clearIngredients();
                 }else {
                     console.log(this.potentialFood.name);
@@ -92,10 +96,12 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
 
     arraysEqual(food, ingre){
         if(!food || !ingre){
+            console.log("one of them doesn't exist")
             return false;
         }
         if(food.length != ingre.length){
-            console.log("YaaY");
+            console.log(food.name);
+            console.log("different lenghts");
             return false;
         }
         food.sort();
@@ -112,11 +118,11 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
         })
         for(let idx = 0; idx < food.length; idx++){
             if(food[idx] != ingre[idx].name){
-                console.log("yaay!");
+                console.log("doesn't equal"+idx);
                 return false;
             }
         }
-        console.log("WHYYYYY");
+        console.log("finished");
         return true;
     }
 

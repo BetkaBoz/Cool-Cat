@@ -1,24 +1,25 @@
-import Timer from "./Timer.js";
 import PreparationPlate from "./PreparationPlate.js";
 const keys = [ 'fry', 'mix', 'cook', 'bake'];
 export default class Cookware extends Phaser.GameObjects.Container{
     constructor(data){
         let{scene, x, y, objectImg, type, timer} = data;
-        super(scene, x, y, [timer,objectImg]);//objectImg
+        super(scene, x, y, [timer,objectImg]);
         this.object = objectImg;
         this.object.setScale(0.57);
-        // this.object.setX(0);
-        // this.object.setY(0);
+        this.scaleNum = 0.57;
         this.onEnd = null;
         this.scene = scene;
         this.type = type;
         this.timer = timer;
         this.timer.setX(x);
-        this.timer.setY(y-50);
+        if(type == "bake"){
+            this.timer.setY(y-120);
+        }else{
+            this.timer.setY(y-100);
+        }
         this.cookedFood = "nothing";
         this.isCooking = false;
         this.isBurning = false;
-        this.timer.setDepth(25);
         this.setDepth(25);
         this.object.setInteractive();
         this.object.on("pointerover",function(){
@@ -37,41 +38,47 @@ export default class Cookware extends Phaser.GameObjects.Container{
             repeat: -1
         });
         this.scene.anims.create({
-            key: 'mix',
-            frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [4,5,6,7]}),
-            frameRate: 8,
-            repeat: -1
-        });
-        this.scene.anims.create({
-            key: 'bake',
-            frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [8,9,10,11,12,13,14,15,16,17]}),
+            key: 'fry_idle',
+            frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [0]}),
             frameRate: 8,
             repeat: 1
         });
         this.scene.anims.create({
-            key: 'cook',
-            frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [18,19,20,21]}),
+            key: 'bake',
+            frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [9,10,11,12,13,14,15,16,17,18]}),
             frameRate: 8,
             repeat: -1
+        });
+        this.scene.anims.create({
+            key: 'bake_idle',
+            frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [8]}),
+            frameRate: 8,
+            repeat: 1
         });
 
     }
 
-    checkOverlap(prep){
+    checkOverlap(prep){        
+        let bossPresent = this.scene.bossIsHere;
         let finalFood;
+        let offsetX = this.object.width*(this.scaleNum/2);
+        let offsetY = this.object.height*(this.scaleNum/2);
         if(prep instanceof PreparationPlate){
-            if (prep.y >= this.y - this.object.height/2 && prep.y <= this.y + this.object.height/2) {
-                if (prep.x >= this.x - this.object.width/2 && prep.x <= this.x + this.object.width/2) {
+            if (prep.y >= this.y - offsetY && prep.y <= this.y + offsetY) {
+                if (prep.x >= this.x - offsetX && prep.x <= this.x + offsetX) {
                     if(prep.isGarbage){
+                        console.log("prep is garbage");
                         this.cookedFood = "Garbage";
                     }else{
                         finalFood = prep.potentialFood.find(word => word.cookMethod == this.type);
                         if(!finalFood){
+                            console.log("there's no final food")
                             this.cookedFood = "Garbage";
                         }else{
-                            if(prep.arraysEqual(finalFood,prep.ingredients)){
+                            if(prep.arraysEqual(finalFood.ingredients,prep.ingredients)){
                                 this.cookedFood = finalFood.name;
                             }else{
+                                console.log("arrays don't equal")
                                 this.cookedFood = "Garbage";
                             }                            
                         }
@@ -79,15 +86,20 @@ export default class Cookware extends Phaser.GameObjects.Container{
                     if(this.cookedFood != "nothing"){
                         console.log(this.cookedFood);
                         if(!finalFood){
+                            if(bossPresent){
+                                this.cookedFood = "Ultimate_Secret_Bowl";
+                            }
                             this.startCooking(3000);
                         }else{
                             this.startCooking(finalFood.prepTime);
                         }
                         prep.clearIngredients();
+                        return true;
                     }
                 }
             }
         }
+        return false;
     }
 
     draw(){
@@ -109,9 +121,7 @@ export default class Cookware extends Phaser.GameObjects.Container{
         if(!(this.isBurning)){
             self.timer.setEvent({time: time, endEvent: this.burnFood,args: [self]});
             self.isBurning = true;
-            self.isCooking = false;
-
-            // self.object.play(keys[0]); //stop animation of chosen cookware
+            self.isCooking = false; //stop animation of chosen cookware
         }
     }
 
