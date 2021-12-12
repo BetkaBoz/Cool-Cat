@@ -174,7 +174,6 @@ export default class MainScene extends Phaser.Scene {
         this.isCookBookOpenable = true;
         this.isLevelOver = false;
         this.isBossDone = true;
-        this.startBoss = false;
 
         this.veryGoodCustomers = 0;
         this.goodCustomers = 0;
@@ -551,15 +550,15 @@ export default class MainScene extends Phaser.Scene {
         //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
             this.delayComing = 12;// 12
-            this.delayLeaving = 40;// 30
+            this.delayLeaving = 45;// 45
         }
         else if  (this.difficulty === "MEDIUM"){
             this.delayComing = 10;//10
-            this.delayLeaving = 35;// 25
+            this.delayLeaving = 40;// 40
         }
         else if  (this.difficulty === "HARD"){
             this.delayComing = 8;//8
-            this.delayLeaving = 30;// 20
+            this.delayLeaving = 30;// 30/35?
             this.isCookBookOpenable = false;//nezobrazia sa recepty
         }
     }
@@ -572,7 +571,7 @@ export default class MainScene extends Phaser.Scene {
             this.customerCounter = 16;//16
         }
         else if  (this.level === 3){
-            this.customerCounter = 2;//20
+            this.customerCounter = 20;//20
         }
         this.customerCounterAll = this.customerCounter;
     }
