@@ -30,7 +30,6 @@ let clock;
 let endText;
 let scene;
 let ingredient;
-let level = 1;
 let foods = [];
 let cookBookText;
 let isOver = [false,false,false,false];
@@ -175,6 +174,7 @@ export default class MainScene extends Phaser.Scene {
         this.isCookBookOpenable = true;
         this.isLevelOver = false;
         this.isBossDone = true;
+        this.startBoss = false;
 
         this.veryGoodCustomers = 0;
         this.goodCustomers = 0;
@@ -233,6 +233,31 @@ export default class MainScene extends Phaser.Scene {
                 sprite.draw();
             }
         }, this);
+
+
+        /*
+        if (this.startBoss){
+            if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){
+            }
+            else {
+                if (!this.isBossDone){
+                    this.createFinalBoss(width/3.8,width/1.6);
+                }
+                this.isBossDone = true;
+            }
+            this.startBoss = false;
+        }
+
+        */
+        if (!this.isBossDone){
+            if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){}
+            else {
+                this.createFinalBoss(width/3.8,width/1.6);
+                this.isBossDone = true;
+            }
+        }
+
+
 
         this.changeClock();
         this.checkIfEnd();
@@ -452,7 +477,7 @@ export default class MainScene extends Phaser.Scene {
             //FINAL BOSS TIME
             //this.cameras.main.shake(40);
             this.isBossDone = false;
-            this.checkPlaceForBoss();
+            this.startBoss = true;
         }
         else {
             if (this.firstPlaceIsEmpty){
@@ -482,7 +507,6 @@ export default class MainScene extends Phaser.Scene {
         let customer = new Customer({scene: this, image: "Chungus",place: 2 ,targetX: targetX, edgeX: width, x: -100, y:115});
         customer.isBoss = true;
         bossIsHere = true;
-        customer.setScale(0.6,0.3);
         customer.order = "Ultimate_secret_bowl";
         customer.order_image.setTexture(customer.order);
 
@@ -527,15 +551,15 @@ export default class MainScene extends Phaser.Scene {
         //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
             this.delayComing = 12;// 12
-            this.delayLeaving = 30;// 30
+            this.delayLeaving = 40;// 30
         }
         else if  (this.difficulty === "MEDIUM"){
             this.delayComing = 10;//10
-            this.delayLeaving = 25;// 25
+            this.delayLeaving = 35;// 25
         }
         else if  (this.difficulty === "HARD"){
             this.delayComing = 8;//8
-            this.delayLeaving = 20;// 20
+            this.delayLeaving = 30;// 20
             this.isCookBookOpenable = false;//nezobrazia sa recepty
         }
     }
@@ -548,22 +572,11 @@ export default class MainScene extends Phaser.Scene {
             this.customerCounter = 16;//16
         }
         else if  (this.level === 3){
-            this.customerCounter = 20;//20
+            this.customerCounter = 2;//20
         }
         this.customerCounterAll = this.customerCounter;
     }
-    checkPlaceForBoss(){
-        if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){
-            this.bossTimer = this.time.addEvent({ delay: 1000, callback: this.checkPlaceForBoss , callbackScope: this, loop: true });
-        }
-        else {
-            if (!this.isBossDone){
-                this.createFinalBoss(width/3.8,width/1.6);
-            }
-            //this.bossTimer.paused =true;
-            this.isBossDone = true;
-        }
-    }
+
     changeClock(){
         if (this.customerCounter< this.customerCounterAll *0.75 && this.customerCounter >= this.customerCounterAll *0.5){
             clock.setTexture('Nclock');
@@ -628,11 +641,11 @@ export default class MainScene extends Phaser.Scene {
         for (let i = 0; i<summaryArray.length;i++){
             summaryArray[i].visible = true;
         }
-        summaryText01.setText(this.veryGoodCustomers+ '    =   '+this.veryGoodCustomers * (150));
-        summaryText02.setText(this.goodCustomers+ '    =   '+this.goodCustomers * (100));
-        summaryText03.setText(this.neutralCustomers+ '    =   '+this.neutralCustomers * (50));
-        summaryText04.setText(this.badCustomers+ '    =   '+0);
-        summaryText05.setText(this.veryBadCustomers+ '    =   '+this.veryBadCustomers * (-50));
+        summaryText01.setText(this.veryGoodCustomers + '    =   '+this.veryGoodCustomers * (150));
+        summaryText02.setText(this.goodCustomers + '    =   '+this.goodCustomers * (100));
+        summaryText03.setText(this.neutralCustomers + '    =   '+this.neutralCustomers * (50));
+        summaryText04.setText(this.badCustomers + '    =   '+0);
+        summaryText05.setText(this.veryBadCustomers + '    =   '+this.veryBadCustomers * (-50));
         summaryTextALL.setText('           '+this.score);
 
         this.scoreFromPreviousLevels += this.score;//TOTAL SCORE
@@ -736,7 +749,7 @@ export default class MainScene extends Phaser.Scene {
         ingredientBar.push(scene.add.group({maxSize:4}));
         ingredientBar.push(scene.add.group({maxSize:5}));
         ingredientBar.push(scene.add.group({maxSize:6}));
-        recipeBook = new RecipeBook({scene:scene, x:width/2, y:235, objectImg:"Nothing", leftArrowImg:"Arrow_Left", rightArrowImg: "Arrow_Right", exitImg:"Exit_Btn", depth:69, level:level})
+        recipeBook = new RecipeBook({scene:scene, x:width/2, y:235, objectImg:"Nothing", leftArrowImg:"Arrow_Left", rightArrowImg: "Arrow_Right", exitImg:"Exit_Btn", depth:69, level:this.level})
         
         //TEMP
         this.addButtons();
@@ -800,7 +813,7 @@ export default class MainScene extends Phaser.Scene {
         trashcan = new Button({scene: scene, x: 959,y: 65,img: 'Trashcan', name: "Trash Button",depth:25});
         trashcan.changeScale(1);
         
-        if(level == 3){
+        if(this.level == 3){
             recipeLook = "Recipe_Book2";
         }else{
             recipeLook = "Recipe_Book";
@@ -1270,6 +1283,7 @@ export default class MainScene extends Phaser.Scene {
                     pan.isBurning = false;
                     pan.isCooking = false;
                     pan.timer.timerControl("stop");
+                    pan.cookedFood = "nothing"
                 }
             }
         })
@@ -1290,6 +1304,7 @@ export default class MainScene extends Phaser.Scene {
                     pot.isBurning = false;
                     pot.isCooking = false;
                     pot.timer.timerControl("stop");
+                    pot.cookedFood = "nothing";
                 }
             }
         })
@@ -1370,7 +1385,7 @@ export default class MainScene extends Phaser.Scene {
         food = new Food({scene:scene, x:100, y:100, image: 'Burnt', ingredients: ingredients, cookMethod: "nothing", prepTime: 3000});
         food.setFoodName("Burnt");
         foods.push(food);
-        if(level >1){
+        if(this.level >1){
             ingredients = ['liquid dough','anko'];
             food = new Food({scene:scene, x:100, y:100, image: 'Dorayaki', ingredients: ingredients, cookMethod: "bake", prepTime: 3000});
             food.setFoodName("Dorayaki");
@@ -1385,20 +1400,20 @@ export default class MainScene extends Phaser.Scene {
             food = new Food({scene:scene, x:100, y:100, image: 'Daikon_Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
             food.setFoodName("Daikon_Salad");
             foods.push(food);
-            if(level = 3){
+            if(this.level === 3){
                 ingredients = ['shrimp','panko','liquid dough'];
-                food = new Food({scene:scene, x:100, y:100, image: 'Ebi Furai', ingredients: ingredients, cookMethod: "fry"});
+                food = new Food({scene:scene, x:100, y:100, image: 'Ebi Furai', ingredients: ingredients, cookMethod: "fry",prepTime: 3000});
                 food.setFoodName("Ebi_Furai");
                 foods.push(food);
 
                 ingredients = ['octopus','tenkasu','liquid dough','spring onions', 'mayo'];
-                food = new Food({scene:scene, x:100, y:100, image: 'Takoyaki', ingredients: ingredients, cookMethod: "fry"});
+                food = new Food({scene:scene, x:100, y:100, image: 'Takoyaki', ingredients: ingredients, cookMethod: "fry",prepTime: 3000});
                 food.setFoodName("Takoyaki");
                 foods.push(food);
 
                 //TODO: Figure how to actually make this!!!
                 ingredients = ['none'];
-                food = new Food({scene:scene, x:100, y:100, image: 'Ultimate_secret_bowl', ingredients: ingredients, cookMethod: "frier"});
+                food = new Food({scene:scene, x:100, y:100, image: 'Ultimate_secret_bowl', ingredients: ingredients, cookMethod: "frier",prepTime: 3000});
                 food.setFoodName("Ultimate_Secret_Bowl");
                 foods.push(food);
             }

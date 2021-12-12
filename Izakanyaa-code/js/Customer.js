@@ -140,6 +140,9 @@ export default class Customer extends Phaser.GameObjects.Container{
                     if (!this.isBoss){
                         this.scene.veryBadCustomers++;
                     }
+                    else {
+                        this.scene.bossScore = this.customerScore;
+                    }
 
 
                 }else if(this.timer.getOverallProgress() <= 0.25){
@@ -157,7 +160,8 @@ export default class Customer extends Phaser.GameObjects.Container{
                     this.face.setTexture('Good')
                     this.customerScore = this.customerScore * 2;
                     if (!this.isBoss) {
-                        this.scene.GoodCustomers++;
+                        this.scene.goodCustomers++;
+                        console.log()
                     }
                     else {
                         this.scene.bossScore = this.customerScore;
@@ -167,7 +171,7 @@ export default class Customer extends Phaser.GameObjects.Container{
                     //ok 50
                     this.face.setTexture('Neutral')
                     if (!this.isBoss) {
-                        this.scene.NeutralCustomers++;
+                        this.scene.neutralCustomers++;
                     }
                     else {
                         this.scene.bossScore = this.customerScore;
@@ -178,7 +182,7 @@ export default class Customer extends Phaser.GameObjects.Container{
                     this.face.setTexture('Bad')
                     this.customerScore = 0;
                     if (!this.isBoss) {
-                        this.scene.BadCustomers++;
+                        this.scene.badCustomers++;
                     }
                     else {
                         this.scene.bossScore = this.customerScore;
@@ -252,7 +256,7 @@ export default class Customer extends Phaser.GameObjects.Container{
         let cus = this.customerImg.getBounds();
         if (object.y >= cus.y && object.y <= cus.y + cus.height) {
             if (object.x >=  cus.x && object.x <= cus.x + cus.width) {
-                console.log("x works");
+                //console.log("x works");
                 return true;
             }
         }
