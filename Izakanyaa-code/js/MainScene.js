@@ -1260,8 +1260,8 @@ export default class MainScene extends Phaser.Scene {
                 if(trashcan.checkOverlap(prepPlate)){
                     prepPlate.clearIngredients();
                 }else{
-                    if(!pan.checkOverlap(prepPlate)){
-                        pot.checkOverlap(prepPlate);
+                    if(!pan.checkOverlap(prepPlate,bossIsHere)){
+                        pot.checkOverlap(prepPlate,bossIsHere);
                     }
                 }
             }
@@ -1319,7 +1319,8 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    fillSlot(foundFood){        
+    fillSlot(foundFood){  
+        console.log(foundFood)      
         let alreadyFilled = false;
         for(let i = 0; i < 3;i++){
             if(!slots.getChildren()[i].isFilled && !alreadyFilled){
@@ -1414,7 +1415,7 @@ export default class MainScene extends Phaser.Scene {
                 //TODO: Figure how to actually make this!!!
                 ingredients = ['none'];
                 food = new Food({scene:scene, x:100, y:100, image: 'Ultimate_secret_bowl', ingredients: ingredients, cookMethod: "frier",prepTime: 3000});
-                food.setFoodName("Ultimate_Secret_Bowl");
+                food.setFoodName("Ultimate_secret_bowl");
                 foods.push(food);
             }
         }

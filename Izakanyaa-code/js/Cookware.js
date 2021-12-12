@@ -58,8 +58,11 @@ export default class Cookware extends Phaser.GameObjects.Container{
 
     }
 
-    checkOverlap(prep){        
-        let bossPresent = this.scene.bossIsHere;
+    checkOverlap(prep,bossPresent){        
+        if(!bossPresent){
+            bossPresent = false
+        } 
+        console.log(this.scene);
         let finalFood;
         let offsetX = this.object.width*(this.scaleNum/2);
         let offsetY = this.object.height*(this.scaleNum/2);
@@ -85,9 +88,11 @@ export default class Cookware extends Phaser.GameObjects.Container{
                     }
                     if(this.cookedFood != "nothing"){
                         console.log(this.cookedFood);
+                        console.log("boss?"+bossPresent);
                         if(!finalFood){
                             if(bossPresent){
-                                this.cookedFood = "Ultimate_Secret_Bowl";
+                                console.log("yu here so work")
+                                this.cookedFood = "Ultimate_secret_bowl";
                             }
                             this.startCooking(3000);
                         }else{
