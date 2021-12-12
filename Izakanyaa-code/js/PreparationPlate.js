@@ -28,7 +28,7 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
             key: 'mix',
             frames: this.scene.anims.generateFrameNumbers('Cookware', {frames: [4,5,6,7]}),
             frameRate: 8,
-            repeat: -1
+            //repeat: 1
         });
         // this.setHit(this);
         this.scene.add.existing(this);
@@ -69,8 +69,18 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
             if(this.arraysEqual(this.potentialFood[0].ingredients,this.ingredients)){
                 let found = this.food.find(element => element.name == this.potentialFood[0].name);
                 if(found){
-                    this.scene.fillSlot(found);
-                    this.clearIngredients();
+                    let animation = this.scene.add.sprite(0,0,"Nothing");
+                    animation.setScale(0.5);
+                    this.add(animation);
+                    animation.play('mix');
+                    animation.on('animationcomplete',function(){
+                        let found = this.parentContainer.food.find(element => element.name == this.parentContainer.potentialFood[0].name);
+                        if(this.scene.fillSlot(found)){
+                            this.parentContainer.clearIngredients();
+                        }
+                        this.parentContainer.remove(this);
+                        this.destroy();
+                    })
                 }else {
                     console.log(this.potentialFood.name);
                 }
