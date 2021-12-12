@@ -38,7 +38,7 @@ let slots;
 let ingredientBar;
 let trashcan;
 let bossIsHere = false;
-
+let recipeBook;
 let summary;
 let summaryText10;
 let summaryText20;
@@ -119,6 +119,7 @@ export default class MainScene extends Phaser.Scene {
 
         //FOODS
         this.load.image('Garbage','./assets/images/food/Blob.png');
+        this.load.image('Burnt','./assets/images/food/Coal.png');
         this.load.image('Shioyaki','./assets/images/food/Shioyaki.png');
         this.load.image('Ikayaki','./assets/images/food/Ikayaki.png');
         this.load.image('Onigiri','./assets/images/food/Onigiri.png');
@@ -151,7 +152,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Daikon_Chopped','./assets/images/ingredients/Vegetables/Daikon chopped.png');
         this.load.image('Spring_Onion','./assets/images/ingredients/Vegetables/Spring onion chopped.png');
 
-        //KITCHEN
+        //KITCHEN 
         this.load.image('Trashcan','./assets/images/kitchen/Trash.png');
         this.load.image('Kitchen_Table','./assets/images/kitchen/Background_Kitchen_Table.png');
         this.load.image('Kitchen_BG','./assets/images/kitchen/Background_Kitchen_Wall.png');
@@ -168,6 +169,12 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Others_Bar','./assets/images/kitchen/Bar_Others.png');
         this.load.image('Veggies_Btn','./assets/images/kitchen/Btn_Veggies.png');
         this.load.image('Veggies_Bar','./assets/images/kitchen/Bar_Veggies.png');
+        this.load.spritesheet('RecipeBook', './assets/images/kitchen/Recipes_Sspritesheet.png',  {frameWidth: 300, frameHeight: 300});
+        this.load.image('Arrow_Right','./assets/images/kitchen/arrow-right.png');
+        this.load.image('Arrow_Left','./assets/images/kitchen/arrow-left.png');
+        this.load.image('Exit_Btn','./assets/images/kitchen/X.png');
+        this.load.image('Recipe_Book','./assets/images/kitchen/Btn_Recipes1.png');
+        this.load.image('Recipe_Book2','./assets/images/kitchen/Btn_Recipes2.png');
 
     }
     create(){
@@ -363,13 +370,13 @@ export default class MainScene extends Phaser.Scene {
 
     }
     cantOpenCookBook(){
-        if (!this.isCookBookOpenable){
-            cookBookText = this.add.text(width/8, height/1.7, 'COOKBOOK IS DISABLED ON HARD DIFFICULTY!', { font: 'bold 20px Arial', fill: '#000000'});
-            cookBookText.setShadow(0, 0, 'rgb(255,255,255)', 30);
-            cookBookText.setDepth(30);
-            this.time.addEvent({ delay: 4000, callback: this.setTextInvisible, callbackScope: this, loop: false });
+        if (!this.isCookBookOpenable){//x: 1070,y: 195
+            cookBookText = this.add.sprite(1065, 195, "Exit_Btn");
+            cookBookText.setDepth(28);
+            this.time.addEvent({ delay: 2000, callback: function(){cookBookText.destroy();} , callbackScope: this, loop: false });
         }
         else {
+            recipeBook.openBook();
             //otvor cookbook
         }
     }
@@ -453,7 +460,7 @@ export default class MainScene extends Phaser.Scene {
     createFinalBoss(targetX, width){
         let customer = new Customer({scene: this, image: "Customer",place: 2 ,targetX: targetX, edgeX: width, x: -100, y:205});
         customer.isBoss = true;
-        isBossHere = true;
+        bossIsHere = true;
         customer.setScale(0.6,0.3);
         customer.order = "Ultimate_secret_bowl";
         customer.order_image.setTexture(customer.order);
@@ -535,7 +542,7 @@ export default class MainScene extends Phaser.Scene {
         if (this.customerGroup.countActive(true)<1 && this.customerCounter ===0 && this.isLevelOver === false && this.isBossDone) {
             //console.log("KONIEC")
             this.isLevelOver = true;
-            endText.visible = true;
+            //endText.visible = true;
             if (this.score >= 1000){
                 //console.log("YOU WON!")
                 endText.setTexture('YouWon')
@@ -544,8 +551,8 @@ export default class MainScene extends Phaser.Scene {
                 //console.log("YOU LOST")
                 endText.setTexture('YouLost')
             }
-            this.cameras.main.fade(3000);
-            this.time.addEvent({ delay: 4000, callback: this.makeSummary, callbackScope: this, loop: false });
+            //this.cameras.main.fade(3000);
+            //this.time.addEvent({ delay: 4000, callback: this.makeSummary, callbackScope: this, loop: false });
         }
     }
 
@@ -611,7 +618,8 @@ export default class MainScene extends Phaser.Scene {
         ingredientBar.push(scene.add.group({maxSize:4}));
         ingredientBar.push(scene.add.group({maxSize:5}));
         ingredientBar.push(scene.add.group({maxSize:6}));
-        //recipeBook = new RecipeBook({scene:scene, x:width/3, y:100, objectImg:"nothing", leftArrowImg:"square", rightArrowImg: "square", exitImg:"square", depth:69, level:level})
+        recipeBook = new RecipeBook({scene:scene, x:width/2, y:235, objectImg:"Nothing", leftArrowImg:"Arrow_Left", rightArrowImg: "Arrow_Right", exitImg:"Exit_Btn", depth:69, level:level})
+        
         //TEMP
         this.addButtons();
         this.addFoods();
@@ -659,7 +667,8 @@ export default class MainScene extends Phaser.Scene {
     }
 
     addButtons(){
-        let button
+        let button;
+        let recipeLook;
 
         // button = new Button({scene: scene, x: width/2+20,y: 64,img: 'square', name: "pause Button",depth:27});
         // button.addFunction("click",function(){
@@ -672,9 +681,18 @@ export default class MainScene extends Phaser.Scene {
 
         trashcan = new Button({scene: scene, x: 959,y: 65,img: 'Trashcan', name: "Trash Button",depth:25});
         trashcan.changeScale(1);
+        
+        if(level == 3){
+            recipeLook = "Recipe_Book2";
+        }else{
+            recipeLook = "Recipe_Book";
+        }
 
-        //button = new Button({scene: scene, x: 1070,y: 115,img: 'square', name: "Recipe Button",depth:25,frame:0});
-        //button.addFunction("click",recipeBook.openBook());
+        button = new Button({scene: scene, x: 1070,y: 195,img: recipeLook, name: "Recipe Button",depth:25,frame:0});
+        button.changeScale(0.6);
+        button.addFunction("click",function(){
+            scene.cantOpenCookBook();
+        });
 
         button = new Button({scene: scene, x: width-55,y: 95,img: 'Meat_Btn', name: "Meat Button",depth:27});
         button.changeScale(0.4,0.3);
@@ -1125,32 +1143,40 @@ export default class MainScene extends Phaser.Scene {
         })
 
         pan.object.on('pointerdown',function (){
-            if(!pan.isCooking && pan.isBurning){
+            let finished = false;
+            if((!pan.isCooking && pan.isBurning)||pan.cookedFood == "Burnt"){
                 let found = foods.find(element => element.name == pan.cookedFood);
                 if(found){
-                    scene.fillSlot(found);
-                    pan.object.play(pan.type+"_idle");
+                    finished = scene.fillSlot(found);
                 }else {
                     console.log(pan.cookedFood);
                 }
-                pan.isBurning = false;
-                pan.isCooking = false;
-                pan.timer.timerControl("stop");
+                if(finished){
+                    pan.object.play(pan.type+"_idle");
+                    pan.isBurning = false;
+                    pan.isCooking = false;
+                    pan.timer.timerControl("stop");
+                }
             }
         })
 
         pot.object.on('pointerdown',function (){
-            if(!pot.isCooking && pot.isBurning){
+            let finished = false;
+            if((!pot.isCooking && pot.isBurning)||pot.cookedFood == "Burnt"){
                 let found = foods.find(element => element.name == pot.cookedFood);
                 if(found){
-                    scene.fillSlot(found);
-                    pot.object.play(pot.type+"_idle");
+                    finished = scene.fillSlot(found);
                 }else {
                     console.log(pot.cookedFood);
                 }
-                pot.isBurning = false;
-                pot.isCooking = false;
-                pot.timer.timerControl("stop");
+                if(finished){
+                    pot.object.play(pot.type+"_idle");
+                    pot.object.x += 7;
+                    //pot.object.y += 1;
+                    pot.isBurning = false;
+                    pot.isCooking = false;
+                    pot.timer.timerControl("stop");
+                }
             }
         })
     }
@@ -1172,8 +1198,10 @@ export default class MainScene extends Phaser.Scene {
                     }
                 });
                 alreadyFilled = true;
+                return true;
             }
         }
+        return false;
     }
 
     //function fills Foods array with instances of Food classed used in the level
@@ -1212,7 +1240,7 @@ export default class MainScene extends Phaser.Scene {
         foods.push(food);
 
         ingredients = ['none'];
-        food = new Food({scene:scene, x:100, y:100, image: 'Coal', ingredients: ingredients, cookMethod: "nothing", prepTime: 3000});
+        food = new Food({scene:scene, x:100, y:100, image: 'Burnt', ingredients: ingredients, cookMethod: "nothing", prepTime: 3000});
         food.setFoodName("Burnt");
         foods.push(food);
         if(level >1){
