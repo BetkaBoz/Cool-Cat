@@ -66,7 +66,14 @@ export default class Customer extends Phaser.GameObjects.Container{
             frameRate: 8,
             repeat: -1
         });
-        this.customerImg.play('move');
+        this.scene.anims.create({
+            key: 'moveChungus',
+            frames: this.scene.anims.generateFrameNumbers('Chungus', {
+                frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13]}),
+            frameRate: 8,
+            repeat: -1
+        });
+        //this.customerImg.play('move');
 
     }
     moveCustomer(){
@@ -228,7 +235,7 @@ export default class Customer extends Phaser.GameObjects.Container{
             this.order_image.setScale(0.9);
         }
         else  if (this.order === "Ultimate_secret_bowl"){
-            this.order_image.setScale(0.65);
+            this.order_image.setScale(0.35);
         }
         else  if (this.order === "Cabbage_Salad"){
             this.order_image.setScale(1.3);
