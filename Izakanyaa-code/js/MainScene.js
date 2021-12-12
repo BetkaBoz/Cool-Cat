@@ -123,11 +123,11 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('Panko','./assets/images/ingredients/Other/Panko Bowl.png');
         this.load.image('Rice','./assets/images/ingredients/Other/Rice Bowl.png');
         this.load.image('Tenkasu','./assets/images/ingredients/Other/Tenkasu Bowl lighter.png');
-        this.load.image('Anko','./assets/images/ingredients/Seasonings/Anko.png');
-        this.load.image('Mayo','./assets/images/ingredients/Seasonings/Mayonnaise.png');
-        this.load.image('Salt','./assets/images/ingredients/Seasonings/Salt shaker.png');
-        this.load.image('Seaweed','./assets/images/ingredients/Seasonings/Seaweed plate.png');
-        this.load.image('Soy_Sauce','./assets/images/ingredients/Seasonings/Soy sauce.png');
+        this.load.image('Anko','./assets/images/ingredients/Seasonings/one_Anko.png');
+        this.load.image('Mayo','./assets/images/ingredients/Seasonings/one_Majo.png');
+        this.load.image('Salt','./assets/images/ingredients/Seasonings/one_Salt.png');
+        this.load.image('Seaweed','./assets/images/ingredients/Seasonings/one_Seaweed.png');
+        this.load.image('Soy_Sauce','./assets/images/ingredients/Seasonings/one_Soy_sauce.png');
         this.load.image('Cabbage','./assets/images/ingredients/Vegetables/Cabbage chopped.png');
         this.load.image('Daikon_Chopped','./assets/images/ingredients/Vegetables/Daikon chopped.png');
         this.load.image('Spring_Onion','./assets/images/ingredients/Vegetables/Spring onion chopped.png');
@@ -904,14 +904,10 @@ export default class MainScene extends Phaser.Scene {
         ingredientBar[0].add(button);
         button.setAlpha(0.1);
         button.addFunction("click",function (pointer){
-            console.log("FFF");
             if(ingredient){
                 ingredient.destroy();
-                console.log("FFFF");
             }
-            console.log("x: "+pointer.x +" y: "+pointer.y);
             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mackerel", name: "mackerel"});
-            console.log("x: "+ingredient.x +" y: "+ingredient.y);
             ingredient.setDepth(27);
         });
         button.addFunction("hover",function (){
@@ -1299,20 +1295,32 @@ export default class MainScene extends Phaser.Scene {
         })
     }
 
+    checkCustomerOverlap(slot){
+        for(let i = 0; i < this.customerGroup.getChildren().length; i++){
+            if(this.customerGroup.getChildren()[i].checkOverlap(slot.food)){
+                this.customerGroup.getChildren()[i].takeFood(slot.food);
+                return true;
+            }
+        }
+    }
+
     fillSlot(foundFood){        
         let alreadyFilled = false;
         for(let i = 0; i < 3;i++){
             if(!slots.getChildren()[i].isFilled && !alreadyFilled){
                 let food = new Food({scene:scene, x:0, y:0, image:foundFood.name, ingredients:[], cookMethod:null, prepTime:null}) ;//found
-                console.log(food.name);
+                //console.log(food.name);
                 slots.getChildren()[i].addFood(food);
                 slots.getChildren()[i].makeInteractive(function (){
-                    if(trashcan.checkOverlap(slots.getChildren()[i].food)){
+                    if(scene.checkCustomerOverlap(slots.getChildren()[i])){
                         slots.getChildren()[i].removeFood();
                     }else{
-                        slots.getChildren()[i].food.x = slots.getChildren()[i].x;
-                        slots.getChildren()[i].food.y = slots.getChildren()[i].y;
-                        console.log(slots.getChildren()[i].food.name);
+                        if(trashcan.checkOverlap(slots.getChildren()[i].food)){
+                            slots.getChildren()[i].removeFood();
+                        }else{
+                            slots.getChildren()[i].food.x = slots.getChildren()[i].x;
+                            slots.getChildren()[i].food.y = slots.getChildren()[i].y;
+                        }
                     }
                 });
                 alreadyFilled = true;
@@ -1326,6 +1334,7 @@ export default class MainScene extends Phaser.Scene {
     //this function should only be called in <createLevel> function
     //TIMO
     addFoods(){
+        foods.splice(0,foods.length-1);
         let ingredients,food;
         ingredients = ['mackerel','salt'];
         food = new Food({scene:scene, x:100, y:100, image: 'Shioyaki', ingredients: ingredients, cookMethod: "bake", prepTime: 3000});

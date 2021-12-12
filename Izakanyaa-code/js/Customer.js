@@ -247,6 +247,18 @@ export default class Customer extends Phaser.GameObjects.Container{
             this.order_image.x += 10;
         }
     }
+
+    checkOverlap(object){
+        let cus = this.customerImg.getBounds();
+        if (object.y >= cus.y && object.y <= cus.y + cus.height) {
+            if (object.x >=  cus.x && object.x <= cus.x + cus.width) {
+                console.log("x works");
+                return true;
+            }
+        }
+        return false;
+    }
+
     takeFood(food){
         if (!this.gotFood){
             if (food.name === this.order){
