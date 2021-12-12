@@ -260,8 +260,8 @@ export default class MainScene extends Phaser.Scene {
         }
 
         if (window.localStorage.getItem("score")){
-            this.score = Number(window.localStorage.getItem("score"));
-            console.log("FOUND SCORE: " + this.score)
+            this.scoreFromPreviousLevels = Number(window.localStorage.getItem("score"));
+            console.log("FOUND SCORE: " + this.scoreFromPreviousLevels)
         }
         else {
             this.scoreFromPreviousLevels = 0;
@@ -502,8 +502,8 @@ export default class MainScene extends Phaser.Scene {
         customer.order_image.setX(10)
         customer.setOrderScale();
 
-        customer.delay = 1;
-        customer.gotFood = true;
+        customer.delay = this.delayLeaving + 20;
+        customer.gotFood = false;
         customer.customerScore = 500;//500
         this.add.existing(customer);
         this.customerGroup.add(customer);
@@ -526,16 +526,16 @@ export default class MainScene extends Phaser.Scene {
     changeDelay(){
         //delay ako často budú chodiť zákazníci
         if (this.difficulty === "EASY"){
-            this.delayComing = 10;// 10
-            this.delayLeaving = 25;// 25
+            this.delayComing = 12;// 12
+            this.delayLeaving = 30;// 30
         }
         else if  (this.difficulty === "MEDIUM"){
-            this.delayComing = 8;//8
-            this.delayLeaving = 20;// 20
+            this.delayComing = 10;//10
+            this.delayLeaving = 25;// 25
         }
         else if  (this.difficulty === "HARD"){
-            this.delayComing = 6;//6
-            this.delayLeaving = 15;// 15
+            this.delayComing = 8;//8
+            this.delayLeaving = 20;// 20
             this.isCookBookOpenable = false;//nezobrazia sa recepty
         }
     }

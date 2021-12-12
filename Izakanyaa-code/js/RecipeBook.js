@@ -72,6 +72,8 @@ export default class RecipeBook extends Phaser.GameObjects.Container{
         this.setAlpha(1);
         this.pageIdx = 0;
         this.bg.play(this.pages[this.pageIdx]);
+        this.left.setAlpha(0);
+        this.right.setAlpha(1);
     }
 
     loadPages(curLevel){
