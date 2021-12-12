@@ -111,15 +111,17 @@ export default class Cookware extends Phaser.GameObjects.Container{
     }
 
     burnFood(self){
+        console.log("here "+self.cookedFood);
         self.isBurning = false;
         self.isCooking = false;
         self.cookedFood = "Burnt";
+        console.log("down here "+self.cookedFood);
     }
 
     startBurn(data){
         let{time, self} = data
         if(!(this.isBurning)){
-            self.timer.setEvent({time: time, endEvent: this.burnFood,args: [self]});
+            self.timer.setEvent({time: time, endEvent: self.burnFood,args: [self]});
             self.isBurning = true;
             self.isCooking = false; //stop animation of chosen cookware
         }
@@ -131,6 +133,9 @@ export default class Cookware extends Phaser.GameObjects.Container{
             this.timer.setVisiblity(true);
             this.isCooking = true;
             this.object.play(this.type);   //play animation of chosen cookware
+            if(this.type == "bake"){
+                this.object.x -= 7;
+            }
         }
     }
 }
