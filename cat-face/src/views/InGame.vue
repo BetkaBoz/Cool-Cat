@@ -20,7 +20,6 @@ export default {
   },
   data() {
     return {
-      diffClickCnt: 0,
       downloaded: false,
       gameInstance: null,
       containerId: 'game-container'

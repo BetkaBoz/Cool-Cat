@@ -16,11 +16,17 @@
 import {createToast} from "mosha-vue-toastify";
 
 export default {
+  data() {
+    return {
+      diffClickCnt: 0
+    }
+  },
   methods: {
     newGame() {
       this.$axios.post('http://localhost/Cool-Cat/cat-tail/public/api/newgame', {user_id: localStorage.getItem('user_id')}).then(res => {
         createToast(res.data.msg, {type: 'success', position:"bottom-right", timeout: 4000})
         this.loadGame()
+        this.$router.push('/inGame')
       }).catch(er => {
         this.errors = er.response.data.errors
       })
@@ -31,6 +37,7 @@ export default {
         localStorage.setItem('difficulty', data.difficulty)
         localStorage.setItem('level', data.level)
         localStorage.setItem('score', data.score)
+        this.$router.push('/inGame')
       }).catch(er => {
         this.errors = er.response.data.errors
       })

@@ -1,4 +1,5 @@
 import Ingredient from "./Ingredient.js";
+import Phaser from "phaser";
 
 export default class PreparationPlate extends Phaser.GameObjects.Container {
     constructor(data){
