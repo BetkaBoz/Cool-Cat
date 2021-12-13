@@ -124,7 +124,7 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
             if(a.name > b.name){
                 return 1;
             }
-            if(a.name = b.name){
+            if(a.name == b.name){
                 return 0;
             }
         })
