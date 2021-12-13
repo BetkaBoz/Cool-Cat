@@ -15,7 +15,7 @@
       </div>
 
       <div class="nav justify-content-end" v-else-if="this.$route.meta.requiresAuth">
-        <router-link to="/game" class="nav-item nav-link" style="color: rgba(255, 255, 255, 0.55)">Game</router-link>
+        <router-link to="/game" class="nav-item nav-link" style="color: rgba(255, 255, 255, 0.55)">Game Menu</router-link>
         <button @click="logout" class="nav-item btn-logout">Logout</button>
       </div>
     </div>

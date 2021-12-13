@@ -1,6 +1,5 @@
 <template>
   <br/><br/>
-  <button @click="unmounted" class="nav-item btn-logout" style="">End Game</button>
   <br/><br/>
   <div :id="containerId" v-if="downloaded" />
   <div class="placeholder" v-else >
@@ -25,11 +24,9 @@ export default {
       containerId: 'game-container'
     }
   },
-  methods: {
-    unmounted() {
-      this.gameInstance.destroy(true)
-      this.$router.push('/game')
-    },
+  beforeRouteLeave(to, from, next) {
+    this.gameInstance.destroy(true)
+    next()
   }
 }
 </script>
