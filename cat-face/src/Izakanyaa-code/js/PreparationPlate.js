@@ -73,6 +73,7 @@ export default class PreparationPlate extends Phaser.GameObjects.Container {
                     animation.setScale(0.5);
                     this.add(animation);
                     animation.play('mix');
+                    this.scene.sound.play("mix_sound")
                     animation.on('animationcomplete',function(){
                         let found = this.parentContainer.food.find(element => element.name == this.parentContainer.potentialFood[0].name);
                         if(this.scene.fillSlot(found)){
