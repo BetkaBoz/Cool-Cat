@@ -30,6 +30,15 @@ router.beforeEach((to, from, next) => {
         } else {
             next()
         }
+    } else if (to.matched.some(record => record.meta.guest)) {
+        if (loggedIn()) {
+            next({
+                path: '/inGame',
+                query: {redirect: to.fullPath}
+            })
+        } else {
+            next()
+        }
     } else {
         next()
     }
