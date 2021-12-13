@@ -1,9 +1,8 @@
-// import Timer from "./Timer.js";
-// import Food from "./Food.js";
+import Timer from "./Timer.js";
+import Food from "./Food.js";
 import "./game.js"
-import Phaser from 'phaser'
 
-var foods =["Shioyaki",
+const foods = ["Shioyaki",
     "Ikayaki",
     "Onigiri",
     "Cabbage_Salad",
@@ -17,19 +16,23 @@ var foods =["Shioyaki",
 
 export default class Customer extends Phaser.GameObjects.Container{
     constructor(data) {
-        let{scene,image,place,targetX,edgeX,x,y,bubble} = data
+        let{scene,image,place,targetX,edgeX,x,y} = data
         let customerImg = scene.add.sprite(x,y,image);
         customerImg.flipX= true;
-        let bubbleImg = scene.add.image(x+269, y-400, bubble);
+        let bubbleImg = scene.add.image(x+269, y-400, "Bubble");
         bubbleImg.flipX= true;
         let orderImg = scene.add.image(x+269, y-420);
         let graphics = scene.add.graphics({x: x+55, y: y-275});
-        super(scene, x, y, [customerImg,bubbleImg,orderImg,graphics]);
+        let faceImg = scene.add.image(x+25, y-420);
+        super(scene, x, y, [customerImg,bubbleImg,orderImg,graphics,faceImg]);
 
         this.customerImg = customerImg;
         this.graphics = graphics;
         this.bubble = bubbleImg;
         this.bubble.visible = false;
+        this.face = faceImg;
+        this.face.visible = false;
+        this.face.setScale(0.4)
 
         this.order = this.generateOrder();
         this.order_image = orderImg;
@@ -42,14 +45,14 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.targetX = targetX;
 
         this.delay = scene.delayLeaving;//v sekundách
-        this.speed = 10;
+        this.speed = 5;//2
 
         this.isMovingAway = false;
         this.isStanding = false;
         this.gotFood = false;
         this.gotWrongFood = false;
         this.countPoints = false;
-
+        this.isBoss = false;
 
         this.timer = null;
         this.showTimer = true;
@@ -58,12 +61,19 @@ export default class Customer extends Phaser.GameObjects.Container{
         //animation of customer
         this.scene.anims.create({
             key: 'move',
-            frames: this.scene.anims.generateFrameNumbers('customer', {
+            frames: this.scene.anims.generateFrameNumbers('Customer', {
                 frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17]}),
             frameRate: 8,
             repeat: -1
         });
-        this.customerImg.play('move');
+        this.scene.anims.create({
+            key: 'moveChungus',
+            frames: this.scene.anims.generateFrameNumbers('Chungus', {
+                frames: [0,1,2,3,4,5,6,7,8,9,10,11,12,13]}),
+            frameRate: 8,
+            repeat: -1
+        });
+        //this.customerImg.play('move');
 
     }
     moveCustomer(){
@@ -93,7 +103,7 @@ export default class Customer extends Phaser.GameObjects.Container{
             if (this.x >= this.edgeX+105){
                 // zákazník odišiel preč
                 // pridaj skóre
-                console.log(this.customerScore);
+                //console.log(this.customerScore);
                 this.scene.score += this.customerScore;
 
                 //uvolni miesto
@@ -124,20 +134,61 @@ export default class Customer extends Phaser.GameObjects.Container{
             this.timer.paused = true;
             if (!this.countPoints){
                 if (this.gotWrongFood){
-                    //zlé jedlo
-                    this.customerScore = 0;
-                }else {
-                    if(this.timer.getOverallProgress() <= 0.33){
-                        //vynikajúce 150B
-                        this.customerScore = this.customerScore * 3;
-                    }else if (this.timer.getOverallProgress() <= 0.66){
-                        //veľmi dobre 100B
-                        this.customerScore = this.customerScore * 2;
+                    //zlé jedlo -50B
+                    this.face.setTexture('VeryBad');
+                    this.customerScore = this.customerScore * (-1);
+                    if (!this.isBoss){
+                        this.scene.veryBadCustomers++;
                     }
-                    else{
-                        //dobre 50B
+                    else {
+                        this.scene.bossScore = this.customerScore;
+                    }
+
+
+                }else if(this.timer.getOverallProgress() <= 0.25){
+                    //veľmi dobre 150B
+                    this.face.setTexture('VeryGood')
+                    this.customerScore = this.customerScore * 3;
+                    if (!this.isBoss){
+                        this.scene.veryGoodCustomers++;
+                    }
+                    else {
+                        this.scene.bossScore = this.customerScore;
+                    }
+                }else if (this.timer.getOverallProgress() <= 0.50){
+                    //dobre 100B
+                    this.face.setTexture('Good')
+                    this.customerScore = this.customerScore * 2;
+                    if (!this.isBoss) {
+                        this.scene.goodCustomers++;
+                        console.log()
+                    }
+                    else {
+                        this.scene.bossScore = this.customerScore;
                     }
                 }
+                else if (this.timer.getOverallProgress() <= 0.75){
+                    //ok 50
+                    this.face.setTexture('Neutral')
+                    if (!this.isBoss) {
+                        this.scene.neutralCustomers++;
+                    }
+                    else {
+                        this.scene.bossScore = this.customerScore;
+                    }
+                }
+                else{
+                    //zle 0B
+                    this.face.setTexture('Bad')
+                    this.customerScore = 0;
+                    if (!this.isBoss) {
+                        this.scene.badCustomers++;
+                    }
+                    else {
+                        this.scene.bossScore = this.customerScore;
+                    }
+                }
+                this.face.visible = true;
                 this.countPoints = true;
             }
             this.moveCustomerAway();
@@ -148,8 +199,16 @@ export default class Customer extends Phaser.GameObjects.Container{
             this.bubble.destroy();
             this.order_image.destroy();
             if (!this.countPoints){
-                //-50
+                //-50 veľmi zle
+                this.face.setTexture('VeryBad')
                 this.customerScore = this.customerScore * (-1);
+                if (!this.isBoss) {
+                    this.scene.veryBadCustomers++;
+                }
+                else {
+                    this.scene.bossScore = this.customerScore;
+                }
+                this.face.visible = true;
                 this.countPoints = true;
             }
             this.moveCustomerAway();
@@ -180,7 +239,7 @@ export default class Customer extends Phaser.GameObjects.Container{
             this.order_image.setScale(0.9);
         }
         else  if (this.order === "Ultimate_secret_bowl"){
-            this.order_image.setScale(0.65);
+            this.order_image.setScale(0.35);
         }
         else  if (this.order === "Cabbage_Salad"){
             this.order_image.setScale(1.3);
@@ -192,6 +251,18 @@ export default class Customer extends Phaser.GameObjects.Container{
             this.order_image.x += 10;
         }
     }
+
+    checkOverlap(object){
+        let cus = this.customerImg.getBounds();
+        if (object.y >= cus.y && object.y <= cus.y + cus.height) {
+            if (object.x >=  cus.x && object.x <= cus.x + cus.width) {
+                //console.log("x works");
+                return true;
+            }
+        }
+        return false;
+    }
+
     takeFood(food){
         if (!this.gotFood){
             if (food.name === this.order){
@@ -207,15 +278,19 @@ export default class Customer extends Phaser.GameObjects.Container{
     draw(){
         if(this.showTimer){
             let colour;
-            if(this.timer.getOverallProgress() <= 0.33){
-                colour = 0x58db70;
-            }else{
-                if(this.timer.getOverallProgress() <= 0.66){
-                    colour = 0xf2b93d;
-                }else{
-                    colour = 0xed463e;
-                }
+            if(this.timer.getOverallProgress() <= 0.25){
+                colour = 0x33d74e;
+            }else if(this.timer.getOverallProgress() <= 0.50){
+                colour = 0xa0f5ae;
+            }else if(this.timer.getOverallProgress() <= 0.75){
+                colour = colour = 0xffffff;
+            }else if(this.timer.getOverallProgress() <= 0.95){
+                colour = colour = 0xffb24d;
             }
+            else{
+                colour = 0xff3a3a;
+            }
+
             this.graphics.clear();
             this.graphics.lineStyle(35, colour, 1);
             this.graphics.beginPath();
