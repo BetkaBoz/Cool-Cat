@@ -58,6 +58,7 @@ let nextLevel;
 let end;
 
 //images imports
+import Bubble from '../assets/images/bubble.png'
 import Mclock from '../assets/images/Morning Clock.png'
 import Nclock from '../assets/images/Noon Clock.png'
 import Eclock from '../assets/images/Evening Clock.png'
@@ -130,17 +131,22 @@ import Exit_Btn from '../assets/images/kitchen/X.png'
 import Recipe_Book from '../assets/images/kitchen/Btn_Recipes1.png'
 import Recipe_Book2 from '../assets/images/kitchen/Btn_Recipes2.png'
 
-import Bubble from '../assets/images/bubble.png'
+//spritesheets
 import Customer_Spritesheet from '@/Izakanyaa-code/assets/images/Customer_Spritesheet.png'
 import Cookware_Spritesheet from '@/Izakanyaa-code/assets/images/Cookware_Spritesheet.png'
 import Chungus from '@/Izakanyaa-code/assets/images/BigChungus_Spritesheet.png'
 import Bonsai from '@/Izakanyaa-code/assets/images/Bonsai_Spritesheet.png'
 import Recipes from '@/Izakanyaa-code/assets/images/kitchen/Recipes_Sspritesheet.png'
 
+//sounds
+import Door from '../assets/audio/Door_open.mp3'
+import Baking_sound from '../assets/audio/Baking_sound.mp3'
+import Fryer_sound from '../assets/audio/Fryer_sound.mp3'
+import Mixing_sound from '../assets/audio/Mixing_sound.mp3'
+
 export default class MainScene extends Phaser.Scene {
     constructor() {
       super('MainScene');
-
     }
   
     preload() {
@@ -241,6 +247,12 @@ export default class MainScene extends Phaser.Scene {
         this.textures.addBase64('NextLevel', NextLevel);
         this.textures.addBase64('Retry', Retry);
         this.textures.addBase64('End', End);
+
+        this.load.audio('door', Door);
+        this.load.audio('bake_sound', Baking_sound);
+        this.load.audio('fry_sound', Fryer_sound);
+        this.load.audio('mix_sound', Mixing_sound);
+
     }
 
     create(){
@@ -624,6 +636,8 @@ export default class MainScene extends Phaser.Scene {
         console.log( customer.order );
     }
     createCustomer(place,targetX,width){
+        this.sound.play("door") //play sound of incoming customer
+
         let customer = new Customer({scene: this, image: "Customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205});
         customer.setScale(0.3);
         //customer.order = "Ebi_Furai";

@@ -137,6 +137,7 @@ export default class Cookware extends Phaser.GameObjects.Container{
             this.timer.setEvent({time: time, endEvent: this.startBurn, args:[{time: 3000, self: this}]});
             this.timer.setVisiblity(true);
             this.isCooking = true;
+            this.scene.sound.play(this.type+"_sound")
             this.object.play(this.type);   //play animation of chosen cookware
             if(this.type == "bake"){
                 this.object.x -= 7;
