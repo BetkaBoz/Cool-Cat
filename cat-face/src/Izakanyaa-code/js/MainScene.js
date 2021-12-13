@@ -11,6 +11,7 @@ import FoodSlots from "./FoodSlots.js";
 import RecipeBook from "./RecipeBook.js";
 import Phaser from "phaser";
 import axios from "axios";
+import {createToast} from "mosha-vue-toastify";
 
 let scoreText;
 let prepPlate;
@@ -784,7 +785,6 @@ export default class MainScene extends Phaser.Scene {
         //let level = Number(localStorage.getItem('level'))
         let userid = Number(localStorage.getItem('user_id'));
         if (this.level < 3) {
-            localStorage.clear();
             localStorage.setItem('level', this.level+1)
             localStorage.setItem('score', this.scoreFromPreviousLevels)
         }
@@ -792,7 +792,7 @@ export default class MainScene extends Phaser.Scene {
         let saveData = {
             user_id: userid,
             difficulty: this.difficulty,
-            level: this.level,
+            level: this.level+1,
             score: this.scoreFromPreviousLevels,
         }
 
