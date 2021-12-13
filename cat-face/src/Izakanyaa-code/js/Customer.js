@@ -1,6 +1,5 @@
-import Timer from "./Timer.js";
-import Food from "./Food.js";
 import "./game.js"
+import Phaser from "phaser";
 
 const foods = ["Shioyaki",
     "Ikayaki",
@@ -45,7 +44,7 @@ export default class Customer extends Phaser.GameObjects.Container{
         this.targetX = targetX;
 
         this.delay = scene.delayLeaving;//v sekundách
-        this.speed = 5;//2
+        this.speed = 2;//2
 
         this.isMovingAway = false;
         this.isStanding = false;
