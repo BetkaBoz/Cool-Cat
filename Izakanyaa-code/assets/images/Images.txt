@@ -1,0 +1,65 @@
+Customer_Spritesheet.png
+Cookware_Spritesheet.png
+Bonsai_Spritesheet.png
+
+Background3.png //posledne čo dala Betka 
+bubble.png
+Curtains.png
+customer.png
+Evening Clock.png
+Morning Clock.png
+Night Clock.png
+Noon Clock.png
+Table.png
+
+/food       //všetky jedlá zatiaľ okrem Cabbage Salad a Daikon Salad
+Blob.png
+Shioyaki.png
+Ikayaki.png
+Onigiri.png
+Taiyaki.png
+Dorayaki.png
+Sushi.png
+Ebi_Furai.png
+Takoyaki.png
+Ultimate_secret_bowl.png
+
+/ingredients/Meat
+Mackerel.png
+Octopus.png
+Salmon.png
+Shrimp.png
+Squid.png
+
+/ingredients/Seasonings/
+Anko.png
+Mayonnaise.png
+Salt shaker.png
+Seaweed plate.png
+Soy sauce.png
+
+/ingredients/Vegetables/
+Cabbage.png
+Daikon.png
+Spring onion.png
+
+/ingredients/Other/
+Liqiud dough bowl.png
+Panko Bowl.png
+Rice Bowl.png
+Tenkasu Bowl lighter.png
+
+        
+/kitchen/
+Plate.png
+Nothing.png
+Pot.png
+Fryer.png
+Btn_Meat.png
+Bar_Meat.png
+Btn_Seasoning.png
+Bar_Seasoning.png
+Btn_Others.png
+Bar_Others.png
+Btn_Veggies.png
+Bar_Veggies.png
