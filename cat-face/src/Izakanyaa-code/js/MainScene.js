@@ -8,10 +8,9 @@ import PreparationPlate from "./PreparationPlate.js";
 import Ingredient from "./Ingredient.js";
 import Button from "./Button.js";
 import FoodSlots from "./FoodSlots.js";
-import Phaser from 'phaser'
-
-import Customer_Spritesheet from '@/Izakanyaa-code/assets/images/Customer_Spritesheet.png'
-import Cookware_Spritesheet from '@/Izakanyaa-code/assets/images/Cookware_Spritesheet.png'
+import RecipeBook from "./RecipeBook.js";
+import Phaser from "phaser";
+import axios from "axios";
 
 let scoreText;
 let prepPlate;
@@ -20,7 +19,6 @@ let pan;
 let pot;
 let width;
 let height;
-// let score;
 var timerCustomer;
 let targetX;
 let place;
@@ -28,18 +26,42 @@ let clock;
 let endText;
 let scene;
 let ingredient;
-let level = 1;
 let foods = [];
 let cookBookText;
-let isOver = [false, false, false, false];
+let isOver = [false,false,false,false];
 let slots;
 let ingredientBar;
+let trashcan;
+let bossIsHere = false;
+let recipeBook;
+let summary;
+let summaryText10;
+let summaryText20;
+let summaryText30;
+let summaryText40;
+let summaryText50;
+let summaryText01;
+let summaryText02;
+let summaryText03;
+let summaryText04;
+let summaryText05;
+let summaryTextALL;
+let summaryArray = [];
+let rectangle;
+let bigChungusSummary;
+let bigChungusSummaryText;
 
+let spacebar;
+let retry;
+let nextLevel;
+let end;
+
+//images imports
 import Mclock from '../assets/images/Morning Clock.png'
 import Nclock from '../assets/images/Noon Clock.png'
 import Eclock from '../assets/images/Evening Clock.png'
 import NIclock from '../assets/images/Night Clock.png'
-import background3 from '../assets/images/Background3.png'
+import Customer_BG from '../assets/images/Customer_BG.png'
 import curtains from '../assets/images/Curtains.png'
 import table from '../assets/images/Table.png'
 import Blob from '../assets/images/food/Blob.png'
@@ -59,7 +81,7 @@ import Octopus from '../assets/images/ingredients/Meat/Octopus.png'
 import Salmon from '../assets/images/ingredients/Meat/Salmon.png'
 import Shrimp from '../assets/images/ingredients/Meat/Shrimp.png'
 import Squid from '../assets/images/ingredients/Meat/Squid.png'
-import Liquid_Dough from '../assets/images/ingredients/Other/Liqiud dough bowl.png'
+import Liquid_Dough from '../assets/images/ingredients/Other/Liquid dough bowl.png'
 import Panko from '../assets/images/ingredients/Other/Panko Bowl.png'
 import Rice from '../assets/images/ingredients/Other/Rice Bowl.png'
 import Tenkasu from '../assets/images/ingredients/Other/Tenkasu Bowl lighter.png'
@@ -71,7 +93,7 @@ import Soy_Sauce from '../assets/images/ingredients/Seasonings/Soy sauce.png'
 import Cabbage from '../assets/images/ingredients/Vegetables/Cabbage.png'
 import Daikon_Chopped from '../assets/images/ingredients/Vegetables/Daikon.png'
 import Spring_Onion from '../assets/images/ingredients/Vegetables/Spring onion.png'
-import Plate from '../assets/images/food/Plate.png'
+import Plate from '../assets/images/kitchen/Plate.png'
 import Nothing from '../assets/images/kitchen/Nothing.png'
 import Pot from '../assets/images/kitchen/Pot.png'
 import Fryer from '../assets/images/kitchen/Fryer.png'
@@ -83,51 +105,72 @@ import Others_Btn from '../assets/images/kitchen/Btn_Others.png'
 import Others_Bar from '../assets/images/kitchen/Bar_Others.png'
 import Veggies_Btn from '../assets/images/kitchen/Btn_Veggies.png'
 import Veggies_Bar from '../assets/images/kitchen/Bar_Veggies.png'
+import YouLost from '../assets/images/YouLost.png'
+import YouWon from '../assets/images/YouWon.png'
+import Summary_screen from '../assets/images/Summary_screen.png'
+import VeryGood from '../assets/images/React00.png'
+import Good from '../assets/images/React01.png'
+import Neutral from '../assets/images/React02.png'
+import Bad from '../assets/images/React03.png'
+import VeryBad from '../assets/images/React04.png'
+import Sum from '../assets/images/Rectangle.png'
+import BigChungusSummary from '../assets/images/BigChungus.png'
+import NextLevel from '../assets/images/NEXT_LEVEL.png'
+import Retry from '../assets/images/RETRY.png'
+import End from '../assets/images/END.png'
+import Burnt from '../assets/images/food/Coal.png'
+import Mackerel_Sliced from '../assets/images/ingredients/Meat/Mackerel meat.png'
+import Trashcan from '../assets/images/kitchen/Trash.png'
+import Kitchen_Table from '../assets/images/kitchen/Background_Kitchen_Table.png'
+import Kitchen_BG from '../assets/images/kitchen/Background_Kitchen_Wall.png'
+import Arrow_Right from '../assets/images/kitchen/arrow-right.png'
+import Arrow_Left from '../assets/images/kitchen/arrow-left.png'
+import Exit_Btn from '../assets/images/kitchen/X.png'
+import Recipe_Book from '../assets/images/kitchen/Btn_Recipes1.png'
+import Recipe_Book2 from '../assets/images/kitchen/Btn_Recipes2.png'
+
+import Bubble from '../assets/images/bubble.png'
+import Customer_Spritesheet from '@/Izakanyaa-code/assets/images/Customer_Spritesheet.png'
+import Cookware_Spritesheet from '@/Izakanyaa-code/assets/images/Cookware_Spritesheet.png'
+import Chungus from '@/Izakanyaa-code/assets/images/BigChungus_Spritesheet.png'
+import Bonsai from '@/Izakanyaa-code/assets/images/Bonsai_Spritesheet.png'
+import Recipes from '@/Izakanyaa-code/assets/images/kitchen/Recipes_Sspritesheet.png'
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
-        super('MainScene');
-        this.difficulty = null;
-        this.score = null;
-        this.level = null;
-        this.delayComing = null;
-        this.delayLeaving = null;
-        this.customerCounter = null;
-        this.customerCounterAll = null;
-        this.bossTimer = null;
+      super('MainScene');
 
-        this.firstPlaceIsEmpty = true;
-        this.secondPlaceIsEmpty = true;
-        this.thirdPlaceIsEmpty = true;
-
-        this.isCookBookOpenable = true;
-        this.isLevelOver = false;
-        this.isBossDone = true;
-        this.setUpGame();
     }
-
+  
     preload() {
         //ENVIRONMENT
-        this.textures.addBase64('bubble', '@/Izakanyaa-code/assets/images/bubble.png');
-        this.load.spritesheet('customer', Customer_Spritesheet, {
+        this.textures.addBase64('Bubble', Bubble);
+        this.load.spritesheet('Customer', Customer_Spritesheet, {
             frameWidth: 640,
             frameHeight: 640
         });
-        // this.textures.addBase64('Mclock','@/Izakanyaa-code/assets/images/Morning Clock.png' );
+        this.load.spritesheet('Chungus',Chungus,{
+            frameWidth: 216, frameHeight: 256
+        });
+        this.load.spritesheet('Bonsai', Bonsai,{
+            frameWidth: 256, frameHeight: 220
+        });
+        this.load.spritesheet('RecipeBook', Recipes,  {
+            frameWidth: 300, frameHeight: 300}
+        );
         this.textures.addBase64('Mclock', Mclock)
         this.textures.addBase64('Nclock', Nclock);
         this.textures.addBase64('Eclock', Eclock);
         this.textures.addBase64('NIclock', NIclock);
-        //this.textures.addBase64('background','./assets/images/Background.png');
-        //this.textures.addBase64('background2','./assets/images/Background2.png');
-        this.textures.addBase64('background3', background3);
-        this.textures.addBase64('curtains', curtains);
-        this.textures.addBase64('table', table);
-        //this.textures.addBase64('square','./assets/images/square.jpg');
-        //this.textures.addBase64('circle','./assets/images/circle.jpg');
+        this.textures.addBase64('Customer_BG', Customer_BG);
+        this.textures.addBase64('Curtains', curtains);
+        this.textures.addBase64('Table', table);
+        this.textures.addBase64('YouLost',YouLost);
+        this.textures.addBase64('YouWon',YouWon);
 
         //FOODS
-        this.textures.addBase64('Blob', Blob);
+        this.textures.addBase64('Burnt',Burnt);
+        this.textures.addBase64('Garbage', Blob);
         this.textures.addBase64('Shioyaki', Shioyaki);
         this.textures.addBase64('Ikayaki', Ikayaki);
         this.textures.addBase64('Onigiri', Onigiri);
@@ -142,6 +185,7 @@ export default class MainScene extends Phaser.Scene {
 
         //INGREDIENTS
         this.textures.addBase64('Mackerel', Mackerel);
+        this.textures.addBase64('Mackerel_Sliced',Mackerel_Sliced);
         this.textures.addBase64('Octopus', Octopus);
         this.textures.addBase64('Salmon', Salmon);
         this.textures.addBase64('Shrimp', Shrimp);
@@ -175,25 +219,74 @@ export default class MainScene extends Phaser.Scene {
         this.textures.addBase64('Others_Bar', Others_Bar);
         this.textures.addBase64('Veggies_Btn', Veggies_Btn);
         this.textures.addBase64('Veggies_Bar', Veggies_Bar);
+        this.textures.addBase64('Trashcan', Trashcan);
+        this.textures.addBase64('Kitchen_Table', Kitchen_Table);
+        this.textures.addBase64('Kitchen_BG', Kitchen_BG);
+        this.textures.addBase64('Arrow_Right', Arrow_Right);
+        this.textures.addBase64('Arrow_Left', Arrow_Left);
+        this.textures.addBase64('Exit_Btn', Exit_Btn);
+        this.textures.addBase64('Recipe_Book', Recipe_Book);
+        this.textures.addBase64('Recipe_Book2', Recipe_Book2);
 
+        //SUMMARY
+        this.textures.addBase64('Summary_screen',Summary_screen);
+        this.textures.addBase64('VeryGood',VeryGood);
+        this.textures.addBase64('Good',Good);
+        this.textures.addBase64('Neutral',Neutral);
+        this.textures.addBase64('Bad',Bad);
+        this.textures.addBase64('VeryBad',VeryBad);
+        this.textures.addBase64('Sum',Sum);
+        this.textures.addBase64('BigChungusSummary',BigChungusSummary);
+        this.textures.addBase64('NextLevel', NextLevel);
+        this.textures.addBase64('Retry', Retry);
+        this.textures.addBase64('End', End);
     }
 
-    create() {
+    create(){
+        this.difficulty = null;
+        this.scoreFromPreviousLevels = null;
+        this.score = null;
+        this.level = null;
+        this.delayComing= null;
+        this.delayLeaving = null;
+        this.customerCounter = null;
+        this.customerCounterAll = null;
+        this.bossTimer = null;
+
+        this.firstPlaceIsEmpty = true;
+        this.secondPlaceIsEmpty = true;
+        this.thirdPlaceIsEmpty = true;
+
+        this.isCookBookOpenable = true;
+        this.isLevelOver = false;
+        this.isBossDone = true;
+
+        this.veryGoodCustomers = 0;
+        this.goodCustomers = 0;
+        this.neutralCustomers = 0;
+        this.badCustomers = 0;
+        this.veryBadCustomers = 0;
+        this.bossScore = 0;
+
+        this.setUpGame();
+
         //štart hry keby ste nevedeli
         this.startGame(); //Matúš
         this.testingCreate(); //Timo
-    }
 
-    update() {
+        spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+    }
+    update(){
+        if (Phaser.Input.Keyboard.JustDown(spacebar)) {
+            this.scene.restart();
+        }
         this.myUpdate(); //Matúš
         this.testUpdate(); //Timo
     }
-
-    startGame() {
+    startGame(){
+        this.cameras.main.fadeIn(2000);
         width = this.cameras.main.width;
         height = this.cameras.main.height;
-
-        this.cameras.main.fadeIn(2000);
 
         this.createEnvironment();
 
@@ -204,85 +297,92 @@ export default class MainScene extends Phaser.Scene {
         });
 
         //časovač na vytváranie zákazníkov
-        timerCustomer = this.time.addEvent({
-            delay: this.delayComing * 1000,
-            callback: this.setUpCustomer,
-            callbackScope: this,
-            repeat: this.customerCounter - 1
-        });
+        timerCustomer = this.time.addEvent({ delay: this.delayComing * 1000, callback: this.setUpCustomer, callbackScope: this, repeat: this.customerCounter -1 });
     }
-
-    myUpdate() {
+    myUpdate(){
         scoreText.setText('SCORE: ' + this.score);
 
-        //this.cameras.main.shake(500);
-
         // ak sú traja zákazníci na scéne zastav timer na generovanie zákazníkov
-        if (this.customerGroup.isFull()) {
+        if (this.customerGroup.isFull()){
             timerCustomer.paused = true;
-        } else {
+        }
+        else {
             timerCustomer.paused = false;
         }
         //hýbanie so zákazníkmi
-        /*
-        for (let i = 0; i < this.customerGroup.getChildren().length; i++) {
-            //console.log(this.customerGroup.getChildren()[i]) ;
-            this.customerGroup.getChildren()[i].moveCustomer();
-            this.customerGroup.getChildren()[i].walkOff();
-
-            if (this.customerGroup.getChildren().length > 0 ){
-                if ( this.customerGroup.getChildren()[i].isStanding){
-                    this.customerGroup.getChildren()[i].draw();
-                    //console.log(this.customerGroup.getChildren()[i].timer.getOverallProgress());
-                }
-            }
-        }*/
-        this.customerGroup.getChildren().forEach(function (sprite) {
+        this.customerGroup.getChildren().forEach(function(sprite) {
             sprite.moveCustomer();
             sprite.walkOff();
 
-            //if (this.customerGroup.getChildren().length > 0 ){
-            if (sprite.isStanding) {
+            if (sprite.isStanding){
                 sprite.draw();
-                //console.log(this.customerGroup.getChildren()[i].timer.getOverallProgress());
             }
-            // }
-
         }, this);
+
+
+        /*
+        if (this.startBoss){
+            if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){
+            }
+            else {
+                if (!this.isBossDone){
+                    this.createFinalBoss(width/3.8,width/1.6);
+                }
+                this.isBossDone = true;
+            }
+            this.startBoss = false;
+        }
+
+        */
+        if (!this.isBossDone){
+            if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true)>=1){
+                console.log("lol");
+            }
+            else {
+                this.createFinalBoss(width/3.8,width/1.6);
+                this.isBossDone = true;
+            }
+        }
+
+
 
         this.changeClock();
         this.checkIfEnd();
     }
-
-    setUpGame() {
+    setUpGame(){
         //nastaví hodnoty podľa local storage hodnoty
         console.log("--------------------")
         console.log("SETTING UP GAME")
-        if (window.localStorage.getItem("difficulty")) {
+        if (window.localStorage.getItem("difficulty")){
             this.difficulty = window.localStorage.getItem("difficulty");
             console.log("FOUND DIFFICULTY: " + this.difficulty)
-        } else {
+        }
+        else {
             this.difficulty = "EASY"
             console.log("NO DIFF. DETECTED, GAME IS ON DIFF.: " + this.difficulty)
         }
 
-        if (window.localStorage.getItem("level")) {
-            this.level = window.localStorage.getItem("level");
+        if (window.localStorage.getItem("level")){
+            this.level = Number( window.localStorage.getItem("level"));
             console.log("FOUND LEVEL: " + this.level)
-        } else {
-            this.level = 3;
+        }
+        else {
+            this.level = 1;
             console.log("NO LEVEL DETECTED, GAME IS ON LEVEL: " + this.level)
         }
 
-        if (window.localStorage.getItem("score")) {
-            this.score = window.localStorage.getItem("score");
-            console.log("FOUND SCORE: " + this.score)
-        } else {
-            this.score = 0;
-            console.log("NO SCORE DETECTED, GAME IS ON SCORE: " + this.score)
+        if (window.localStorage.getItem("score")){
+            this.scoreFromPreviousLevels = Number(window.localStorage.getItem("score"));
+            console.log("FOUND SCORE: " + this.scoreFromPreviousLevels)
         }
+        else {
+            this.scoreFromPreviousLevels = 0;
+            console.log("NO SCORE DETECTED, GAME IS ON SCORE: " + this.scoreFromPreviousLevels)
+        }
+        this.score = 0;
         this.changeDelay();
-        console.log("CUSTOMER DELAY IS: " + this.delayComing);
+        console.log("CUSTOMER COMING DELAY IS: " + this.delayComing);
+        console.log("CUSTOMER LEAVING DELAY IS: " + this.delayLeaving);
 
         this.changeCustomerCounter();
         console.log("THE NUMBER OF ALL CUSTOMERS IS: " + this.customerCounterAll);
@@ -291,71 +391,136 @@ export default class MainScene extends Phaser.Scene {
         console.log("--------------------")
 
     }
-
-    createEnvironment() {
+    createEnvironment(){
         //pozadie
-        let bg = this.add.sprite(0, 0, 'background3');
+        let bg = this.add.sprite(0, 0, 'Customer_BG');
         bg.setScale(2);
         // change origin to the top-left of the sprite
-        bg.setOrigin(0, 0);
+        bg.setOrigin(0,0);
 
-        //záclony
-        /*
-            let curtains = this.add.sprite(0, 0, 'curtains');
-            curtains.setScale(2);
-            // change origin to the top-left of the sprite
-            curtains.setOrigin(0,0);
-        */
         //stôl
-        let table = this.add.sprite(0, height / 6, 'table');
+        let table = this.add.sprite(0, height/6 , 'Table');
         table.setScale(2);
         table.setDepth(25);
-        // change origin to the top-left of the sprite
-        table.setOrigin(0, 0);
+        table.setOrigin(0,0);
 
         //vytvorenie hodín
-        //clock= this.add.image(width/1.13,height/9,"Mclock");
-        clock = this.add.image(width / 9, height / 10, "Mclock");
-        //clock.setOrigin(0,0);
-        clock.setScale(1.1);
+        clock= this.add.image(10,10,"Mclock");
+        clock.setOrigin(0,0);
+        clock.setScale(1.25);
+
+        //vytvorenie bonsaiu
+        this.anims.create({
+            key: 'glow',
+            frames: this.anims.generateFrameNumbers('Bonsai', {
+                frames: [0,1,2,3,4,5,6,7,8,9,10]}),
+            frameRate: 2,
+            repeat: -1
+        });
+
+        this.bonsai = this.add.sprite(570,330,'Bonsai',0);
+        this.bonsai.setScale(0.5);
+        this.bonsai.setDepth(69);
+        this.bonsai.play("glow");
+
+        let shadow = this.add.sprite(580, 345, 'Bonsai');
+        shadow.setScale(0.45)
+        shadow.setDepth(68)
+        shadow.setTint(0x000000)
+        shadow.setAlpha(0.3)
 
         //vytvorenie score textu
-        scoreText = this.add.text(width / 2.8, 5, 'SCORE: ' + this.score, {font: 'bold 32px Arial', fill: '#000000'});
+        scoreText = this.add.text(199, 5, 'SCORE: ' + this.score, { font: 'bold 32px Arial', fill: '#000000'});
         scoreText.setShadow(0, 0, 'rgb(255,255,255)', 30);
 
         //vytvorenie konecneho textu
-        endText = this.add.text(width / 8, height / 2, '', {font: 'bold 100px Arial', fill: '#ff0000'});
-        endText.setShadow(0, 0, 'rgb(255,255,255)', 30);
+        endText= this.add.image(width/2, (height/2)-50,"YouWon")
+        endText.setScale(1.4)
         endText.setDepth(500);
         endText.visible = false;
 
         this.changeEnvironment();
 
+        //sumár
+        summary = this.add.image(0, 0,"Summary_screen")
+        summary.setOrigin(0,0);
+        summary.setDepth(1000)
+        summary.visible = false;
+
+        nextLevel = new Button({x:970,y:520,scene: this,img: "NextLevel",depth:1001})
+        nextLevel.setOrigin(0,0)
+        nextLevel.setScale(0.4);
+        nextLevel.addFunction("click", function(){
+            nextLevel.scene.saveGame();
+            nextLevel.scene.scene.restart();
+        });
+
+        retry = new Button({x:70,y:520,scene: this,img: "Retry",depth:1001})
+        retry.setOrigin(0,0)
+        retry.setScale(0.4);
+        retry.addFunction("click", function(){
+            retry.scene.scene.restart();
+        });
+
+        rectangle = this.add.image(869,490,"Sum");
+        //lava strana
+        summaryText10 = this.add.text(500, 150, '150    X ', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText20 = this.add.text(500, 220, '100    X ', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText30 = this.add.text(500, 290, '50      X ', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText40 = this.add.text(500, 360, '0        X ', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText50 = this.add.text(500, 430, '-50     X ', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        //prava strana
+        summaryText01 = this.add.text(700, 150, '', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText02 = this.add.text(700, 220, '', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText03 = this.add.text(700, 290, '', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText04 = this.add.text(700, 360, '', { font: 'bold 40px Arial', fill: '#86d3ff'});
+        summaryText05 = this.add.text(700, 430, '', { font: 'bold 40px Arial', fill: '#86d3ff'});
+
+        summaryTextALL = this.add.text(675, 500, '', { font: 'bold 48px Arial', fill: '#86d3ff'});
+
+
+        rectangle.setDepth(1001);
+        summaryText10.setDepth(1001);
+        summaryText20.setDepth(1001);
+        summaryText30.setDepth(1001);
+        summaryText40.setDepth(1001);
+        summaryText50.setDepth(1001);
+        summaryText01.setDepth(1001);
+        summaryText02.setDepth(1001);
+        summaryText03.setDepth(1001);
+        summaryText04.setDepth(1001);
+        summaryText05.setDepth(1001);
+        summaryTextALL.setDepth(1001);
+
+        summaryArray.push(summaryText10,summaryText20,summaryText30,summaryText40,summaryText50,
+                          summaryText01,summaryText02,summaryText03,summaryText04,summaryText05,
+                          rectangle,summaryTextALL,nextLevel,retry);
+        summaryArray.forEach(element => {
+            element.visible = false;
+        })
+
     }
-
-    cantOpenCookBook() {
-
-        if (!this.isCookBookOpenable) {
-            cookBookText = this.add.text(width / 8, height / 1.7, 'COOKBOOK IS DISABLED ON HARD DIFFICULTY!', {
-                font: 'bold 20px Arial',
-                fill: '#000000'
-            });
-            cookBookText.setShadow(0, 0, 'rgb(255,255,255)', 30);
-            cookBookText.setDepth(30);
-            this.time.addEvent({delay: 4000, callback: this.setTextInvisible, callbackScope: this, loop: false});
+    cantOpenCookBook(){
+        if (!this.isCookBookOpenable){//x: 1070,y: 195
+            cookBookText = this.add.sprite(1065, 195, "Exit_Btn");
+            cookBookText.setDepth(28);
+            this.time.addEvent({ delay: 2000, callback: function(){cookBookText.destroy();} , callbackScope: this, loop: false });
+        }
+        else {
+            recipeBook.openBook();
+            //otvor cookbook
         }
     }
-
-    setTextInvisible() {
+    setTextInvisible(){
         cookBookText.visible = false;
         return 0;
     }
-
-    changeEnvironment() {
+    changeEnvironment(){
         //zmena prostredia podľa levelu
-        if (this.level === 1) {
-            console.log('prvy level')
-        } else if (this.level === 2) {
+        if (this.level === 1){
+            console.log("lol")
+        }
+        else if  (this.level === 2){
             /*
             let lantern =  this.add.sprite(0, 0, 'curtains');
             lantern.setScale(2);
@@ -363,7 +528,8 @@ export default class MainScene extends Phaser.Scene {
             lantern.setOrigin(0,0);
             */
 
-        } else if (this.level === 3) {
+        }
+        else if  (this.level === 3){
             /*
             let lantern =  this.add.sprite(0, 0, 'curtains');
             lantern.setScale(2);
@@ -380,212 +546,296 @@ export default class MainScene extends Phaser.Scene {
             // change origin to the top-left of the sprite
             bonsai.setOrigin(0,0);
             */
+            bigChungusSummary = this.add.image(1000,300,"BigChungusSummary")
+            bigChungusSummary.setScale(0.5)
+            bigChungusSummary.setDepth(1001);
+            bigChungusSummaryText =  this.add.text(935, 200, '' , { font: 'bold 40px Arial', fill: '#86d3ff'});
+            bigChungusSummaryText.setDepth(1001);
+            summaryArray.push(bigChungusSummary,bigChungusSummaryText);
 
         }
     }
-
-    setUpCustomer() {
+    setUpCustomer(){
         this.customerCounter--;
         console.log(this.customerCounter)
-        //better riešenie, ify na zabranie miesta
-
 
         //check if it is last boss
-        if (this.customerCounter === 0 && this.level === 3) {
+        if (this.customerCounter === 0 && this.level === 3){
             //FINAL BOSS TIME
             //this.cameras.main.shake(40);
             this.isBossDone = false;
-            this.checkPlaceForBoss();
-        } else {
-            if (this.firstPlaceIsEmpty) {
+            this.startBoss = true;
+        }
+        else {
+            if (this.firstPlaceIsEmpty){
                 //stred okna
-                targetX = width / 1.3;
+                targetX = width/2.5;
                 place = 1;
                 this.firstPlaceIsEmpty = false;
-            } else if (this.secondPlaceIsEmpty) {
-                targetX = width / 2;
+            }
+            else if (this.secondPlaceIsEmpty){
+                targetX = width/3.8;
                 place = 2;
                 this.secondPlaceIsEmpty = false;
-            } else if (this.thirdPlaceIsEmpty) {
-                targetX = width / 5;
+            }
+            else if (this.thirdPlaceIsEmpty){
+                targetX = width/8;
                 place = 3;
                 this.thirdPlaceIsEmpty = false;
             }
             //viac ako traja BY nemali nikdy byť ale nikdy nevieš
             else {
-                targetX = width / 1.5;
+                targetX = width/1.5;
             }
-            //this.time.addEvent({ delay: this.delay * 1000, callback: this.customerIsDone, callbackScope: this, loop: false });
-            this.createCustomer(place, targetX, width);
+            this.createCustomer(place,targetX,width/2);
         }
-
-
     }
-
-    createFinalBoss(targetX, width) {
-        let customer = new Customer({
-            scene: this,
-            image: "customer",
-            place: 2,
-            targetX: targetX,
-            edgeX: width,
-            x: -100,
-            y: 205,
-            bubble: "bubble"
-        });
-        customer.setScale(0.6, 0.3);
+    createFinalBoss(targetX, width){
+        let customer = new Customer({scene: this, image: "Chungus",place: 2 ,targetX: targetX, edgeX: width, x: -100, y:115});
+        customer.isBoss = true;
+        bossIsHere = true;
         customer.order = "Ultimate_secret_bowl";
         customer.order_image.setTexture(customer.order);
-        customer.bubble.setScale(0.8);
+
+
+        customer.graphics.setY(-20)
+        customer.graphics.setX(-75)
+        customer.graphics.setScale(0.4)
+
+        customer.face.setY(-25)
+        customer.face.setX(-95)
+        customer.face.setScale(0.20)
+
+        customer.bubble.setY(-10)
+        customer.bubble.setX(10)
+        customer.bubble.setScale(0.4);
+        customer.order_image.setY(-20)
+        customer.order_image.setX(10)
         customer.setOrderScale();
-        customer.delay = 3;
-        //customer.gotFood = true;
-        customer.customerScore = 500;
+
+        customer.delay = this.delayLeaving + 20;
+        customer.gotFood = false;
+        customer.customerScore = 500;//500
         this.add.existing(customer);
         this.customerGroup.add(customer);
-        console.log(customer.order);
-    }
+        customer.customerImg.play('moveChungus');
 
-    createCustomer(place, targetX, width) {
-        let customer = new Customer({
-            scene: this,
-            image: "customer",
-            place: place,
-            targetX: targetX,
-            edgeX: width,
-            x: -100,
-            y: 205,
-            bubble: "bubble"
-        });
+        console.log( customer.order );
+    }
+    createCustomer(place,targetX,width){
+        let customer = new Customer({scene: this, image: "Customer",place: place ,targetX: targetX, edgeX: width, x: -100, y:205});
         customer.setScale(0.3);
         //customer.order = "Ebi_Furai";
         //customer.order_image.setTexture(customer.order);
         customer.setOrderScale();
         this.add.existing(customer);
         this.customerGroup.add(customer);
-        console.log(customer.order);
+        customer.customerImg.play('move');
+
+        console.log( customer.order );
     }
-
-    changeDelay() {
+    changeDelay(){
         //delay ako často budú chodiť zákazníci
-        if (this.difficulty === "EASY") {
-            this.delayComing = 1;// 10
-            this.delayLeaving = 5;// 25
-        } else if (this.difficulty === "MEDIUM") {
+        if (this.difficulty === "EASY"){
+            this.delayComing = 12;// 12
+            this.delayLeaving = 45;// 45
+        }
+        else if  (this.difficulty === "MEDIUM"){
+            this.delayComing = 10;//10
+            this.delayLeaving = 40;// 40
+        }
+        else if  (this.difficulty === "HARD"){
             this.delayComing = 8;//8
-            this.delayLeaving = 20;// 20
-
-        } else if (this.difficulty === "HARD") {
-            this.delayComing = 6;//6
-            this.delayLeaving = 15;// 15
+            this.delayLeaving = 30;// 30/35?
             this.isCookBookOpenable = false;//nezobrazia sa recepty
         }
     }
-
-    changeCustomerCounter() {
+    changeCustomerCounter(){
         //počet zákazníkov v každom leveli
-        if (this.level === 1) {
-            this.customerCounter = 2;// 12
-        } else if (this.level === 2) {
+        if (this.level === 1){
+            this.customerCounter = 12;// 12
+        }
+        else if  (this.level === 2){
             this.customerCounter = 16;//16
-        } else if (this.level === 3) {
-            this.customerCounter = 4;//20
+        }
+        else if  (this.level === 3){
+            this.customerCounter = 20;//20
         }
         this.customerCounterAll = this.customerCounter;
     }
 
-    checkPlaceForBoss() {
-        if (!this.secondPlaceIsEmpty || this.customerGroup.countActive(true) >= 1) {
-            this.bossTimer = this.time.addEvent({
-                delay: 1000,
-                callback: this.checkPlaceForBoss,
-                callbackScope: this,
-                loop: true
-            });
-        } else {
-            if (!this.isBossDone) {
-                this.createFinalBoss(width / 2, width);
-            }
-            //this.bossTimer.paused =true;
-            this.isBossDone = true;
-
-
-        }
-    }
-
-    changeClock() {
-        if (this.customerCounter < this.customerCounterAll * 0.75 && this.customerCounter >= this.customerCounterAll * 0.5) {
+    changeClock(){
+        if (this.customerCounter< this.customerCounterAll *0.75 && this.customerCounter >= this.customerCounterAll *0.5){
             clock.setTexture('Nclock');
-        } else if (this.customerCounter <= this.customerCounterAll * 0.5 && this.customerCounter >= this.customerCounterAll * 0.25) {
+        }
+        else if(this.customerCounter<= this.customerCounterAll *0.5  && this.customerCounter >= this.customerCounterAll *0.25){
             clock.setTexture('Eclock');
-        } else if (this.customerCounter <= this.customerCounterAll * 0.25) {
+        }
+        else if (this.customerCounter <= this.customerCounterAll *0.25){
             clock.setTexture('NIclock');
         }
     }
-
-    checkIfEnd() {
-        if (this.customerGroup.countActive(true) < 1 && this.customerCounter === 0 && this.isLevelOver === false && this.isBossDone) {
+    checkIfEnd(){
+        if (this.customerGroup.countActive(true)<1 && this.customerCounter ===0 && this.isLevelOver === false && this.isBossDone) {
             //console.log("KONIEC")
             this.isLevelOver = true;
             endText.visible = true;
-            if (this.score >= 1000) {
-                console.log("YOU WON!")
-                endText.setText("YOU WON!");
-
-                //this.time.addEvent({delay: 5000, callback: this.scene.stop, callbackScope: this, loop: false });
-            } else {
-                console.log("YOU LOST")
-                endText.setText("YOU LOST");
+            if (this.level=== 3){
+                if (this.score >= (this.customerCounterAll * 50) +500){
+                    //console.log("YOU WON!")
+                    endText.setTexture('YouWon')
+                }
+                else {
+                    //console.log("YOU LOST")
+                    endText.setTexture('YouLost')
+                }
             }
-            this.cameras.main.fade(5000);
+            else {
+                if (this.score >= this.customerCounterAll * 50){
+                    //console.log("YOU WON!")
+                    endText.setTexture('YouWon')
+                }
+                else {
+                    //console.log("YOU LOST")
+                    endText.setTexture('YouLost')
+                }
+            }
+
+
+            /*
+            this.scene.pause();
+            //console.log(this.events)
+            if (this.scene.isActive('MainScene')){
+                console.log("TUT")
+                let newScene = new MainScene("MainScene")
+                this.scene.switch("MainScene");
+            }
+*/
+            this.cameras.main.fade(3000);
+            this.time.addEvent({ delay: 4000, callback: this.makeSummary, callbackScope: this, loop: false });
         }
     }
 
+    makeSummary(){
+        console.log("SUMMARY");
+        this.cameras.main.fadeIn(2000);
+        summary.visible= true;
+        console.log( this.veryGoodCustomers);
+        console.log( this.goodCustomers);
+        console.log( this.neutralCustomers);
+        console.log( this.badCustomers);
+        console.log( this.veryBadCustomers);
+        for (let i = 0; i<summaryArray.length;i++){
+            summaryArray[i].visible = true;
+        }
+        summaryText01.setText(this.veryGoodCustomers + '    =   '+this.veryGoodCustomers * (150));
+        summaryText02.setText(this.goodCustomers + '    =   '+this.goodCustomers * (100));
+        summaryText03.setText(this.neutralCustomers + '    =   '+this.neutralCustomers * (50));
+        summaryText04.setText(this.badCustomers + '    =   '+0);
+        summaryText05.setText(this.veryBadCustomers + '    =   '+this.veryBadCustomers * (-50));
+        summaryTextALL.setText('           '+this.score);
 
-    //function used only for testing
+        this.scoreFromPreviousLevels += this.score;//TOTAL SCORE
+
+        endText.setDepth(1001);
+        endText.setScale(0.35);
+        endText.setX(60)
+        endText.setY(70)
+
+        endText.setOrigin(0,0)
+
+        if (this.level=== 3){
+            if (this.bossScore < 0){
+                bigChungusSummaryText.setText('  '+ this.bossScore);
+            }
+            else {
+                bigChungusSummaryText.setText('+'+ this.bossScore);
+            }
+            nextLevel.destroy();
+
+            if (this.score >= (this.customerCounterAll * 50)+500){
+                //zobrazí sa END tlačídlo
+
+                end = new Button({x:970,y:520,scene: this,img: "End",depth:1001})
+                end.setOrigin(0,0)
+                end.setScale(0.4);
+                end.addFunction("click", function(){
+                    end.scene.saveGame();
+                    end.scene.scene.remove();
+                    console.log("YOU BEAT THE GAME, THANKS FOR PLAYING ^^")
+                });
+            }
+            else {
+                //nezobrazí sa END tlačídlo
+            }
+        }
+        else {
+            if (this.score >= (this.customerCounterAll * 50)){
+                //zobrazí sa MEXT LEVEL tlačídlo
+            }
+            else {
+                //nezobrazí sa MEXT LEVEL tlačídlo
+                nextLevel.destroy();
+            }
+        }
+    }
+
+    saveGame() {
+        //let level = Number(localStorage.getItem('level'))
+        let userid = Number(localStorage.getItem('user_id'));
+        if (this.level < 3) {
+            localStorage.clear();
+            localStorage.setItem('level', this.level+1)
+            localStorage.setItem('score', this.scoreFromPreviousLevels)
+        }
+
+        let saveData = {
+            user_id: userid,
+            difficulty: this.difficulty,
+            level: this.level,
+            score: this.scoreFromPreviousLevels,
+        }
+
+        axios.post('http://localhost/Cool-Cat/cat-tail/public/api/save', saveData).then(
+            () => createToast('Save Successful', {type: 'success', position:"bottom-right", timeout: 4000})
+        ).catch(er => {
+            this.errors = er.response.data.errors
+        })
+    }
+
+
+
+ //function used only for testing
     //TIMO
-    testingCreate() {
+    testingCreate(){
         scene = this;
-        let panImg = scene.add.image(0, 0, "Fryer");
-        panImg.setScale(0.45);
-        let potImg = scene.add.image(0, 0, "Pot");
-        potImg.setScale(0.45);
+        let kitchenBG
+        kitchenBG = scene.add.image(width/2,0,"Kitchen_BG");
+        kitchenBG.setOrigin(0,0);
+        kitchenBG.setScale(1.9);
+        kitchenBG.setDepth(25);
+        kitchenBG = scene.add.image(width/2,59,"Kitchen_Table");
+        kitchenBG.setOrigin(0,0);
+        kitchenBG.setScale(1.7);
+        kitchenBG.setDepth(25);
+        let panImg = scene.add.sprite(0, 0, "Fryer");
+        //panImg.setScale(0.45);
+        let potImg = scene.add.sprite(0, 0, "Pot");
         timer = []
-        timer.push(new Timer({scene: scene, x: 0, y: 0}));
-        pan = new Cookware({
-            scene: scene,
-            x: 75,
-            y: height - 50,
-            objectImg: panImg,
-            type: "fry",
-            timer: timer[timer.length - 1]
-        });
-        timer.push(new Timer({scene: scene, x: 0, y: 0}));
-        pot = new Cookware({
-            scene: scene,
-            x: (pan.object.width / 2) + 10,
-            y: height - 100,
-            objectImg: potImg,
-            type: "bake",
-            timer: timer[timer.length - 1]
-        });
-        prepPlate = new PreparationPlate({
-            scene: scene,
-            x: width / 2,
-            y: height - 50,
-            plateImg: "Plate",
-            ingredients: [],
-            foods: foods
-        });
-        prepPlate.plate.setScale(0.5);
-        prepPlate.width = prepPlate.width / 2;
-        prepPlate.height = prepPlate.height / 2;
+        timer.push(new Timer({scene: scene, x: 0, y: 0,showTimer:true,depth:27}));
+        pan = new Cookware({scene: scene, x: 1070, y:335, objectImg: panImg, type: "fry", timer: timer[timer.length-1]});
+        timer.push(new Timer({scene: scene, x: 0, y: 0,showTimer:true,depth:27}));
+        pot = new Cookware({scene: scene, x: 874, y:230, objectImg: potImg , type: "bake", timer: timer[timer.length-1]});
+        prepPlate = new PreparationPlate({scene: scene, x: 825, y:382, plateImg:"Plate", ingredients:[], foods:foods});
         prepPlate.setHit(prepPlate);
+        prepPlate.setDepth(26);
         ingredientBar = [];
-        ingredientBar.push(scene.add.group({maxSize: 7}));
-        ingredientBar.push(scene.add.group({maxSize: 4}));
-        ingredientBar.push(scene.add.group({maxSize: 5}));
-        ingredientBar.push(scene.add.group({maxSize: 6}));
+        ingredientBar.push(scene.add.group({maxSize:7}));
+        ingredientBar.push(scene.add.group({maxSize:4}));
+        ingredientBar.push(scene.add.group({maxSize:5}));
+        ingredientBar.push(scene.add.group({maxSize:6}));
+        recipeBook = new RecipeBook({scene:scene, x:width/2, y:235, objectImg:"Nothing", leftArrowImg:"Arrow_Left", rightArrowImg: "Arrow_Right", exitImg:"Exit_Btn", depth:69, level:this.level})
+        
         //TEMP
         this.addButtons();
         this.addFoods();
@@ -593,797 +843,664 @@ export default class MainScene extends Phaser.Scene {
         this.setInteractivity();
     }
 
-    createFoodSlots() {
+    createFoodSlots(){
         let foodSlot;
-        slots = scene.add.group({maxSize: 3});
-        foodSlot = new FoodSlots({scene: scene, x: width / 8, y: height / 1.55, slotImg: 'Plate'});
+        slots = scene.add.group({maxSize:3});
+        foodSlot = new FoodSlots({scene:scene, x:width/8, y: height/1.55, slotImg:'Plate'});
         slots.add(foodSlot);
-        foodSlot = new FoodSlots({scene: scene, x: width / 4, y: height / 1.55, slotImg: 'Plate'});
+        foodSlot = new FoodSlots({scene:scene, x:width/4, y: height/1.55, slotImg:'Plate'});
         slots.add(foodSlot);
-        foodSlot = new FoodSlots({scene: scene, x: (width / 8) * 3, y: height / 1.55, slotImg: 'Plate'});
+        foodSlot = new FoodSlots({scene:scene, x:(width/8)*3, y: height/1.55, slotImg:'Plate'});
         slots.add(foodSlot);
     }
 
-    hideButtons() {
-        for (let i = 0; i < 4; i++) {//width-76
-            if (!isOver[i]) {
-                ingredientBar[i].getChildren()[0].setNewPos(width + 152);
-                ingredientBar[i].getChildren()[0].setSpeed(12);
-                for (let j = 1; j < ingredientBar[i].getLength(); j++) {
-                    ingredientBar[i].getChildren()[j].setNewPos(width - 76);
-                    ingredientBar[i].getChildren()[j].setSpeed(12);
+    hideButtons(){
+        for(let i = 0; i<4;i++){//width-76
+            if(!isOver[i]){
+                ingredientBar[i].getChildren()[0].setNewPos(width+185);     
+                ingredientBar[i].getChildren()[0].setSpeed(12);  
+                for(let j = 1; j<ingredientBar[i].getLength();j++){
+                    ingredientBar[i].getChildren()[j].setNewPos(width-55);        
+                    ingredientBar[i].getChildren()[j].setSpeed(12);                
                 }
-            } else {
-                for (let j = 0; j < ingredientBar[i].getLength(); j++) {
-                    ingredientBar[i].getChildren()[j].setNewPos(ingredientBar[i].getChildren()[j].originalX);
-                    if (j > 0) {
-                        ingredientBar[i].getChildren()[j].setSpeed(13 - j);
-                    }
-                }
+            }else{
+                for(let j = 0; j<ingredientBar[i].getLength();j++){
+                    ingredientBar[i].getChildren()[j].setNewPos(ingredientBar[i].getChildren()[j].originalX);  
+                    if(j >0){
+                        ingredientBar[i].getChildren()[j].setSpeed(13-j);        
+                    }                         
+                }                
             }
         }
     }
 
-    moveButtons() {
-        for (let i = 0; i < 4; i++) {
-            for (let j = 0; j < ingredientBar[i].getLength(); j++) {
-                ingredientBar[i].getChildren()[j].move();
-            }
-        }
+    moveButtons(){
+        for(let i =0; i<4;i++){
+            for(let j = 0; j<ingredientBar[i].getLength();j++){
+                ingredientBar[i].getChildren()[j].move();                   
+            }     
+        }   
     }
 
-    addButtons() {
-        let button
+    addButtons(){
+        let button;
+        let recipeLook;
 
-        button = new Button({scene: scene, x: width - 76, y: 65, img: 'Meat_Btn', name: "Meat Button", depth: 27});
-        button.setScale(0.5, 0.4);
-        button.addFunction("click", function () {
+        // button = new Button({scene: scene, x: width/2+20,y: 64,img: 'square', name: "pause Button",depth:27});
+        // button.addFunction("click",function(){
+        //     if(scene.scene.isPaused()){
+        //         scene.scene.resume('MainScene');
+        //     }else{
+        //         scene.scene.pause();
+        //     }
+        // })
+
+        trashcan = new Button({scene: scene, x: 959,y: 65,img: 'Trashcan', name: "Trash Button",depth:25});
+        trashcan.changeScale(1);
+        
+        if(this.level == 3){
+            recipeLook = "Recipe_Book2";
+        }else{
+            recipeLook = "Recipe_Book";
+        }
+
+        button = new Button({scene: scene, x: 1070,y: 195,img: recipeLook, name: "Recipe Button",depth:25,frame:0});
+        button.changeScale(0.6);
+        button.addFunction("click",function(){
+            scene.cantOpenCookBook();
+        });
+
+        button = new Button({scene: scene, x: width-55,y: 95,img: 'Meat_Btn', name: "Meat Button",depth:27});
+        button.changeScale(0.4,0.3);
+        button.addFunction("click",function(){
             isOver[0] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[0] = false;
-        });
-
-        button = new Button({
-            scene: scene,
-            x: ((width / 4) * 3) - 20,
-            y: 65,
-            img: 'Meat_Bar',
-            name: "Meat Bar",
-            depth: 26
-        });
-        ingredientBar[0].add(button);
-        button.setScale(0.4);
-        button.addFunction("hover", function () {
-            isOver[0] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[0] = false;
-        });
-
-        button = new Button({
-            scene: scene,
-            x: width - 76,
-            y: 185,
-            img: 'Veggies_Btn',
-            name: "Veggies Button",
-            depth: 27
-        });
-        button.setScale(0.5, 0.4);
-        button.addFunction("click", function () {
-            isOver[1] = true;
-        });
-        button.addFunction("leave", function () {
             isOver[1] = false;
-        });
-
-        button = new Button({
-            scene: scene,
-            x: ((width / 4) * 3) - 20,
-            y: 185,
-            img: 'Veggies_Bar',
-            name: "Veggies Bar",
-            depth: 26
-        });
-        button.setScale(0.4);
-        ingredientBar[1].add(button);
-        button.addFunction("hover", function () {
-            isOver[1] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[1] = false;
-        });
-
-        button = new Button({
-            scene: scene,
-            x: width - 76,
-            y: 305,
-            img: 'Seasoning_Btn',
-            name: "Seasoning Button",
-            depth: 27
-        });
-        button.setScale(0.5, 0.4);
-        button.addFunction("click", function () {
-            isOver[2] = true;
-        });
-        button.addFunction("leave", function () {
             isOver[2] = false;
-        });
-
-        button = new Button({
-            scene: scene,
-            x: ((width / 4) * 3) - 20,
-            y: 305,
-            img: 'Seasoning_Bar',
-            name: "Seasoning Bar",
-            depth: 26
-        });
-        button.setScale(0.4);
-        ingredientBar[2].add(button);
-        button.addFunction("hover", function () {
-            isOver[2] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[2] = false;
-        });
-
-        button = new Button({scene: scene, x: width - 76, y: 425, img: 'Others_Btn', name: "Other Button", depth: 27});
-        button.setScale(0.5, 0.4);
-        button.addFunction("click", function () {
-            isOver[3] = true;
-        });
-        button.addFunction("leave", function () {
             isOver[3] = false;
         });
-
-        button = new Button({
-            scene: scene,
-            x: ((width / 4) * 3) - 20,
-            y: 425,
-            img: 'Others_Bar',
-            name: "Other Bar",
-            depth: 26
+        //button.addFunction("leave",function(){
+        //    isOver[0] = false;
+        //});
+        button = new Button({scene: scene, x: width+152,y: 95,img: 'Meat_Bar', name: "Meat Bar",depth:26, originalX:970});
+        ingredientBar[0].add(button);
+        button.changeScale(0.4);
+        button.addFunction("hover",function(){
+            isOver[0] = true;
         });
-        button.setScale(0.4);
-        ingredientBar[3].add(button);
-        button.addFunction("hover", function () {
+        button.addFunction("leave",function(){
+            isOver[0] = false;
+        });
+
+        button = new Button({scene: scene, x: width-55,y: 185,img: 'Veggies_Btn', name: "Veggies Button",depth:27});
+        button.changeScale(0.4,0.3);
+        button.addFunction("click",function(){
+            isOver[0] = false;
+            isOver[1] = true;
+            isOver[2] = false;
+            isOver[3] = false;
+        });
+        //button.addFunction("leave",function(){
+        //    isOver[1] = false;
+        //});
+
+        button = new Button({scene: scene, x: width+152,y: 185,img: 'Veggies_Bar', name: "Veggies Bar",depth:26, originalX:970});
+        button.changeScale(0.4);
+        ingredientBar[1].add(button);
+        button.addFunction("hover",function(){
+            isOver[1] = true;
+        });
+        button.addFunction("leave",function(){
+            isOver[1] = false;
+        });
+
+        button = new Button({scene: scene, x: width-55,y: 275,img: 'Seasoning_Btn', name: "Seasoning Button",depth:27});
+        button.changeScale(0.4,0.3);
+        button.addFunction("click",function(){
+            isOver[0] = false;
+            isOver[1] = false;
+            isOver[2] = true;
+            isOver[3] = false;
+        });
+        //button.addFunction("leave",function(){
+        //    isOver[2] = false;
+        //});
+
+        button = new Button({scene: scene, x: width+152,y: 275,img: 'Seasoning_Bar', name: "Seasoning Bar",depth:26, originalX:970});
+        button.changeScale(0.4);
+        ingredientBar[2].add(button);
+        button.addFunction("hover",function(){
+            isOver[2] = true;
+        });
+        button.addFunction("leave",function(){
+            isOver[2] = false;
+        });
+
+        button = new Button({scene: scene, x: width-55,y: 365,img: 'Others_Btn', name: "Other Button",depth:27});
+        button.changeScale(0.4,0.3);
+        button.addFunction("click",function(){
+            isOver[0] = false;
+            isOver[1] = false;
+            isOver[2] = false;
             isOver[3] = true;
         });
-        button.addFunction("leave", function () {
+        //button.addFunction("leave",function(){
+        //    isOver[3] = false;
+        //});
+
+        button = new Button({scene: scene, x: width+152,y: 365,img: 'Others_Bar', name: "Other Bar",depth:26, originalX:970});
+        button.changeScale(0.4);
+        ingredientBar[3].add(button);
+        button.addFunction("hover",function(){
+            isOver[3] = true;
+        });
+        button.addFunction("leave",function(){
             isOver[3] = false;
         });
 
         //meat
-        button = new Button({scene: scene, x: 710, y: 65, img: 'square', name: "Mackerel Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 95,img: 'Nothing', name: "Mackerel Button",depth:26, originalX:740});
         ingredientBar[0].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.1);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Mackerel",
-                name: "mackerel"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mackerel", name: "mackerel"});
+            ingredient.setDepth(27);
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[0] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[0] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 800, y: 65, img: 'square', name: "Octopus Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 95,img: 'Nothing', name: "Shrimp Button",depth:26, originalX:830});
         ingredientBar[0].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Octopus",
-                name: "octopus"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Shrimp", name: "shrimp"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[0] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[0] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 880, y: 65, img: 'square', name: "Salmon Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 95,img: 'Nothing', name: "Squid Button",depth:26, originalX:910});
         ingredientBar[0].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Salmon",
-                name: "salmon"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Squid", name: "squid"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[0] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[0] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 960, y: 65, img: 'square', name: "Shrimp Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 95,img: 'Nothing', name: "Octopus Button",depth:26, originalX:990});
         ingredientBar[0].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Shrimp",
-                name: "shrimp"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Octopus", name: "octopus"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[0] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[0] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 1025, y: 65, img: 'square', name: "Chopped Makrel Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 95,img: 'Nothing', name: "Sliced Mackerel Button",depth:26, originalX:1055});
         ingredientBar[0].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Squid",
-                name: "squid"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mackerel_Sliced", name: "mackerel_sliced"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[0] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[0] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 1100, y: 65, img: 'square', name: "Squid Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 95,img: 'Nothing', name: "Salmon Button",depth:26, originalX:1130});
         ingredientBar[0].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Squid",
-                name: "squid"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Salmon", name: "salmon"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[0] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[0] = false;
+            //this.setAlpha(0.01);
         });
+
+         //Vegetables 1
+         button = new Button({scene: scene, x: width-76,y: 185,img: 'Nothing', name: "Daikon Button",depth:26, originalX:780});
+         ingredientBar[1].add(button);
+         button.setAlpha(0.01);
+         button.addFunction("click",function (pointer){
+             if(ingredient){
+                 ingredient.destroy();
+             }
+             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Daikon_Chopped", name: "daikon"});
+         });
+         button.addFunction("hover",function (){
+             isOver[1] = true;
+             //this.setAlpha(0.1);
+         });
+         button.addFunction("leave",function (){
+             isOver[1] = false;
+             //this.setAlpha(0.01);
+         });
+         button = new Button({scene: scene, x: width-76,y: 185,img: 'Nothing', name: "Cabbage Button",depth:26, originalX:920});
+         ingredientBar[1].add(button);
+         button.setAlpha(0.01);
+         button.addFunction("click",function (pointer){
+             if(ingredient){
+                 ingredient.destroy();
+             }
+             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Cabbage", name: "cabbage"});
+         });
+         button.addFunction("hover",function (){
+             isOver[1] = true;
+             //this.setAlpha(0.1);
+         });
+         button.addFunction("leave",function (){
+             isOver[1] = false;
+             //this.setAlpha(0.01);
+         });
+         button = new Button({scene: scene, x: width-76,y: 185,img: 'Nothing', name: "Spring onion Button",depth:26, originalX:1060});
+         ingredientBar[1].add(button);
+         button.setAlpha(0.01);
+         button.addFunction("click",function (pointer){
+             if(ingredient){
+                 ingredient.destroy();
+             }
+             ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Spring_Onion", name: "spring onions"});
+         });
+         button.addFunction("hover",function (){
+             isOver[1] = true;
+             //this.setAlpha(0.1);
+         });
+         button.addFunction("leave",function (){
+             isOver[1] = false;
+             //this.setAlpha(0.01);
+         });
 
         //Seasoning
-        button = new Button({scene: scene, x: 740, y: 305, img: 'square', name: "Mayonnaise Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 275,img: 'Nothing', name: "Mayonnaise Button",depth:26, originalX:770});
         ingredientBar[2].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Mayo",
-                name: "mayo"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Mayo", name: "mayo"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[2] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[2] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 840, y: 305, img: 'square', name: "Salt Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 275,img: 'Nothing', name: "Soy sauce Button",depth:26,originalX:870});
         ingredientBar[2].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Salt",
-                name: "salt"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Soy_Sauce", name: "soy sauce"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[2] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[2] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 940, y: 305, img: 'square', name: "Seaweed Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 275,img: 'Nothing', name: "Salt Button",depth:26,originalX: 970});
         ingredientBar[2].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Seaweed",
-                name: "seaweed"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Salt", name: "salt"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[2] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[2] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 1061.5, y: 305, img: 'square', name: "Soy sauce Button", depth: 26});
+        button = new Button({scene: scene, x: width-76,y: 275,img: 'Nothing', name: "Seaweed Button",depth:26,originalX:1091.5});
         ingredientBar[2].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Soy_sauce",
-                name: "soy sauce"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Seaweed", name: "seaweed"});
         });
-        button.addFunction("hover", function () {
+        button.addFunction("hover",function (){
             isOver[2] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
+        button.addFunction("leave",function (){
             isOver[2] = false;
-        });
-        //Other 3
-        button = new Button({scene: scene, x: 700, y: 425, img: 'square', name: "Anko Button", depth: 26});
-        ingredientBar[3].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Anko",
-                name: "anko"
-            });
-        });
-        button.addFunction("hover", function () {
-            isOver[2] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[2] = false;
-        });
-        button = new Button({scene: scene, x: 790, y: 425, img: 'square', name: "Liqiud dough Button", depth: 26});
-        ingredientBar[3].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Liqiud_dough",
-                name: "liqiud dough"
-            });
-        });
-        button.addFunction("hover", function () {
-            isOver[3] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[3] = false;
-        });
-        button = new Button({scene: scene, x: 900, y: 425, img: 'square', name: "Panko Button", depth: 26});
-        ingredientBar[3].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Panko",
-                name: "panko"
-            });
-        });
-        button.addFunction("hover", function () {
-            isOver[3] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[3] = false;
-        });
-        button = new Button({scene: scene, x: 1010, y: 425, img: 'square', name: "Rice Button", depth: 26});
-        ingredientBar[3].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Rice",
-                name: "rice"
-            });
-        });
-        button.addFunction("hover", function () {
-            isOver[3] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[3] = false;
-        });
-        button = new Button({scene: scene, x: 1110, y: 425, img: 'square', name: "Tenkasu Button", depth: 26});
-        ingredientBar[3].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
-                ingredient.destroy();
-            }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Tenkasu",
-                name: "tenkasu"
-            });
-        });
-        button.addFunction("hover", function () {
-            isOver[3] = true;
-        });
-        button.addFunction("leave", function () {
-            isOver[3] = false;
+            //this.setAlpha(0.01);
         });
 
-        //Vegetables 1
-        button = new Button({scene: scene, x: 750, y: 185, img: 'square', name: "Cabbage Button", depth: 26});
-        ingredientBar[1].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        //Other 3
+        button = new Button({scene: scene, x: width-76,y: 365,img: 'Nothing', name: "Tenkasu Button",depth:26,originalX:730});
+        ingredientBar[3].add(button);
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Cabbage",
-                name: "cabbage"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Tenkasu", name: "tenkasu"});
         });
-        button.addFunction("hover", function () {
-            isOver[1] = true;
+        button.addFunction("hover",function (){
+            isOver[3] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
-            isOver[1] = false;
+        button.addFunction("leave",function (){
+            isOver[3] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 890, y: 185, img: 'square', name: "Daikon Button", depth: 26});
-        ingredientBar[1].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button = new Button({scene: scene, x: width-76,y: 365,img: 'Nothing', name: "Panko Button",depth:26, originalX:820});
+        ingredientBar[3].add(button);
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Daikon_Chopped",
-                name: "daikon"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Panko", name: "panko"});
         });
-        button.addFunction("hover", function () {
-            isOver[1] = true;
+        button.addFunction("hover",function (){
+            isOver[3] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
-            isOver[1] = false;
+        button.addFunction("leave",function (){
+            isOver[3] = false;
+            //this.setAlpha(0.01);
         });
-        button = new Button({scene: scene, x: 1030, y: 185, img: 'square', name: "Spring onion Button", depth: 26});
-        ingredientBar[1].add(button);
-        button.addFunction("click", function (pointer) {
-            if (ingredient) {
+        button = new Button({scene: scene, x: width-76,y: 365,img: 'Nothing', name: "Liqiud dough Button",depth:26,originalX:930});
+        ingredientBar[3].add(button);
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
                 ingredient.destroy();
             }
-            ingredient = new Ingredient({
-                scene: scene,
-                x: pointer.x,
-                y: pointer.y,
-                plate: prepPlate,
-                img: "Spring_onion",
-                name: "spring onions"
-            });
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Liquid_Dough", name: "liquid dough"});
         });
-        button.addFunction("hover", function () {
-            isOver[1] = true;
+        button.addFunction("hover",function (){
+            isOver[3] = true;
+            //this.setAlpha(0.1);
         });
-        button.addFunction("leave", function () {
-            isOver[1] = false;
+        button.addFunction("leave",function (){
+            isOver[3] = false;
+            //this.setAlpha(0.01);
+        });
+        button = new Button({scene: scene, x: width-76,y: 365,img: 'Nothing', name: "Rice Button",depth:26,originalX:1040});
+        ingredientBar[3].add(button);
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Rice", name: "rice"});
+        });
+        button.addFunction("hover",function (){
+            isOver[3] = true;
+            //this.setAlpha(0.1);
+        });
+        button.addFunction("leave",function (){
+            isOver[3] = false;
+            //this.setAlpha(0.01);
+        });
+        button = new Button({scene: scene, x: width-76,y: 365,img: 'Nothing', name: "Anko Button",depth:26,originalX:1140});
+        ingredientBar[3].add(button);
+        button.setAlpha(0.01);
+        button.addFunction("click",function (pointer){
+            if(ingredient){
+                ingredient.destroy();
+            }
+            ingredient = new Ingredient({scene:scene, x : pointer.x, y:pointer.y,plate:prepPlate, img: "Anko", name: "anko"});
+        });
+        button.addFunction("hover",function (){
+            isOver[3] = true;
+            //this.setAlpha(0.1);
+        });
+        button.addFunction("leave",function (){
+            isOver[3] = false;
+            //this.setAlpha(0.01);
         });
     }
 
     //function used to set input.on functions to elements in scene
     //TIMO
 
-    setInteractivity() {
-        scene.input.on('pointermove', function (pointer) {
+    setInteractivity(){
+        scene.input.on('pointermove', function(pointer) {
             //check here is a scene has a selected gameObject
-            if (ingredient) {
-                ingredient.setTint(0x44ff4);
+            if(ingredient){
                 ingredient.setPosition(pointer.x, pointer.y);
             }
         })
 
-        scene.input.on('pointerup', function () {
-            if (ingredient) {
-                if (!prepPlate.checkOverlap(ingredient)) {
+        scene.input.on('pointerup', function (){
+            if(ingredient){
+                if(!prepPlate.checkOverlap(ingredient)){
                     ingredient.destroy();
-                } else {
+                }else {
                     ingredient.emit('dragend');
                 }
                 ingredient = undefined;
             }
         })
 
-        scene.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+        scene.input.on('drag', function(pointer, gameObject, dragX, dragY){
             gameObject.x = dragX;
             gameObject.y = dragY;
         })
 
-        prepPlate.on('dragend', function () {
-            if (prepPlate.ingredients.length > 0) {
-                pan.checkOverlap(prepPlate);
-                pot.checkOverlap(prepPlate);
+        prepPlate.on('dragend',function (){
+            if(prepPlate.ingredients.length > 0){
+                if(trashcan.checkOverlap(prepPlate)){
+                    prepPlate.clearIngredients();
+                }else{
+                    if(!pan.checkOverlap(prepPlate,bossIsHere)){
+                        pot.checkOverlap(prepPlate,bossIsHere);
+                    }
+                }
             }
             prepPlate.x = prepPlate.plate.x;
             prepPlate.y = prepPlate.plate.y;
         })
 
-        pan.object.on('pointerdown', function () {
-            if (!pan.isCooking && pan.isBurning) {
+        pan.object.on('pointerdown',function (){
+            let finished = false;
+            if((!pan.isCooking && pan.isBurning)||pan.cookedFood == "Burnt"){
                 let found = foods.find(element => element.name == pan.cookedFood);
-                if (found) {
-                    let alreadyFilled = false;
-                    for (let i = 0; i < 3; i++) {
-                        if (!slots.getChildren()[i].isFilled && !alreadyFilled) {
-                            let food = new Food({
-                                scene: scene,
-                                x: 0,
-                                y: 0,
-                                image: found.name,
-                                ingredients: [],
-                                cookMethod: null,
-                                prepTime: null
-                            });//found
-                            console.log(food.name);
-                            slots.getChildren()[i].addFood(food);
-                            slots.getChildren()[i].makeInteractive(function () {
-                                console.log("boop");
-                                slots.getChildren()[i].food.x = slots.getChildren()[i].x;
-                                slots.getChildren()[i].food.y = slots.getChildren()[i].y;
-                            });
-                            alreadyFilled = true;
-                        }
-                    }
-                } else {
+                if(found){
+                    finished = scene.fillSlot(found);
+                }else {
                     console.log(pan.cookedFood);
                 }
-                pan.isBurning = false;
-                pan.isCooking = false;
-                pan.timer.timerControl("stop");
+                if(finished){
+                    pan.object.play(pan.type+"_idle");
+                    pan.isBurning = false;
+                    pan.isCooking = false;
+                    pan.timer.timerControl("stop");
+                    pan.cookedFood = "nothing"
+                }
             }
         })
+
+        pot.object.on('pointerdown',function (){
+            let finished = false;
+            if((!pot.isCooking && pot.isBurning)||pot.cookedFood == "Burnt"){
+                let found = foods.find(element => element.name == pot.cookedFood);
+                if(found){
+                    finished = scene.fillSlot(found);
+                }else {
+                    console.log(pot.cookedFood);
+                }
+                if(finished){
+                    pot.object.play(pot.type+"_idle");
+                    pot.object.x += 7;
+                    //pot.object.y += 1;
+                    pot.isBurning = false;
+                    pot.isCooking = false;
+                    pot.timer.timerControl("stop");
+                    pot.cookedFood = "nothing";
+                }
+            }
+        })
+    }
+
+    checkCustomerOverlap(slot){
+        for(let i = 0; i < this.customerGroup.getChildren().length; i++){
+            if(this.customerGroup.getChildren()[i].checkOverlap(slot.food)){
+                this.customerGroup.getChildren()[i].takeFood(slot.food);
+                return true;
+            }
+        }
+    }
+
+    fillSlot(foundFood){  
+        console.log(foundFood)      
+        let alreadyFilled = false;
+        for(let i = 0; i < 3;i++){
+            if(!slots.getChildren()[i].isFilled && !alreadyFilled){
+                let food = new Food({scene:scene, x:0, y:0, image:foundFood.name, ingredients:[], cookMethod:null, prepTime:null}) ;//found
+                //console.log(food.name);
+                slots.getChildren()[i].addFood(food);
+                slots.getChildren()[i].makeInteractive(function (){
+                    if(scene.checkCustomerOverlap(slots.getChildren()[i])){
+                        slots.getChildren()[i].removeFood();
+                    }else{
+                        if(trashcan.checkOverlap(slots.getChildren()[i].food)){
+                            slots.getChildren()[i].removeFood();
+                        }else{
+                            slots.getChildren()[i].food.x = slots.getChildren()[i].x;
+                            slots.getChildren()[i].food.y = slots.getChildren()[i].y;
+                        }
+                    }
+                });
+                alreadyFilled = true;
+                return true;
+            }
+        }
+        return false;
     }
 
     //function fills Foods array with instances of Food classed used in the level
     //this function should only be called in <createLevel> function
     //TIMO
-    addFoods() {
-        level = 3;
-        console.log("level: " + level);
-        let ingredients, food;
-        ingredients = ['mackerel', 'salt'];
-        food = new Food({
-            scene: scene,
-            x: 100,
-            y: 100,
-            image: 'Shioyaki',
-            ingredients: ingredients,
-            cookMethod: "bake",
-            prepTime: 3000
-        });
+    addFoods(){
+        foods.splice(0,foods.length-1);
+        let ingredients,food;
+        ingredients = ['mackerel','salt'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Shioyaki', ingredients: ingredients, cookMethod: "bake", prepTime: 3000});
         food.setFoodName("Shioyaki");
         foods.push(food);
 
-        ingredients = ['squid', 'soy sauce'];
-        food = new Food({
-            scene: scene,
-            x: 100,
-            y: 100,
-            image: 'Ikayaki',
-            ingredients: ingredients,
-            cookMethod: "fry",
-            prepTime: 3000
-        });
+        ingredients = ['squid','soy sauce'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Ikayaki', ingredients: ingredients, cookMethod: "fry", prepTime: 3000});
         food.setFoodName("Ikayaki");
         foods.push(food);
 
-        ingredients = ['rice', 'mackerel', 'seaweed'];
-        food = new Food({
-            scene: scene,
-            x: 100,
-            y: 100,
-            image: 'Onigiri',
-            ingredients: ingredients,
-            cookMethod: "mix",
-            prepTime: 3000
-        });
+        ingredients = ['rice','mackerel_sliced', 'seaweed'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Onigiri', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
         food.setFoodName("Onigiri");
         foods.push(food);
 
-        ingredients = ['liquid dough', 'anko'];
-        food = new Food({
-            scene: scene,
-            x: 100,
-            y: 100,
-            image: 'Taiyaki',
-            ingredients: ingredients,
-            cookMethod: "fry",
-            prepTime: 3000
-        });
+        ingredients = ['liquid dough','anko'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Taiyaki', ingredients: ingredients, cookMethod: "fry", prepTime: 3000});
         food.setFoodName("Taiyaki");
         foods.push(food);
 
-        ingredients = ['cabbage', 'salt', 'soy sauce'];
-        food = new Food({
-            scene: scene,
-            x: 100,
-            y: 100,
-            image: 'Cabbage_Salad',
-            ingredients: ingredients,
-            cookMethod: "mix",
-            prepTime: 3000
-        });
+        ingredients = ['cabbage','salt','soy sauce'];
+        food = new Food({scene:scene, x:100, y:100, image: 'Cabbage_Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
         food.setFoodName("Cabbage_Salad");
         foods.push(food);
 
         ingredients = ['none'];
-        food = new Food({
-            scene: scene,
-            x: 100,
-            y: 100,
-            image: 'square',
-            ingredients: ingredients,
-            cookMethod: "nothing",
-            prepTime: 3000
-        });
+        food = new Food({scene:scene, x:100, y:100, image: 'Blob', ingredients: ingredients, cookMethod: "nothing", prepTime: 3000});
         food.setFoodName("Garbage");
         foods.push(food);
 
         ingredients = ['none'];
-        food = new Food({
-            scene: scene,
-            x: 100,
-            y: 100,
-            image: 'square',
-            ingredients: ingredients,
-            cookMethod: "nothing",
-            prepTime: 3000
-        });
+        food = new Food({scene:scene, x:100, y:100, image: 'Burnt', ingredients: ingredients, cookMethod: "nothing", prepTime: 3000});
         food.setFoodName("Burnt");
         foods.push(food);
-        if (level > 1) {
-            ingredients = ['liquid dough', 'anko'];
-            food = new Food({
-                scene: scene,
-                x: 100,
-                y: 100,
-                image: 'Dorayaki',
-                ingredients: ingredients,
-                cookMethod: "bake",
-                prepTime: 3000
-            });
+        if(this.level >1){
+            ingredients = ['liquid dough','anko'];
+            food = new Food({scene:scene, x:100, y:100, image: 'Dorayaki', ingredients: ingredients, cookMethod: "bake", prepTime: 3000});
             food.setFoodName("Dorayaki");
             foods.push(food);
 
-            ingredients = ['rice', 'salmon', 'seaweed'];
-            food = new Food({
-                scene: scene,
-                x: 100,
-                y: 100,
-                image: 'Sushi',
-                ingredients: ingredients,
-                cookMethod: "mix",
-                prepTime: 3000
-            });
+            ingredients = ['rice','salmon', 'seaweed'];
+            food = new Food({scene:scene, x:100, y:100, image: 'Sushi', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
             food.setFoodName("Sushi");
             foods.push(food);
 
             ingredients = ['daikon', 'salt'];
-            food = new Food({
-                scene: scene,
-                x: 100,
-                y: 100,
-                image: 'Daikon_Salad',
-                ingredients: ingredients,
-                cookMethod: "mix",
-                prepTime: 3000
-            });
+            food = new Food({scene:scene, x:100, y:100, image: 'Daikon_Salad', ingredients: ingredients, cookMethod: "mix", prepTime: 3000});
             food.setFoodName("Daikon_Salad");
             foods.push(food);
-            if (level === 3) {
-                ingredients = ['shrimp', 'panko', 'liquid dough'];
-                food = new Food({
-                    scene: scene,
-                    x: 100,
-                    y: 100,
-                    image: 'Ebi Furai',
-                    ingredients: ingredients,
-                    cookMethod: "fry"
-                });
+            if(this.level === 3){
+                ingredients = ['shrimp','panko','liquid dough'];
+                food = new Food({scene:scene, x:100, y:100, image: 'Ebi Furai', ingredients: ingredients, cookMethod: "fry",prepTime: 3000});
                 food.setFoodName("Ebi_Furai");
                 foods.push(food);
 
-                ingredients = ['octopus', 'tenkasu', 'liquid dough', 'spring onions', 'mayo'];
-                food = new Food({
-                    scene: scene,
-                    x: 100,
-                    y: 100,
-                    image: 'Takoyaki',
-                    ingredients: ingredients,
-                    cookMethod: "fry"
-                });
+                ingredients = ['octopus','tenkasu','liquid dough','spring onions', 'mayo'];
+                food = new Food({scene:scene, x:100, y:100, image: 'Takoyaki', ingredients: ingredients, cookMethod: "fry",prepTime: 3000});
                 food.setFoodName("Takoyaki");
                 foods.push(food);
 
                 //TODO: Figure how to actually make this!!!
-                ingredients = ['UGHHH'];
-                food = new Food({
-                    scene: scene,
-                    x: 100,
-                    y: 100,
-                    image: 'square',
-                    ingredients: ingredients,
-                    cookMethod: "frier"
-                });
-                food.setFoodName("Ultimate_Secrete_Bowl");
+                ingredients = ['none'];
+                food = new Food({scene:scene, x:100, y:100, image: 'Ultimate_secret_bowl', ingredients: ingredients, cookMethod: "frier",prepTime: 3000});
+                food.setFoodName("Ultimate_secret_bowl");
                 foods.push(food);
             }
         }
@@ -1391,7 +1508,7 @@ export default class MainScene extends Phaser.Scene {
             element.setAlpha(0);
             element.setX(-100);
             element.setScale(0.5);
-            element.setDepth(70);
+            //element.setDepth(70);
         })
     }
 
@@ -1404,22 +1521,17 @@ export default class MainScene extends Phaser.Scene {
 
     //this function is only used for testing
     //TIMO
-    testUpdate() {
-        if (pan.isCooking || pan.isBurning) {
+    testUpdate(){
+        if(pan.isCooking || pan.isBurning){
             pan.draw();
+        }
+        if(pot.isCooking || pot.isBurning){
+            pot.draw();
         }
         this.hideButtons();
         this.moveButtons();
     }
 }
-/*
-function createCustomer(){
-    let customer = new Customer({scene: this, image: "customer", counterX: 200, edgeX: width, x: 350, y:200, timeLimit: 3000, timeOffset: 0, orderImg: "circle", bubble: "bubble", score: score});
-    this.add.existing(customer);
-    customer.setScale(0.4)
-    return customer;
-}
-*/
 /*
 function onEvent ()
 {

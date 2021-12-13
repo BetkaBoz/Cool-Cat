@@ -11,23 +11,23 @@
 
               <div class="form-group">
                 <input v-model="formData.name" type="text" class="form-control" name="name" placeholder="Username">
-                <p class="table-danger" v-text="errors.name"></p>
+                <p class="table-danger" v-text="errors.name" style="color: #b91d19"></p>
               </div>
 
               <div class="form-group">
                 <input v-model="formData.email" type="text" class="form-control" name="email" placeholder="Email">
-                <p class="table-danger" v-text="errors.email"></p>
+                <p class="table-danger" v-text="errors.email" style="color: #b91d19"></p>
               </div>
 
               <div class="form-group">
                 <input v-model="formData.password" type="password" class="form-control" name="password" placeholder="Password">
-                <p class="table-danger" v-text="errors.password"></p>
+                <p class="table-danger" v-text="errors.password" style="color: #b91d19"></p>
               </div>
 
               <div class="form-group">
                 <input v-model="formData.password_confirmation" type="password" class="form-control"
                        name="password_confirmation" placeholder="Confirm Password">
-                <p class="table-danger" v-text="errors.password_confirmation"></p>
+                <p class="table-danger" v-text="errors.password_confirmation" style="color: #b91d19"></p>
               </div>
 
               <div class="col-md-12">

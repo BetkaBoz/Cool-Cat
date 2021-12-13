@@ -11,12 +11,12 @@
 
               <div class="form-group">
                 <input v-model="formData.email" type="text" class="form-control" name="email" placeholder="Email">
-                <p class="table-danger" v-text="errors.email"></p>
+                <p class="table-danger" v-text="errors.email" style="color: #b91d19"></p>
               </div>
 
               <div class="form-group">
                 <input v-model="formData.password" type="password" class="form-control" name="password" placeholder="Password">
-                <p class="table-danger" v-text="errors.password"></p>
+                <p class="table-danger" v-text="errors.password" style="color: #b91d19"></p>
               </div>
 
               <div class="form-group">
